@@ -3,10 +3,9 @@ Permainan menghancurkan blok menggunakan bola yang dipantulkan oleh papan.
 <<<<<<< HEAD
 =======
 KELOMPOK C6
-Ahmad Habib
-Muhammad Brata Hadinata
-Muhammad Raihan Abubakar
-Nezya Zulfa
-Siti Soviyah
->>>>>>> 805db2369c241790b55aa31f12ded7d38e79747d
-editisoidfejdasfksjdjihfiodjfidlkgfjkgjl
+Ahmad Habib Mutaqqin (241511065)
+Muhammad Brata Hadinata (241511082)
+Muhammad Raihan Abubakar (241511084)
+Nezya Zulfa Fauziah (241511085)
+Siti Soviyyah (241511090)
+Wyandhanu Maulidan Nugraha (2415110992)
