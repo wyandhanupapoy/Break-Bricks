@@ -9,4 +9,4 @@ Muhammad Raihan Abubakar (241511984)
 Nezya Zulfa Fauziah (241511085)
 Siti Soviyyah (241511090)
 Wyandhanu Maulidan Nugraha (24151109)
->>>>>>> 805db2369c241790b55aa31f12ded7d38e79747d
+
