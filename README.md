@@ -13,4 +13,4 @@ Siti Soviyah
 >>>>>>> 805db2369c241790b55aa31f12ded7d38e79747d
  
 kuda terbang 
- kita harus bekera bersam sama  bersma aja kita bis mennag dfdsfdsfredfujedio
+ kita harus bekera bersam sama  bersma aja kita bis mennag dfdsfdsfredfujedio namandskfj
