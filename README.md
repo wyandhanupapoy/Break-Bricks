@@ -5,7 +5,7 @@ NAMA:
 Muhammad Raihan Abubakar udshf
 =======
 KELOMPOK C6
-Ahmad Habib
+Ahmad Habib Mutaqqin (24151106)
 Muhammad Brata Hadinata
 Muhammad Raihan Abubakar
 Nezya Zulfa
