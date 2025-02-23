@@ -1,7 +1,6 @@
 # Break-Bricks
 Permainan menghancurkan blok menggunakan bola yang dipantulkan oleh papan.
-<<<<<<< HEAD
-=======
+=
 KELOMPOK C6
 Ahmad Habib Mutaqqin (241511065)
 Muhammad Brata Hadinata (241511082)
