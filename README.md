@@ -34,6 +34,6 @@ fitur tambahan: skor & nyawa
 4. Blok (Nezya): fitur ini dibuat dengan tujuan bola harus menyentuh blok sehingga skor bertambah. Ketika blok telah habis maka permainan selesai.
 5. Papan (Brata):
 6. NyawA (Brata):
-7. Menu (Siti): fitur ini dibuat dengan tujuan 
-8. Sound Effect (Siti):
+7. Menu (Siti): fitur ini dibuat dengan tujuan untuk menampilkan tampilan awal saat pertama kali membuka game, yang berisi pilihan menu di dalam game.
+8. Sound Effect (Siti): fitur ini dibuat dengan tujuan untuk memberikan sound effect di dalam game (suara bola memantul, balok hancur, klik opsi menu, musik latar) agar pengalaman bermain game menjadi lebih menyenangkan.
 9. Ending (Dhanu): fitur ini dibuat dengan tujuan ketika game selesai maka fitur ini aktif dan akan menampilkan skor akhir dan permainan akan berakhir.
