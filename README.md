@@ -14,7 +14,7 @@ Siti Soviyyah (241511090)
 Wyandhanu Maulidan Nugraha (241511092)
  
 
-2. Papan (Brata): 
+2. Papan (Brata): coba fitur push
 
 3. Blok (Nezya): fitur ini dibuat dengan tujuan bola harus menyentuh blok sehingga skor bertambah. Ketika blok telah habis maka permainan selesai.
 
