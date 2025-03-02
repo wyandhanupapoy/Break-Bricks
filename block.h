@@ -1,6 +1,6 @@
 // blok.h - File berisi fungsi-fungsi terkait blok
-#ifndef BLOK_H
-#define BLOK_H
+#ifndef BLOCK_H
+#define BLOCK_H
 
 #include "definisi.h"
 

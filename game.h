@@ -13,7 +13,7 @@
 #include "tampilan.h"
 #include "paddle.h"
 #include "bola.h"
-#include "blok.h"
+#include "block.h"
 
 // Mulai level baru
 void mulaiLevelBaru(DataPermainan *data, Paddle *paddle, Bola *bola, Blok blok[JUMLAH_BLOK_BARIS][JUMLAH_BLOK_KOLOM]) {

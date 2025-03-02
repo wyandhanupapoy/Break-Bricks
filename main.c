@@ -10,7 +10,7 @@
 #include "tampilan.h"
 #include "paddle.h"
 #include "bola.h"
-#include "blok.h"
+#include "block.h"
 #include "game.h"
 
 int main() {

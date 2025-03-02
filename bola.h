@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include "definisi.h"
 #include "paddle.h"
-#include "blok.h"
+#include "block.h"
 
 // Inisialisasi bola
 void inisialisasiBola(Bola *bola, Paddle paddle) {
