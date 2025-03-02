@@ -16,10 +16,22 @@ SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
 TTF_Font *font = NULL;
 GameState gameState = MENU_MAIN;
+bool running = true;
 
 void renderText(const char *text, int x, int y, SDL_Color color) {
     SDL_Surface *surface = TTF_RenderText_Solid(font, text, color);
+    if (!surface) {
+        printf("Failed to create text surface: %s\n", TTF_GetError());
+        return;
+    }
+
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+    if (!texture) {
+        printf("Failed to create text texture: %s\n", SDL_GetError());
+        SDL_FreeSurface(surface);
+        return;
+    }
+
     SDL_Rect destRect = {x, y, surface->w, surface->h};
     SDL_RenderCopy(renderer, texture, NULL, &destRect);
     SDL_FreeSurface(surface);
@@ -51,7 +63,7 @@ void handleMouseClick(int x, int y) {
     if (gameState == MENU_MAIN) {
         if (y > 200 && y < 250) gameState = MENU_LEVEL;
         else if (y > 300 && y < 350) gameState = MENU_HOW_TO_PLAY;
-        else if (y > 400 && y < 450) exit(0);
+        else if (y > 400 && y < 450) running = false;
     } else if (gameState == MENU_LEVEL) {
         if (y > 500 && y < 550) gameState = MENU_MAIN;
         else if (y > 200 && y < 250) printf("Starting Easy Level\n");
@@ -63,7 +75,6 @@ void handleMouseClick(int x, int y) {
 }
 
 void gameLoop() {
-    bool running = true;
     SDL_Event event;
     while (running) {
         while (SDL_PollEvent(&event)) {
@@ -72,26 +83,59 @@ void gameLoop() {
                 handleMouseClick(event.button.x, event.button.y);
             }
         }
+
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
+
         if (gameState == MENU_MAIN) renderMainMenu();
         else if (gameState == MENU_LEVEL) renderLevelMenu();
         else if (gameState == MENU_HOW_TO_PLAY) renderHowToPlay();
+
         SDL_RenderPresent(renderer);
     }
 }
 
-int main() {
-    SDL_Init(SDL_INIT_VIDEO);
-    TTF_Init();
-    window = SDL_CreateWindow("Brick Breaker Menu", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    font = TTF_OpenFont("arial.ttf", 24);
-    if (!font) {
-        printf("Failed to load font!\n");
+int main(int argc, char *argv[]) {
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
         return 1;
     }
+
+    if (TTF_Init() == -1) {
+        printf("TTF could not initialize! TTF_Error: %s\n", TTF_GetError());
+        SDL_Quit();
+        return 1;
+    }
+
+    window = SDL_CreateWindow("Brick Breaker Menu", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    if (!window) {
+        printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
+        TTF_Quit();
+        SDL_Quit();
+        return 1;
+    }
+
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    if (!renderer) {
+        printf("Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
+        SDL_DestroyWindow(window);
+        TTF_Quit();
+        SDL_Quit();
+        return 1;
+    }
+
+    font = TTF_OpenFont("arial.ttf", 24);
+    if (!font) {
+        printf("Failed to load font! TTF_Error: %s\n", TTF_GetError());
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyWindow(window);
+        TTF_Quit();
+        SDL_Quit();
+        return 1;
+    }
+
     gameLoop();
+
     TTF_CloseFont(font);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
