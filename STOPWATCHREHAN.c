@@ -41,6 +41,3 @@ int main() {
 
     return 0;
 }
-
-// Dengan ini, kamu bisa lihat waktu berjalan secara real-time!
-// Jangan lupa compile jadi .exe pakai GCC atau compiler favoritmu 🚀
