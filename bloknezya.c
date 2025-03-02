@@ -138,3 +138,4 @@ int main(int argc, char *argv[]) {  // Menggunakan format yang benar untuk SDL2
     SDL_Quit();
     return 0;
 }
+    
