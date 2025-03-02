@@ -1,3 +1,5 @@
+#define SDL_MAIN_HANDLED  // Agar SDL tidak mengganti main() dengan SDL_main()
+
 #include <SDL2/SDL.h>
 #include <stdio.h>
 
@@ -61,7 +63,7 @@ void checkCollisionBall(float *ballX, float *ballY, float *ballVelX, float *ball
     }
 }
 
-int main() {
+int main(int argc, char *argv[]) {  // Menggunakan format yang benar untuk SDL2
     SDL_Init(SDL_INIT_VIDEO);
     SDL_Window *window = SDL_CreateWindow("Breakout", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
