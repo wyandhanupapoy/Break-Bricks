@@ -23,12 +23,12 @@ int initAudio() {
 // Load semua efek suara
 int loadSounds() {
     backgroundMusic = Mix_LoadMUS("assets/sounds/background.mp3");
-    clickSound = Mix_LoadWAV("assets/sounds/click.wav");
-    paddleBounce = Mix_LoadWAV("assets/sounds/paddle_bounce.wav");
-    wallBounce = Mix_LoadWAV("assets/sounds/wall_bounce.wav");
-    blockBreak = Mix_LoadWAV("assets/sounds/block_break.wav");
-    winSound = Mix_LoadWAV("assets/sounds/win.wav");
-    loseSound = Mix_LoadWAV("assets/sounds/lose.wav");
+    clickSound = Mix_LoadWAV("assets/sounds/click_3.wav");
+    paddleBounce = Mix_LoadWAV("assets/sounds/Random2.wav");
+    wallBounce = Mix_LoadWAV("assets/sounds/Random2.wav");
+    blockBreak = Mix_LoadWAV("assets/sounds/Explosion4.wav");
+    winSound = Mix_LoadWAV("assets/sounds/Won!.wav");
+    loseSound = Mix_LoadWAV("assets/sounds/losetrumpet.wav");
     
     if (!backgroundMusic || !clickSound || !paddleBounce || !wallBounce || !blockBreak || !winSound || !loseSound) {
         printf("Failed to load sound: %s\n", Mix_GetError());
