@@ -9,7 +9,7 @@ char board[HEIGHT][WIDTH];
 
 // Posisi bola
 int ballX = 5, ballY = 8;
-int dirX = 1, dirY = -2; // Arah bola
+int dirX = 1, dirY = -1; // Arah bola
 
 // Inisialisasi papan dengan blok dan ruang kosong
 void initBoard() {
