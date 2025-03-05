@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
 
         // Inisialisasi di awal
         Nyawa playerNyawa;
-        initNyawa(&playerNyawa, renderer, "heart.png");
+        initNyawa(&playerNyawa, renderer, "gambar/heart.png");
 
         // Di dalam loop render
         renderNyawa(&playerNyawa, renderer);
