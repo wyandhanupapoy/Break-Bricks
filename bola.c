@@ -1,80 +1,77 @@
+#include <SDL2/SDL.h>
 #include <stdio.h>
-#include <conio.h>
-#include <windows.h>
+#include <stdbool.h>
 
-#define WIDTH 10
-#define HEIGHT 10
+#define SCREEN_WIDTH 800
+#define SCREEN_HEIGHT 600
+#define BALL_SIZE 10
 
-char board[HEIGHT][WIDTH];
+void moveBall(float ball[2][2]) {
+    ball[0][0] += ball[1][0]; // Update posisi X
+    ball[0][1] += ball[1][1]; // Update posisi Y
 
-// Posisi bola
-int ballX = 5, ballY = 8;
-int dirX = 1, dirY = -1; // Arah bola
+    // Pantulan terhadap dinding
+    if (ball[0][0] <= 0 || ball[0][0] >= SCREEN_WIDTH - BALL_SIZE) {
+        ball[1][0] = -ball[1][0]; // Balik arah X
+    }
+    if (ball[0][1] <= 0 || ball[0][1] >= SCREEN_HEIGHT - BALL_SIZE) {
+        ball[1][1] = -ball[1][1]; // Balik arah Y
+    }
+}
 
-// Inisialisasi papan dengan blok dan ruang kosong
-void initBoard() {
-    for (int i = 0; i < HEIGHT; i++) {
-        for (int j = 0; j < WIDTH; j++) {
-            if (i < 3)
-                board[i][j] = '#'; // Blok
-            else
-                board[i][j] = ' '; // Ruang kosong
+int main(int argc, char *argv[]) {
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
+        return -1;
+    }
+
+    SDL_Window *window = SDL_CreateWindow("Break Bricks - Ball", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    if (!window) {
+        printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
+        SDL_Quit();
+        return -1;
+    }
+
+    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    if (!renderer) {
+        printf("Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        return -1;
+    }
+
+    // Inisialisasi bola dengan array 2D
+    float ball[2][2] = {
+        {SCREEN_WIDTH / 2.0, SCREEN_HEIGHT / 2.0}, // Posisi awal (x, y)
+        {4.0, -4.0} // Kecepatan awal (vx, vy)
+    };
+
+    bool running = true;
+    SDL_Event event;
+
+    while (running) {
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
+                running = false;
+            }
         }
-    }
-    board[ballY][ballX] = 'O'; // Bola
-}
 
-// Menampilkan papan permainan
-void drawBoard() {
-    system("cls"); // Membersihkan layar (Windows)
-    for (int i = 0; i < HEIGHT; i++) {
-        for (int j = 0; j < WIDTH; j++) {
-            printf("%c ", board[i][j]);
-        }
-        printf("\n");
-    }
-}
+        moveBall(ball);
 
-// Menggerakkan bola
-void moveBall() {
-    // Hapus posisi bola sebelumnya
-    board[ballY][ballX] = ' ';
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_RenderClear(renderer);
 
-    // Hitung posisi baru
-    int newX = ballX + dirX;
-    int newY = ballY + dirY;
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        SDL_Rect ballRect = {ball[0][0], ball[0][1], BALL_SIZE, BALL_SIZE};
+        SDL_RenderFillRect(renderer, &ballRect);
 
-    // Deteksi tabrakan dengan dinding
-    if (newX < 0 || newX >= WIDTH) {
-        dirX *= -1; // Pantulan horizontal
-        newX = ballX + dirX;
-    }
-    if (newY < 0) {
-        dirY *= -1; // Pantulan vertikal
-        newY = ballY + dirY;
+        SDL_RenderPresent(renderer);
+        SDL_Delay(16);
     }
 
-    // Deteksi tabrakan dengan blok
-    if (board[newY][newX] == '#') {
-        board[newY][newX] = ' '; // Hancurkan blok
-        dirY *= -1; // Bola memantul
-        newY = ballY + dirY;
-    }
-
-    // Perbarui posisi bola
-    ballX = newX;
-    ballY = newY;
-    board[ballY][ballX] = 'O';
-}
-
-int main() {
-    initBoard();
-
-    while (1) {
-        drawBoard();
-        moveBall();
-        Sleep(200);
-    }
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
 
     return 0;
 }
