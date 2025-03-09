@@ -1,4 +1,3 @@
-#define SDL_MAIN_HANDLED
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_main.h>
 #include <stdio.h>
@@ -66,6 +65,12 @@ int main(int argc, char *argv[])
             {
                 running = 0;
             }
+            else if (event.type == SDL_KEYDOWN) {
+                if (event.key.keysym.sym == SDLK_SPACE) {
+                    kurangiNyawa(&playerNyawa);
+                    printf("Nyawa: %d\n", playerNyawa.nyawa);  // Debugging untuk cek apakah nyawa berkurang
+                }
+            }
         }
 
         // Mengatur warna latar belakang
@@ -74,10 +79,6 @@ int main(int argc, char *argv[])
 
         // Di dalam loop render
         renderNyawa(&playerNyawa, renderer);
-
-        if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_SPACE) {
-            kurangiNyawa(&playerNyawa);
-        }
 
         // Menampilkan hasil render
         SDL_RenderPresent(renderer);
