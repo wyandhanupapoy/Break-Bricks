@@ -16,16 +16,22 @@ typedef struct {
 
 // Inisialisasi nyawa dengan tekstur hati
 int initNyawa(Nyawa *nyawa, SDL_Renderer *renderer, const char *heartImagePath) {
+    if (!nyawa || !renderer || !heartImagePath) {
+        fprintf(stderr, "Invalid parameters passed to initNyawa\n");
+        return 0;
+    }
+
     SDL_Surface *heartSurface = IMG_Load(heartImagePath);
     if (!heartSurface) {
-        printf("Failed to load heart image: %s\n", IMG_GetError());
+        fprintf(stderr, "Failed to load heart image: %s\n", IMG_GetError());
         return 0;
     }
 
     nyawa->heartTexture = SDL_CreateTextureFromSurface(renderer, heartSurface);
     SDL_FreeSurface(heartSurface);
+    
     if (!nyawa->heartTexture) {
-        printf("Failed to create texture: %s\n", SDL_GetError());
+        fprintf(stderr, "Failed to create texture: %s\n", SDL_GetError());
         return 0;
     }
 
@@ -41,6 +47,8 @@ int initNyawa(Nyawa *nyawa, SDL_Renderer *renderer, const char *heartImagePath) 
 
 // Menampilkan nyawa di layar
 void renderNyawa(Nyawa *nyawa, SDL_Renderer *renderer) {
+    if (!nyawa || !renderer || !nyawa->heartTexture) return;
+    
     for (int i = 0; i < nyawa->nyawa; i++) {
         SDL_RenderCopy(renderer, nyawa->heartTexture, NULL, &nyawa->heartRects[i]);
     }
@@ -48,6 +56,7 @@ void renderNyawa(Nyawa *nyawa, SDL_Renderer *renderer) {
 
 // Mengurangi nyawa jika terkena damage
 void kurangiNyawa(Nyawa *nyawa) {
+    if (!nyawa) return;
     if (nyawa->nyawa > 0) {
         nyawa->nyawa--;
     }
@@ -55,6 +64,7 @@ void kurangiNyawa(Nyawa *nyawa) {
 
 // Menghapus tekstur sebelum keluar
 void destroyNyawa(Nyawa *nyawa) {
+    if (!nyawa) return;
     if (nyawa->heartTexture) {
         SDL_DestroyTexture(nyawa->heartTexture);
         nyawa->heartTexture = NULL;
