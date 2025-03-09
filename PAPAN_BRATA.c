@@ -3,7 +3,7 @@
 #include <stdlib.h> // Untuk system("cls")
 
 #define WIDTH 20  // Lebar area permainan (sesuai kebutuhan)
-#define HEIGHT 10 // Tinggi area permainan
+#define HEIGHT 10 // Tinggi area permainan (sesuai kebutuhan)
 
 char gameBoard[HEIGHT][WIDTH]; // Array 2D untuk arena permainan
 int paddleX = WIDTH / 2 - 2;   // Posisi awal papan pemantul (tengah)
