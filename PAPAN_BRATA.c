@@ -2,7 +2,7 @@
 #include <conio.h>  // Untuk fungsi getch() (khusus Windows)
 #include <stdlib.h> // Untuk system("cls")
 
-#define WIDTH 20  // Lebar area permainan
+#define WIDTH 20  // Lebar area permainan (sesuai kebutuhan)
 #define HEIGHT 10 // Tinggi area permainan
 
 char gameBoard[HEIGHT][WIDTH]; // Array 2D untuk arena permainan
