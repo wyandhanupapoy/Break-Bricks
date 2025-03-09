@@ -88,10 +88,10 @@ int main(int argc, char *argv[])
     destroyNyawa(&playerNyawa);
 
     // Membersihkan sumber daya
+    IMG_Quit();
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
-    IMG_Quit();
 
     return 0;
 }
