@@ -1,6 +1,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_main.h>
-#include <SDL2/SDL_image.h>  // Pastikan library ini ada
+#include <SDL2/SDL_image.h>  
 #include <stdio.h>
 #include "nyawa.h"
 
@@ -65,11 +65,9 @@ int main(int argc, char *argv[])
             else if (event.type == SDL_KEYDOWN) {
                 if (event.key.keysym.sym == SDLK_SPACE) {
                     kurangiNyawa(&playerNyawa);
-                    printf("Nyawa: %d\n", playerNyawa.nyawa);  // Debugging
                 } 
                 else if (event.key.keysym.sym == SDLK_r) {  // Reset nyawa jika tekan 'R'
-                    playerNyawa.nyawa = MAX_NYAWA;
-                    printf("Nyawa di-reset ke: %d\n", playerNyawa.nyawa);
+                    resetNyawa(&playerNyawa);
                 }
             }
         }
