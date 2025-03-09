@@ -35,6 +35,14 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
+        printf("Failed to initialize SDL_image: %s\n", IMG_GetError());
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        return 1;
+    }    
+
     // Loop utama
     int running = 1;
 
@@ -42,6 +50,7 @@ int main(int argc, char *argv[])
     Nyawa playerNyawa;
     if (!initNyawa(&playerNyawa, renderer, "gambar/heart.png")) {
         printf("Gagal menginisialisasi nyawa.\n");
+        printf("Periksa apakah file gambar/heart.png benar-benar ada!\n");
         SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(window);
         SDL_Quit();
@@ -66,8 +75,9 @@ int main(int argc, char *argv[])
         // Di dalam loop render
         renderNyawa(&playerNyawa, renderer);
 
-        // Saat terkena damage
-        kurangiNyawa(&playerNyawa);
+        if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_SPACE) {
+            kurangiNyawa(&playerNyawa);
+        }
 
         // Menampilkan hasil render
         SDL_RenderPresent(renderer);
@@ -80,6 +90,7 @@ int main(int argc, char *argv[])
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
+    IMG_Quit();
 
     return 0;
 }
