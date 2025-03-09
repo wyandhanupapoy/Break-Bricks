@@ -37,6 +37,17 @@ int main(int argc, char *argv[])
 
     // Loop utama
     int running = 1;
+
+    // Inisialisasi di awal
+    Nyawa playerNyawa;
+    if (!initNyawa(&playerNyawa, renderer, "gambar/heart.png")) {
+        printf("Gagal menginisialisasi nyawa.\n");
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        return 1;
+    }
+
     SDL_Event event;
     while (running)
     {
@@ -52,22 +63,18 @@ int main(int argc, char *argv[])
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
-        // Inisialisasi di awal
-        Nyawa playerNyawa;
-        initNyawa(&playerNyawa, renderer, "gambar/heart.png");
-
         // Di dalam loop render
         renderNyawa(&playerNyawa, renderer);
 
         // Saat terkena damage
         kurangiNyawa(&playerNyawa);
 
-        // Hapus sumber daya saat keluar
-        destroyNyawa(&playerNyawa);
-
         // Menampilkan hasil render
         SDL_RenderPresent(renderer);
     }
+
+    // Hapus sumber daya saat keluar
+    destroyNyawa(&playerNyawa);
 
     // Membersihkan sumber daya
     SDL_DestroyRenderer(renderer);
