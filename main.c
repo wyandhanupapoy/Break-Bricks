@@ -82,6 +82,7 @@ int main(int argc, char *argv[])
 
         // Menampilkan hasil render
         SDL_RenderPresent(renderer);
+        SDL_Delay(16);  // Menunggu sekitar 16ms per frame (~60 FPS)
     }
 
     // Hapus sumber daya saat keluar
