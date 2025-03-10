@@ -1,9 +1,28 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_main.h>
 #include <SDL2/SDL_ttf.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <time.h>
+#include <SDL2/SDL_main.h>
 
-int main() {
+#define SCREEN_WIDTH  400
+#define SCREEN_HEIGHT 200
+
+// Fungsi untuk menampilkan teks ke layar
+void renderText(SDL_Renderer *renderer, TTF_Font *font, const char *text, int x, int y) {
+    SDL_Color color = {255, 255, 255}; // putih
+    SDL_Surface *surface = TTF_RenderText_Solid(font, text, color);
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+
+    SDL_Rect dst = {x, y, surface->w, surface->h};
+    SDL_RenderCopy(renderer, texture, NULL, &dst);
+
+    SDL_FreeSurface(surface);
+    SDL_DestroyTexture(texture);
+}
+
+int main(int argc, char *argv[]) {
     // Inisialisasi SDL
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         printf("Error SDL_Init: %s\n", SDL_GetError());
@@ -12,22 +31,39 @@ int main() {
 
     if (TTF_Init() < 0) {
         printf("Error TTF_Init: %s\n", TTF_GetError());
+        SDL_Quit();
         return 1;
     }
 
     // Buat window dan renderer
-    SDL_Window *window = SDL_CreateWindow("Stopwatch Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    SDL_Window *window = SDL_CreateWindow("Stopwatch Game",
+        SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+        SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    
+    if (!window) {
+        printf("Error membuat window: %s\n", SDL_GetError());
+        TTF_Quit();
+        SDL_Quit();
+        return 1;
+    }
 
-    if (!window || !renderer) {
-        printf("Error membuat window atau renderer: %s\n", SDL_GetError());
+    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    if (!renderer) {
+        printf("Error membuat renderer: %s\n", SDL_GetError());
+        SDL_DestroyWindow(window);
+        TTF_Quit();
+        SDL_Quit();
         return 1;
     }
 
     // Load font
-    TTF_Font *font = TTF_OpenFont("arial.ttf", 24);
+    TTF_Font *font = TTF_OpenFont("arial (1).ttf" , 24);
     if (!font) {
         printf("Error load font: %s\n", TTF_GetError());
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyWindow(window);
+        TTF_Quit();
+        SDL_Quit();
         return 1;
     }
 
@@ -38,7 +74,8 @@ int main() {
 
     while (running) {
         while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT || (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)) {
+            if (event.type == SDL_QUIT || 
+                (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)) {
                 running = false;
             } else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RETURN) {
                 if (!timing) {
@@ -75,5 +112,5 @@ int main() {
     TTF_Quit();
     SDL_Quit();
 
-    return 0;
+return 0;
 }
