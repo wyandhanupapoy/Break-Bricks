@@ -1,85 +1,134 @@
-#include "BOLA.h"
 #include <SDL2/SDL.h>
 #include <stdio.h>
+#include <BOLA.h>
 
-#define BALL_COUNT_X 3  // Jumlah bola dalam sumbu X
-#define BALL_COUNT_Y 3  // Jumlah bola dalam sumbu Y
+#define SCREEN_WIDTH 800
+#define SCREEN_HEIGHT 600
+#define BALL_RADIUS 15
+#define GRAVITY 0.5f
+#define BOUNCE_DAMPING 0.7f
 
-// Variabel global SDL
+// Ukuran Array 2D
+#define BALL_ROWS 3
+#define BALL_COLS 3
+
+// Struktur Bola
+typedef struct {
+    float x, y;
+    float velocityX, velocityY;
+} Ball;
+
+// Variabel SDL
 SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
-int running = 1;  // Status program
+int running = 1;
 
-// Array 2D untuk menyimpan bola
-Ball balls[BALL_COUNT_X][BALL_COUNT_Y];
-
-// Inisialisasi bola dengan posisi awal berbeda
-void initBalls() {
-    for (int i = 0; i < BALL_COUNT_X; i++) {
-        for (int j = 0; j < BALL_COUNT_Y; j++) {
-            float startX = 100 + i * 200;  // Jarak antar bola
-            float startY = 50 + j * 150;   // Jarak antar bola
-            initBall(&balls[i][j], startX, startY, 15);
-        }
-    }
-}
+// Array 2D untuk Menyimpan Bola
+Ball balls[BALL_ROWS][BALL_COLS];
 
 // Inisialisasi SDL
 int initSDL() {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        printf("SDL tidak dapat diinisialisasi! SDL_Error: %s\n", SDL_GetError());
+        printf("SDL gagal diinisialisasi: %s\n", SDL_GetError());
         return 0;
     }
 
-    window = SDL_CreateWindow("Break Bricks", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+    window = SDL_CreateWindow("Bola SDL2",
+                              SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                               SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     if (!window) {
-        printf("Gagal membuat window! SDL_Error: %s\n", SDL_GetError());
+        printf("Gagal membuat window: %s\n", SDL_GetError());
         return 0;
     }
 
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     if (!renderer) {
-        printf("Gagal membuat renderer! SDL_Error: %s\n", SDL_GetError());
+        printf("Gagal membuat renderer: %s\n", SDL_GetError());
         return 0;
     }
 
     return 1;
 }
 
-// Fungsi utama untuk game loop
+// Inisialisasi Bola dalam Array 2D
+void initBalls() {
+    for (int i = 0; i < BALL_ROWS; i++) {
+        for (int j = 0; j < BALL_COLS; j++) {
+            balls[i][j].x = 100 + j * 200;  // Posisi awal X
+            balls[i][j].y = 50 + i * 150;   // Posisi awal Y
+            balls[i][j].velocityX = 2.0f;   // Kecepatan X
+            balls[i][j].velocityY = 0.0f;   // Kecepatan Y
+        }
+    }
+}
+
+// Update Posisi Bola
+void updateBalls() {
+    for (int i = 0; i < BALL_ROWS; i++) {
+        for (int j = 0; j < BALL_COLS; j++) {
+            balls[i][j].velocityY += GRAVITY;  // Efek gravitasi
+            balls[i][j].x += balls[i][j].velocityX;
+            balls[i][j].y += balls[i][j].velocityY;
+
+            // Pantulan dari dinding kiri/kanan
+            if (balls[i][j].x - BALL_RADIUS < 0 || balls[i][j].x + BALL_RADIUS > SCREEN_WIDTH) {
+                balls[i][j].velocityX = -balls[i][j].velocityX;
+            }
+
+            // Pantulan dari lantai
+            if (balls[i][j].y + BALL_RADIUS > SCREEN_HEIGHT) {
+                balls[i][j].y = SCREEN_HEIGHT - BALL_RADIUS;
+                balls[i][j].velocityY = -balls[i][j].velocityY * BOUNCE_DAMPING;
+            }
+        }
+    }
+}
+
+// Render Bola
+void renderBalls() {
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // Warna bola putih
+    for (int i = 0; i < BALL_ROWS; i++) {
+        for (int j = 0; j < BALL_COLS; j++) {
+            for (int w = -BALL_RADIUS; w <= BALL_RADIUS; w++) {
+                for (int h = -BALL_RADIUS; h <= BALL_RADIUS; h++) {
+                    if (w * w + h * h <= BALL_RADIUS * BALL_RADIUS) {
+                        SDL_RenderDrawPoint(renderer, balls[i][j].x + w, balls[i][j].y + h);
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Game Loop
 void gameLoop() {
     SDL_Event event;
     while (running) {
-        // Event handler
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 running = 0;
             }
         }
 
-        // Update bola
-        for (int i = 0; i < BALL_COUNT_X; i++) {
-            for (int j = 0; j < BALL_COUNT_Y; j++) {
-                updateBall(&balls[i][j]);
-            }
-        }
+        updateBalls();
 
-        // Render bola
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // Background hitam
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
-        for (int i = 0; i < BALL_COUNT_X; i++) {
-            for (int j = 0; j < BALL_COUNT_Y; j++) {
-                renderBall(renderer, &balls[i][j]);
-            }
-        }
+        renderBalls();
         SDL_RenderPresent(renderer);
 
-        SDL_Delay(16);  // ~60 FPS
+        SDL_Delay(16); // ~60 FPS
     }
 }
 
-// Fungsi utama program
+// Clean-up SDL
+void closeSDL() {
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
+}
+
+// Fungsi Utama
 int main(int argc, char *argv[]) {
     if (!initSDL()) {
         return -1;
@@ -87,11 +136,7 @@ int main(int argc, char *argv[]) {
 
     initBalls();
     gameLoop();
-
-    // Cleanup
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
+    closeSDL();
 
     return 0;
 }
