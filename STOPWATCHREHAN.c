@@ -1,43 +1,80 @@
+#include <SDL2/SDL.h>
 #include <stdio.h>
-#include <time.h>
-#include <stdlib.h>
-#include <windows.h>
+#include <stdbool.h>
 
 int main() {
-    char input;
-    clock_t start, current;
-    double elapsed_time;
-    int score;
-
+    // Inisialisasi SDL
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        printf("Gagal menginisialisasi SDL: %s\n", SDL_GetError());
+        return 1;
+    }
+    
+    SDL_Window *window = SDL_CreateWindow("Stopwatch Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 400, 200, SDL_WINDOW_SHOWN);
+    if (!window) {
+        printf("Gagal membuat jendela: %s\n", SDL_GetError());
+        SDL_Quit();
+        return 1;
+    }
+    
+    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    if (!renderer) {
+        printf("Gagal membuat renderer: %s\n", SDL_GetError());
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        return 1;
+    }
+    
     printf("=== Stopwatch Game ===\n");
     printf("Tekan ENTER untuk memulai stopwatch...\n");
-    getchar(); // Menunggu input untuk mulai
-
-    start = clock(); // Mulai stopwatch
-
+    getchar(); // Tunggu input sebelum memulai
+    
+    Uint32 start_time = SDL_GetTicks(); // Mulai stopwatch
+    bool running = true;
+    
     printf("Stopwatch berjalan... Tekan ENTER untuk berhenti!\n");
-
-    while (!_kbhit()) { // Loop sampai ada input keyboard
-        current = clock();
-        elapsed_time = ((double)(current - start)) / CLOCKS_PER_SEC;
+    
+    while (running) {
+        Uint32 current_time = SDL_GetTicks();
+        double elapsed_time = (current_time - start_time) / 1000.0;
+        
+        // Event handling
+        SDL_Event event;
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
+                running = false;
+            }
+        }
+        
+        // Cek jika tombol ENTER ditekan
+        if (SDL_GetKeyboardState(NULL)[SDL_SCANCODE_RETURN]) {
+            running = false;
+        }
+        
+        // Clear screen
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_RenderClear(renderer);
+        
+        // Render update (misalnya menampilkan waktu di UI, butuh SDL_ttf untuk teks)
         printf("\rWaktu: %.2f detik", elapsed_time);
         fflush(stdout);
-        Sleep(100); // Tunggu 100 ms biar tampilan lebih stabil
+        
+        SDL_RenderPresent(renderer);
+        SDL_Delay(100); // Update setiap 100ms
     }
-
-    getchar(); // Mengambil input untuk berhenti
     
-    current = clock(); // Waktu berhenti akhir
-    elapsed_time = ((double)(current - start)) / CLOCKS_PER_SEC;
-
-    // Hitung skor (semakin cepat waktu, skor lebih tinggi)
-    score = (int)(1000 / elapsed_time);
-
+    Uint32 end_time = SDL_GetTicks();
+    double elapsed_time = (end_time - start_time) / 1000.0;
+    int score = (int)(1000 / elapsed_time);
+    
     printf("\n\nWaktu akhir: %.2f detik\n", elapsed_time);
     printf("Skor: %d\n", score);
-
     printf("\nTekan ENTER untuk keluar...\n");
     getchar();
-
+    
+    // Cleanup
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
+    
     return 0;
 }
