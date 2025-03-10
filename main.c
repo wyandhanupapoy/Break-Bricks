@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
     }
 
     // Membuat jendela
-    SDL_Window *window = SDL_CreateWindow("SDL2 Window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
+    SDL_Window *window = SDL_CreateWindow("Dhanu", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
                                           WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
     if (!window) {
         printf("Window Creation Error: %s\n", SDL_GetError());
