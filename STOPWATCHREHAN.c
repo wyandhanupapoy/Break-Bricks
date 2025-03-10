@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-int main() {
+int main(int argc, char *argv[]) {
     // Inisialisasi SDL
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         printf("Gagal menginisialisasi SDL: %s\n", SDL_GetError());
