@@ -1,4 +1,6 @@
-#include "block.h"
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_main.h>
+#include "blok.h"
 
 Block blocks[ROWS][COLUMNS]; // Definisi array blok
 
