@@ -1,80 +1,97 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <time.h>
+#include <SDL2/SDL_main.h>
 
-int main() {
+#define SCREEN_WIDTH  400
+#define SCREEN_HEIGHT 200
+
+// Fungsi untuk menampilkan teks ke layar
+void renderText(SDL_Renderer *renderer, TTF_Font *font, const char *text, int x, int y) {
+    SDL_Color color = {255, 255, 255}; // putih
+    SDL_Surface *surface = TTF_RenderText_Solid(font, text, color);
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+
+    SDL_Rect dst = {x, y, surface->w, surface->h};
+    SDL_RenderCopy(renderer, texture, NULL, &dst);
+
+    SDL_FreeSurface(surface);
+    SDL_DestroyTexture(texture);
+}
+
+int main(int argc, char *argv[]) {
     // Inisialisasi SDL
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        printf("Gagal menginisialisasi SDL: %s\n", SDL_GetError());
+        printf("Error SDL_Init: %s\n", SDL_GetError());
         return 1;
     }
-    
-    SDL_Window *window = SDL_CreateWindow("Stopwatch Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 400, 200, SDL_WINDOW_SHOWN);
-    if (!window) {
-        printf("Gagal membuat jendela: %s\n", SDL_GetError());
-        SDL_Quit();
+
+    if (TTF_Init() < 0) {
+        printf("Error TTF_Init: %s\n", TTF_GetError());
         return 1;
     }
-    
+
+    // Buat window dan renderer
+    SDL_Window *window = SDL_CreateWindow("Stopwatch Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    if (!renderer) {
-        printf("Gagal membuat renderer: %s\n", SDL_GetError());
-        SDL_DestroyWindow(window);
-        SDL_Quit();
+
+    if (!window || !renderer) {
+        printf("Error membuat window atau renderer: %s\n", SDL_GetError());
         return 1;
     }
-    
-    printf("=== Stopwatch Game ===\n");
-    printf("Tekan ENTER untuk memulai stopwatch...\n");
-    getchar(); // Tunggu input sebelum memulai
-    
-    Uint32 start_time = SDL_GetTicks(); // Mulai stopwatch
+
+    // Load font
+    TTF_Font *font = TTF_OpenFont("arial.ttf", 24);
+    if (!font) {
+        printf("Error load font: %s\n", TTF_GetError());
+        return 1;
+    }
+
     bool running = true;
-    
-    printf("Stopwatch berjalan... Tekan ENTER untuk berhenti!\n");
-    
+    bool timing = false;
+    Uint32 startTime = 0, elapsedTime = 0;
+    SDL_Event event;
+
     while (running) {
-        Uint32 current_time = SDL_GetTicks();
-        double elapsed_time = (current_time - start_time) / 1000.0;
-        
-        // Event handling
-        SDL_Event event;
         while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) {
+            if (event.type == SDL_QUIT || (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)) {
                 running = false;
+            } else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RETURN) {
+                if (!timing) {
+                    startTime = SDL_GetTicks(); // Mulai stopwatch
+                    timing = true;
+                } else {
+                    elapsedTime = SDL_GetTicks() - startTime; // Stop stopwatch
+                    timing = false;
+                }
             }
         }
-        
-        // Cek jika tombol ENTER ditekan
-        if (SDL_GetKeyboardState(NULL)[SDL_SCANCODE_RETURN]) {
-            running = false;
-        }
-        
-        // Clear screen
+
+        // Render background
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
-        
-        // Render update (misalnya menampilkan waktu di UI, butuh SDL_ttf untuk teks)
-        printf("\rWaktu: %.2f detik", elapsed_time);
-        fflush(stdout);
-        
+
+        // Hitung waktu
+        Uint32 displayTime = timing ? SDL_GetTicks() - startTime : elapsedTime;
+        char timeText[32];
+        sprintf(timeText, "Time: %.2f s", displayTime / 1000.0);
+
+        // Tampilkan waktu di layar
+        renderText(renderer, font, "Press ENTER to start/stop", 50, 50);
+        renderText(renderer, font, timeText, 50, 100);
+        renderText(renderer, font, "Press ESC to exit", 50, 150);
+
         SDL_RenderPresent(renderer);
-        SDL_Delay(100); // Update setiap 100ms
     }
-    
-    Uint32 end_time = SDL_GetTicks();
-    double elapsed_time = (end_time - start_time) / 1000.0;
-    int score = (int)(1000 / elapsed_time);
-    
-    printf("\n\nWaktu akhir: %.2f detik\n", elapsed_time);
-    printf("Skor: %d\n", score);
-    printf("\nTekan ENTER untuk keluar...\n");
-    getchar();
-    
+
     // Cleanup
+    TTF_CloseFont(font);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
+    TTF_Quit();
     SDL_Quit();
-    
+
     return 0;
 }
