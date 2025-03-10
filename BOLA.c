@@ -1,6 +1,6 @@
 #include <SDL2/SDL.h>
 #include <stdio.h>
-#include <BOLA.h>
+#include "BOLA.h"
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
@@ -11,12 +11,6 @@
 // Ukuran Array 2D
 #define BALL_ROWS 3
 #define BALL_COLS 3
-
-// Struktur Bola
-typedef struct {
-    float x, y;
-    float velocityX, velocityY;
-} Ball;
 
 // Variabel SDL
 SDL_Window *window = NULL;
