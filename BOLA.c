@@ -1,4 +1,4 @@
-#include "ball.h"
+#include "BOLA.h"
 #include <SDL2/SDL.h>
 #include <stdio.h>
 
