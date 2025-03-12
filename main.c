@@ -6,21 +6,21 @@ int main()
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Breakout - Paddle");
     SetTargetFPS(60);
 
-    Paddle paddle;
-    InitPaddle(&paddle);
+    Paddle paddles[PADDLE_ROWS][PADDLE_COLS]; // Deklarasi array paddle
+    InitPaddles(paddles);                     // Inisialisasi paddle
 
     while (!WindowShouldClose())
     {
         // Update logika paddle
-        UpdatePaddle(&paddle);
+        UpdatePaddles(paddles);
 
         BeginDrawing();
         ClearBackground(RAYWHITE);
 
         DrawText("Breakout Game!", 300, 20, 20, BLACK);
 
-        // Gambar paddle
-        DrawPaddle(&paddle);
+        // Gambar semua paddle
+        DrawPaddles(paddles);
 
         EndDrawing();
     }
