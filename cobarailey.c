@@ -1,18 +1,16 @@
 #include "raylib.h"
 
-#define SCREEN_WIDTH 800
-#define SCREEN_HEIGHT 600
-
-int main(void) {
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Raylib Window");
+int main() {
+    InitWindow(800, 600, "Hello, Raylib!");
     SetTargetFPS(60);
-    
+
     while (!WindowShouldClose()) {
         BeginDrawing();
         ClearBackground(RAYWHITE);
+        DrawText("raylib anda tidak berjalan!", 300, 280, 20, BLACK);
         EndDrawing();
     }
-    
+
     CloseWindow();
     return 0;
 }
