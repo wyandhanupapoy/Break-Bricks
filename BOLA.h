@@ -1,20 +1,20 @@
-#ifndef BALL_H
-#define BALL_H
+#ifndef BOLA_H
+#define BOLA_H
 
 #include "raylib.h"
 
-#define BALL_ROWS 2 // Contoh ukuran array 2 dimensi untuk beberapa bola
-#define BALL_COLS 2
+#define ROWS 1   // Jumlah bola dalam array 2D (bisa ditambah jika ingin lebih dari satu bola)
+#define COLS 1   // Saat ini hanya satu bola, tapi bisa diperluas
 
 typedef struct {
-    Vector2 position;
-    Vector2 speed;
-    float radius;
-    Color color;
-} Ball;
+    Vector2 position; // Posisi bola
+    Vector2 speed;    // Kecepatan bola
+    float radius;     // Radius bola
+    Color color;      // Warna bola
+} Bola;
 
-void InitBalls(Ball balls[BALL_ROWS][BALL_COLS], float startX, float startY, float radius, float speedX, float speedY);
-void UpdateBalls(Ball balls[BALL_ROWS][BALL_COLS], float screenWidth, float screenHeight);
-void DrawBalls(Ball balls[BALL_ROWS][BALL_COLS]);
+void InitBola(Bola bola[ROWS][COLS]);
+void UpdateBola(Bola bola[ROWS][COLS]);
+void DrawBola(Bola bola[ROWS][COLS]);
 
-#endif
+#endif // BOLA_H
