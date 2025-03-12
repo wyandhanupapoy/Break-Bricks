@@ -9,7 +9,7 @@
 
 // Konstanta untuk paddle
 #define PADDLE_ROWS 1    // Jumlah baris paddle (bisa diubah jika ingin lebih dari 1)
-#define PADDLE_COLS 2    // Jumlah paddle dalam satu baris
+#define PADDLE_COLS 1    // Jumlah paddle dalam satu baris
 #define PADDLE_WIDTH 100
 #define PADDLE_HEIGHT 20
 #define PADDLE_SPEED 5
