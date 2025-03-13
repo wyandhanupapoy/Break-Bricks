@@ -3,8 +3,10 @@
 
 #include "raylib.h"
 
-#define ROWS 1   // Jumlah bola dalam array 2D (bisa ditambah jika ingin lebih dari satu bola)
-#define COLS 1   // Saat ini hanya satu bola, tapi bisa diperluas
+#define ROWS 2   // Jumlah bola dalam array 2D
+#define COLS 2   // Bisa ditambah sesuai kebutuhan
+#define SCREEN_WIDTH 800
+#define SCREEN_HEIGHT 600
 
 typedef struct {
     Vector2 position; // Posisi bola

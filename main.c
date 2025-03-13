@@ -2,20 +2,17 @@
 #include "BOLA.h"
 
 int main() {
-    InitWindow(800, 600, "Breakout - Raylib");
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Break Bricks - Bola");
     SetTargetFPS(60);
     
     Bola bola[ROWS][COLS];
     InitBola(bola);
     
     while (!WindowShouldClose()) {
-        // Update bola
-        UpdateBola(bola);
-        
         BeginDrawing();
         ClearBackground(RAYWHITE);
         
-        // Gambar bola
+        UpdateBola(bola);
         DrawBola(bola);
         
         EndDrawing();
