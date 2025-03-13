@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 588526b9be4263d9e33322941397818ad2e2afc5
 #include "raylib.h"
 #include "padle.h"
 
@@ -31,13 +27,4 @@ int main()
 
     CloseWindow();
     return 0;
-<<<<<<< HEAD
 }
-<<<<<<< HEAD
-=======
->>>>>>> origin/blok
-=======
->>>>>>> 588526b9be4263d9e33322941397818ad2e2afc5
-=======
-}
->>>>>>> da05ab08fa69721fe451b19f47521dfc858c505c
