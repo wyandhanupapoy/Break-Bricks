@@ -3,8 +3,8 @@
 
 #include "raylib.h"
 
-#define ROWS 2   // Jumlah bola dalam array 2D
-#define COLS 2   // Bisa ditambah sesuai kebutuhan
+#define BOLA_ROWS 1   // Jumlah bola dalam array 2D
+#define BOLA_COLS 1   // Bisa ditambah sesuai kebutuhan
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
 
@@ -15,8 +15,8 @@ typedef struct {
     Color color;      // Warna bola
 } Bola;
 
-void InitBola(Bola bola[ROWS][COLS]);
-void UpdateBola(Bola bola[ROWS][COLS]);
-void DrawBola(Bola bola[ROWS][COLS]);
+void InitBola(Bola bola[BOLA_ROWS][BOLA_COLS]);
+void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS]);
+void DrawBola(Bola bola[BOLA_ROWS][BOLA_COLS]);
 
 #endif // BOLA_H
