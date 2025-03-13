@@ -1,9 +1,9 @@
 #include "BOLA.h"
 
 // Inisialisasi bola pada array 2D
-void InitBola(Bola bola[ROWS][COLS]) {
-    for (int i = 0; i < ROWS; i++) {
-        for (int j = 0; j < COLS; j++) {
+void InitBola(Bola bola[BOLA_ROWS][BOLA_COLS]) {
+    for (int i = 0; i < BOLA_ROWS; i++) {
+        for (int j = 0; j < BOLA_COLS; j++) {
             bola[i][j].position = (Vector2){400 + j * 50, 300 + i * 50}; // Posisi awal
             bola[i][j].speed = (Vector2){4, -4}; // Kecepatan awal bola
             bola[i][j].radius = 10;
@@ -13,9 +13,9 @@ void InitBola(Bola bola[ROWS][COLS]) {
 }
 
 // Update posisi bola
-void UpdateBola(Bola bola[ROWS][COLS]) {
-    for (int i = 0; i < ROWS; i++) {
-        for (int j = 0; j < COLS; j++) {
+void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS]) {
+    for (int i = 0; i < BOLA_ROWS; i++) {
+        for (int j = 0; j < BOLA_COLS; j++) {
             bola[i][j].position.x += bola[i][j].speed.x;
             bola[i][j].position.y += bola[i][j].speed.y;
             
@@ -33,9 +33,9 @@ void UpdateBola(Bola bola[ROWS][COLS]) {
 }
 
 // Gambar bola pada layar
-void DrawBola(Bola bola[ROWS][COLS]) {
-    for (int i = 0; i < ROWS; i++) {
-        for (int j = 0; j < COLS; j++) {
+void DrawBola(Bola bola[BOLA_ROWS][BOLA_COLS]) {
+    for (int i = 0; i < BOLA_ROWS; i++) {
+        for (int j = 0; j < BOLA_COLS; j++) {
             DrawCircleV(bola[i][j].position, bola[i][j].radius, bola[i][j].color);
         }
     }

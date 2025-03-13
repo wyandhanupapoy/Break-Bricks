@@ -3,9 +3,9 @@
 
 #include "raylib.h"
 
-// Konstanta untuk stopwatch
-#define ROWS 1  // Bisa ditambah jika ingin lebih dari satu stopwatch
-#define COLS 1
+// Renamed to avoid conflicts with other headers
+#define STOPWATCH_ROWS 1  // Bisa ditambah jika ingin lebih dari satu stopwatch
+#define STOPWATCH_COLS 1
 
 // Struktur Stopwatch
 typedef struct {
@@ -14,8 +14,8 @@ typedef struct {
 } Stopwatch;
 
 // Deklarasi fungsi
-void InitStopwatch(Stopwatch sw[ROWS][COLS]);
-void UpdateStopwatch(Stopwatch sw[ROWS][COLS]);
-void DrawStopwatch(Stopwatch sw[ROWS][COLS]);
+void InitStopwatch(Stopwatch sw[STOPWATCH_ROWS][STOPWATCH_COLS]);
+void UpdateStopwatch(Stopwatch sw[STOPWATCH_ROWS][STOPWATCH_COLS]);
+void DrawStopwatch(Stopwatch sw[STOPWATCH_ROWS][STOPWATCH_COLS]);
 
 #endif

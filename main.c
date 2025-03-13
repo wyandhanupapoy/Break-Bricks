@@ -5,54 +5,103 @@
 #include "skor.h"
 #include "stopwatch.h"
 
+// Global define for screen dimensions to ensure consistency
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
 
 int main()
 {
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Breakout - Paddle");
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Break Bricks - Skor");
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Breakout - Blocks");
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Stopwatch in Raylib");
-
+    // Only initialize the window once
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Breakout Game");
     SetTargetFPS(60);
 
-    Paddle paddles[PADDLE_ROWS][PADDLE_COLS]; // Deklarasi array paddle
-    InitPaddles(paddles);                     // Inisialisasi paddle
+    // Initialize game components
+    Paddle paddles[PADDLE_ROWS][PADDLE_COLS];
+    InitPaddles(paddles);
 
-    Block blocks[ROWS][COLS];
+    Block blocks[BLOCK_ROWS][BLOCK_COLS];
     InitBlocks(blocks);
 
-    Bola bola[ROWS][COLS];
+    Bola bola[BOLA_ROWS][BOLA_COLS];
     InitBola(bola);
 
     Skor skor[MAX_PLAYERS];
     InitSkor(skor);
 
-    Stopwatch sw[ROWS][COLS]; // Deklarasi stopwatch sebagai array 2D
-    InitStopwatch(sw);        // Inisialisasi stopwatch
+    Stopwatch sw[STOPWATCH_ROWS][STOPWATCH_COLS];
+    InitStopwatch(sw);
 
+    // Main game loop
     while (!WindowShouldClose())
     {
-        // Update logika paddle
+        // Update game logic
         UpdatePaddles(paddles);
         UpdateBola(bola);
-        UpdateStopwatch(sw); // Update stopwatch setiap frame
+        UpdateStopwatch(sw);
 
+        // Check collisions between ball and blocks
+        for (int ballRow = 0; ballRow < BOLA_ROWS; ballRow++) {
+            for (int ballCol = 0; ballCol < BOLA_COLS; ballCol++) {
+                // Check ball-paddle collision
+                for (int padRow = 0; padRow < PADDLE_ROWS; padRow++) {
+                    for (int padCol = 0; padCol < PADDLE_COLS; padCol++) {
+                        if (CheckCollisionCircleRec(
+                            bola[ballRow][ballCol].position,
+                            bola[ballRow][ballCol].radius,
+                            paddles[padRow][padCol].rect))
+                        {
+                            // Reverse ball direction on y-axis when hitting paddle
+                            bola[ballRow][ballCol].speed.y *= -1;
+                            
+                            // Slightly adjust x direction based on where ball hit paddle
+                            float paddleCenter = paddles[padRow][padCol].rect.x + paddles[padRow][padCol].rect.width/2;
+                            float ballDistFromCenter = bola[ballRow][ballCol].position.x - paddleCenter;
+                            bola[ballRow][ballCol].speed.x = ballDistFromCenter * 0.05f;
+                        }
+                    }
+                }
+                
+                // Check ball-block collision
+                for (int blockRow = 0; blockRow < BLOCK_ROWS; blockRow++) {
+                    for (int blockCol = 0; blockCol < BLOCK_COLS; blockCol++) {
+                        if (blocks[blockRow][blockCol].active && 
+                            CheckCollisionCircleRec(
+                                bola[ballRow][ballCol].position,
+                                bola[ballRow][ballCol].radius,
+                                blocks[blockRow][blockCol].rect))
+                        {
+                            blocks[blockRow][blockCol].active = false; // Deactivate the block
+                            bola[ballRow][ballCol].speed.y *= -1; // Reverse ball direction
+                            
+                            // Add score when block is destroyed
+                            TambahSkor(&skor[0], 10);
+                        }
+                    }
+                }
+                
+                // Check if ball is below screen (game over condition)
+                if (bola[ballRow][ballCol].position.y + bola[ballRow][ballCol].radius > SCREEN_HEIGHT) {
+                    // Reset ball position
+                    bola[ballRow][ballCol].position = (Vector2){400, 300};
+                    bola[ballRow][ballCol].speed = (Vector2){4, -4};
+                    
+                    // Game could end here or lives could be reduced
+                }
+            }
+        }
+
+        // Drawing
         BeginDrawing();
-        ClearBackground(RAYWHITE);
-        ClearBackground(BLACK);
-
-        DrawText("Breakout Game!", 300, 20, 20, BLACK);
-        DrawText("Stopwatch Example", 280, 20, 20, BLACK);
-
-        // Gambar semua paddle
-        DrawPaddles(paddles);
-        DrawBlocks(blocks);
-        DrawBola(bola);
-        DrawSkor(skor);
-        DrawStopwatch(sw); // Gambar stopwatch di tengah layar
-
+            ClearBackground(RAYWHITE); // Use consistent background
+            
+            DrawText("Breakout Game!", 300, 20, 20, BLACK);
+            
+            // Draw game elements
+            DrawPaddles(paddles);
+            DrawBlocks(blocks);
+            DrawBola(bola);
+            DrawSkor(skor);
+            DrawStopwatch(sw);
         EndDrawing();
     }
 
