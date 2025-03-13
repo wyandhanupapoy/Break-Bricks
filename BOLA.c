@@ -1,9 +1,10 @@
 #include "BOLA.h"
 
+// Inisialisasi bola pada array 2D
 void InitBola(Bola bola[ROWS][COLS]) {
     for (int i = 0; i < ROWS; i++) {
         for (int j = 0; j < COLS; j++) {
-            bola[i][j].position = (Vector2){400, 300}; // Posisi awal bola di tengah
+            bola[i][j].position = (Vector2){400 + j * 50, 300 + i * 50}; // Posisi awal
             bola[i][j].speed = (Vector2){4, -4}; // Kecepatan awal bola
             bola[i][j].radius = 10;
             bola[i][j].color = RED;
@@ -11,6 +12,7 @@ void InitBola(Bola bola[ROWS][COLS]) {
     }
 }
 
+// Update posisi bola
 void UpdateBola(Bola bola[ROWS][COLS]) {
     for (int i = 0; i < ROWS; i++) {
         for (int j = 0; j < COLS; j++) {
@@ -18,7 +20,7 @@ void UpdateBola(Bola bola[ROWS][COLS]) {
             bola[i][j].position.y += bola[i][j].speed.y;
             
             // Pantulan dinding kiri & kanan
-            if (bola[i][j].position.x - bola[i][j].radius <= 0 || bola[i][j].position.x + bola[i][j].radius >= 800) {
+            if (bola[i][j].position.x - bola[i][j].radius <= 0 || bola[i][j].position.x + bola[i][j].radius >= SCREEN_WIDTH) {
                 bola[i][j].speed.x *= -1;
             }
             
@@ -30,6 +32,7 @@ void UpdateBola(Bola bola[ROWS][COLS]) {
     }
 }
 
+// Gambar bola pada layar
 void DrawBola(Bola bola[ROWS][COLS]) {
     for (int i = 0; i < ROWS; i++) {
         for (int j = 0; j < COLS; j++) {
