@@ -1,41 +1,23 @@
-#ifndef BLOK_H
-#define BLOK_H
+#ifndef BLOCK_H
+#define BLOCK_H
 
-#include <SDL2/SDL.h>
+#include "raylib.h"
 
-// Konstanta game
-#define SCREEN_WIDTH 800
-#define SCREEN_HEIGHT 600
+// Konstanta jumlah baris dan kolom blok
 #define ROWS 5
-#define COLUMNS 10
-#define FPS 60
+#define COLS 10
+#define BLOCK_WIDTH 75
+#define BLOCK_HEIGHT 25
+#define BLOCK_SPACING 5
 
-// Struktur blok dalam game
+// Struktur untuk blok
 typedef struct {
-    int x, y;
-    int width, height;
-    int isDestroyed;
-    SDL_Color color;
+    Rectangle rect;  // Posisi dan ukuran blok
+    bool active;     // Status blok (aktif/hancur)
 } Block;
 
-// Struktur utama game (menyimpan window dan renderer)
-typedef struct {
-    SDL_Window *window;
-    SDL_Renderer *renderer;
-    int running;
-} Game;
-
-extern Block blocks[ROWS][COLUMNS];
-
-// Fungsi utama game
-int initGame(Game *game);
-void handleEvents(Game *game);
-void updateGame();
-void renderGame(Game *game);
-void cleanUp(Game *game);
-
-// Fungsi khusus blok
-void initBlocks();
-void drawBlocks(SDL_Renderer *renderer);
+// Deklarasi fungsi
+void InitBlocks(Block blocks[ROWS][COLS]);
+void DrawBlocks(Block blocks[ROWS][COLS]);
 
 #endif
