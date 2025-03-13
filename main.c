@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 588526b9be4263d9e33322941397818ad2e2afc5
 #include "raylib.h"
 
 #define SCREEN_WIDTH 800
@@ -17,5 +20,8 @@ int main(void) {
     CloseWindow();
     return 0;
 }
+<<<<<<< HEAD
 =======
 >>>>>>> origin/blok
+=======
+>>>>>>> 588526b9be4263d9e33322941397818ad2e2afc5
