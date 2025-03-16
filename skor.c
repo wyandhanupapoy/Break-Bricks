@@ -20,8 +20,8 @@ void DrawSkor(Skor skor[MAX_PLAYERS]) {
         
         int textWidth = MeasureText(scoreText, 20);
         int posX = SCREEN_WIDTH - textWidth - 20;
-        int posY = 20 + (i * 30); // Jarak vertikal antar pemain
+        int posY = 10; // Posisi Y diatur agar sejajar dengan nyawa
 
-        DrawText(scoreText, posX, posY, 20, WHITE);
+        DrawText(scoreText, posX, posY, 20, BLACK);
     }
 }

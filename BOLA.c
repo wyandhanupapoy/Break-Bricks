@@ -25,6 +25,8 @@ void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PAD
                 for (int j = 0; j < PADDLE_ROWS; j++) {
                     for (int k = 0; k < PADDLE_COLS; k++) {
                         if (CheckCollisionCircleRec(bola[i][0].position, bola[i][0].radius, paddles[j][k].rect)) {
+                            // Memindahkan bola sedikit ke atas dari paddle
+                            bola[i][0].position.y = paddles[j][k].rect.y - bola[i][0].radius; // Atur posisi bola
                             bola[i][0].speed.y *= -1; // Bounce back
                         }
                     }

@@ -1,4 +1,3 @@
-// stopwatch.h
 #ifndef STOPWATCH_H
 #define STOPWATCH_H
 
@@ -14,6 +13,7 @@ typedef struct {
 
 void InitStopwatch(Stopwatch sw[][STOPWATCH_COLS]);
 void UpdateStopwatch(Stopwatch sw[][STOPWATCH_COLS]);
+void DrawStopwatch(Stopwatch sw[][STOPWATCH_COLS]);
 void ResetStopwatch(Stopwatch sw[][STOPWATCH_COLS]);
 
 #endif

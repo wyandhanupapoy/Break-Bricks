@@ -1,6 +1,6 @@
 #include "stopwatch.h"
 #include <stdio.h>
-#include <math.h>
+#include <raylib.h>
 
 // Inisialisasi stopwatch
 void InitStopwatch(Stopwatch sw[STOPWATCH_ROWS][STOPWATCH_COLS]) {
@@ -30,7 +30,7 @@ void DrawStopwatch(Stopwatch sw[STOPWATCH_ROWS][STOPWATCH_COLS]) {
     for (int i = 0; i < STOPWATCH_ROWS; i++) {
         for (int j = 0; j < STOPWATCH_COLS; j++) {
             sprintf(timeText, "Time: %.2f", sw[i][j].time);
-            DrawText(timeText, 600, 50, 30, BLACK); // Posisi atas layar
+            DrawText(timeText, 500, 11, 20, BLACK); // Posisi Y diatur agar sejajar dengan nyawa
         }
     }
 }
