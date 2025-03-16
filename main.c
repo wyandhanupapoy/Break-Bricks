@@ -1,9 +1,10 @@
-#include "raylib.h"
 #include "paddle.h"
 #include "block.h"
 #include "BOLA.h"
 #include "nyawa.h"
+
 #include <stdio.h>
+#include <raylib.h>
 
 // Ukuran layar
 #define SCREEN_WIDTH 800

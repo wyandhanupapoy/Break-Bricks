@@ -1,7 +1,7 @@
 #ifndef BOLA_H
 #define BOLA_H
 
-#include "raylib.h"
+#include <raylib.h>
 #include "paddle.h"
 
 #define BOLA_ROWS 1

@@ -1,7 +1,7 @@
 #ifndef PADDLE_H
 #define PADDLE_H
 
-#include "raylib.h"
+#include <raylib.h>
 
 #define PADDLE_ROWS 1
 #define PADDLE_COLS 1

@@ -1,7 +1,7 @@
 #ifndef SKOR_H
 #define SKOR_H
 
-#include "raylib.h"
+#include <raylib.h>
 
 #define MAX_PLAYERS 1 // Jumlah pemain maksimal
 

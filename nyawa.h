@@ -1,7 +1,7 @@
 #ifndef NYAWA_H
 #define NYAWA_H
 
-#include "raylib.h"
+#include <raylib.h>
 
 #define NYAWA_BARIS 1
 #define NYAWA_KOLOM 5
