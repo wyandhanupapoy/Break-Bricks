@@ -6,7 +6,6 @@
 #include <stdio.h>
 #include <raylib.h>
 
-// Ukuran layar
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
 
@@ -14,19 +13,15 @@ int main() {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Breakout Game");
     SetTargetFPS(60);
 
-    // Inisialisasi paddle
     Paddle paddles[PADDLE_ROWS][PADDLE_COLS];
     InitPaddles(paddles);
 
-    // Inisialisasi blok
     Block blocks[BLOCK_ROWS][BLOCK_COLS];
     InitBlocks(blocks);
 
-    // Inisialisasi bola
     Bola bola[BOLA_ROWS][BOLA_COLS];
     InitBola(bola);
 
-    // Inisialisasi nyawa
     Nyawa nyawa[NYAWA_BARIS][NYAWA_KOLOM];
     InitNyawa(nyawa, 3);  // Mulai dengan 3 nyawa
 
@@ -34,7 +29,6 @@ int main() {
     bool isPaused = false;
 
     while (!WindowShouldClose()) {
-        // Pause Game
         if (IsKeyPressed(KEY_P)) isPaused = !isPaused;
 
         if (!isPaused) {
@@ -45,46 +39,44 @@ int main() {
                     
                     if (IsKeyPressed(KEY_SPACE)) {
                         gameState = GAME_PLAY;
+                        // Set kecepatan bola saat game dimulai
+                        bola[0][0].speed = (Vector2){5, -5}; // Atur kecepatan bola
                     }
-                    break;
+                    
+                    // Di dalam case GAME_PLAY
+                    UpdateBola(bola, paddles, &gameState);
 
                 case GAME_PLAY:
                     UpdatePaddles(paddles);
                     UpdateBola(bola, paddles, &gameState);
 
-                    // Cek tabrakan bola dengan blok
                     for (int ballRow = 0; ballRow < BOLA_ROWS; ballRow++) {
-                        for (int ballCol = 0; ballCol < BOLA_COLS; ballCol++) {
-                            if (!bola[ballRow][ballCol].active) continue;
+                        for (int blockRow = 0; blockRow < BLOCK_ROWS; blockRow++) {
+                            for (int blockCol = 0; blockCol < BLOCK_COLS; blockCol++) {
+                                if (blocks[blockRow][blockCol].active && 
+                                    CheckBallBlockCollision(
+                                        bola[ballRow][0].position,
+                                        bola[ballRow][0].radius,
+                                        blocks[blockRow][blockCol].rect)) 
+                                {
+                                    blocks[blockRow][blockCol].active = false;
+                                    bola[ballRow][0].speed.y *= -1;
 
-                            for (int blockRow = 0; blockRow < BLOCK_ROWS; blockRow++) {
-                                for (int blockCol = 0; blockCol < BLOCK_COLS; blockCol++) {
-                                    if (blocks[blockRow][blockCol].active && 
-                                        CheckBallBlockCollision(
-                                            bola[ballRow][ballCol].position,
-                                            bola[ballRow][ballCol].radius,
-                                            blocks[blockRow][blockCol].rect)) 
-                                    {
-                                        blocks[blockRow][blockCol].active = false;
-                                        bola[ballRow][ballCol].speed.y *= -1;
-
-                                        if (AllBlocksDestroyed(blocks)) {
-                                            gameState = GAME_WIN;
-                                        }
-                                        break;
+                                    if (AllBlocksDestroyed(blocks)) {
+                                        gameState = GAME_WIN;
                                     }
+                                    break;
                                 }
                             }
+                        }
 
-                            // Jika bola jatuh ke bawah layar
-                            if (bola[ballRow][ballCol].position.y + bola[ballRow][ballCol].radius > SCREEN_HEIGHT) {
-                                KurangiNyawa(nyawa);
-                                if (!AnyLivesLeft(nyawa)) {
-                                    gameState = GAME_OVER;
-                                } else {
-                                    ResetBola(bola);
-                                    gameState = GAME_START;
-                                }
+                        if (bola[ballRow][0].position.y + bola[ballRow][0].radius > SCREEN_HEIGHT) {
+                            KurangiNyawa(nyawa);
+                            if (!AnyLivesLeft(nyawa)) {
+                                gameState = GAME_OVER;
+                            } else {
+                                ResetBola(bola);
+                                gameState = GAME_START;
                             }
                         }
                     }
@@ -109,7 +101,6 @@ int main() {
             }
         }
 
-        // Drawing
         BeginDrawing();
         ClearBackground(RAYWHITE);
 
