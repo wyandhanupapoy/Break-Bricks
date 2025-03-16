@@ -4,7 +4,7 @@
 #include "BOLA.h"
 #include "skor.h"
 #include "stopwatch.h"
-#include "nyawa.h"
+#include "Brata.h"
 
 // Global define for screen dimensions to ensure consistency
 #define SCREEN_WIDTH 800
@@ -116,7 +116,7 @@ int main()
         DrawBola(bola);
         DrawSkor(skor);
         DrawStopwatch(sw);
-        DrawNyawa(nyawa); // Tambahkan gambar nyawa di atas
+        DrawNyawa(nyawa); // Tambahkan gambar nyawa
         EndDrawing();
     }
 

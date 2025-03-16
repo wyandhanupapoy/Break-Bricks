@@ -1,4 +1,4 @@
-#include "nyawa.h"
+#include "Brata.h"
 
 // Fungsi untuk inisialisasi nyawa sesuai jumlah total nyawa yang diberikan
 void InitNyawa(Nyawa nyawa[NYAWA_BARIS][NYAWA_KOLOM], int totalNyawa)
