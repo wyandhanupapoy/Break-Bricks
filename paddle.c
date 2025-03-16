@@ -1,6 +1,6 @@
 #include "paddle.h"
 
-#define SCREEN_WIDTH 800
+#define SCREEN_WIDTH 830
 #define SCREEN_HEIGHT 600
 
 void InitPaddles(Paddle paddles[PADDLE_ROWS][PADDLE_COLS]) {
@@ -18,7 +18,7 @@ void UpdatePaddles(Paddle paddles[PADDLE_ROWS][PADDLE_COLS]) {
             if (IsKeyDown(KEY_LEFT) && paddles[i][j].rect.x > 0) {
                 paddles[i][j].rect.x -= paddles[i][j].speed.x;
             }
-            if (IsKeyDown(KEY_RIGHT) && paddles[i][j].rect.x < 800 - PADDLE_WIDTH) {
+            if (IsKeyDown(KEY_RIGHT) && paddles[i][j].rect.x < SCREEN_WIDTH - PADDLE_WIDTH) {
                 paddles[i][j].rect.x += paddles[i][j].speed.x;
             }
         }

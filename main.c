@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <raylib.h>
 
-#define SCREEN_WIDTH 800
+#define SCREEN_WIDTH 830
 #define SCREEN_HEIGHT 600
 
 int main()
