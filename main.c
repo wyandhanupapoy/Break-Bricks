@@ -91,7 +91,7 @@ int main()
                     }
                 }
 
-                // ✅ Check if ball is below screen (nyawa berkurang)
+                //  Check if ball is below screen (nyawa berkurang)
                 if (bola[ballRow][ballCol].position.y + bola[ballRow][ballCol].radius > SCREEN_HEIGHT)
                 {
                     // Kurangi nyawa karena bola jatuh
@@ -116,7 +116,7 @@ int main()
         DrawBola(bola);
         DrawSkor(skor);
         DrawStopwatch(sw);
-        DrawNyawa(nyawa); // ✅ Tambahkan gambar nyawa
+        DrawNyawa(nyawa); // Tambahkan gambar nyawa
         EndDrawing();
     }
 
