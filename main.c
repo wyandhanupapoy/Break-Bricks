@@ -5,14 +5,13 @@
 #include "skor.h"
 #include "stopwatch.h"
 
-// Global define for screen dimensions to ensure consistency
+// Global define for screen dimensions
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
 
 int main()
 {
-    // Only initialize the window once
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Breakout Game");
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Breakout Game with Stopwatch");
     SetTargetFPS(60);
 
     // Initialize game components
@@ -28,8 +27,8 @@ int main()
     Skor skor[MAX_PLAYERS];
     InitSkor(skor);
 
-    Stopwatch sw[STOPWATCH_ROWS][STOPWATCH_COLS];
-    InitStopwatch(sw);
+    Stopwatch sw[ROWS][COLS]; // Stopwatch declaration
+    InitStopwatch(sw);        // Initialize stopwatch
 
     // Main game loop
     while (!WindowShouldClose())
@@ -50,10 +49,7 @@ int main()
                             bola[ballRow][ballCol].radius,
                             paddles[padRow][padCol].rect))
                         {
-                            // Reverse ball direction on y-axis when hitting paddle
                             bola[ballRow][ballCol].speed.y *= -1;
-                            
-                            // Slightly adjust x direction based on where ball hit paddle
                             float paddleCenter = paddles[padRow][padCol].rect.x + paddles[padRow][padCol].rect.width/2;
                             float ballDistFromCenter = bola[ballRow][ballCol].position.x - paddleCenter;
                             bola[ballRow][ballCol].speed.x = ballDistFromCenter * 0.05f;
@@ -70,10 +66,8 @@ int main()
                                 bola[ballRow][ballCol].radius,
                                 blocks[blockRow][blockCol].rect))
                         {
-                            blocks[blockRow][blockCol].active = false; // Deactivate the block
-                            bola[ballRow][ballCol].speed.y *= -1; // Reverse ball direction
-                            
-                            // Add score when block is destroyed
+                            blocks[blockRow][blockCol].active = false;
+                            bola[ballRow][ballCol].speed.y *= -1;
                             TambahSkor(&skor[0], 10);
                         }
                     }
@@ -81,27 +75,21 @@ int main()
                 
                 // Check if ball is below screen (game over condition)
                 if (bola[ballRow][ballCol].position.y + bola[ballRow][ballCol].radius > SCREEN_HEIGHT) {
-                    // Reset ball position
                     bola[ballRow][ballCol].position = (Vector2){400, 300};
                     bola[ballRow][ballCol].speed = (Vector2){4, -4};
-                    
-                    // Game could end here or lives could be reduced
                 }
             }
         }
 
         // Drawing
         BeginDrawing();
-            ClearBackground(RAYWHITE); // Use consistent background
-            
-            DrawText("Breakout Game!", 300, 20, 20, BLACK);
-            
-            // Draw game elements
-            DrawPaddles(paddles);
-            DrawBlocks(blocks);
-            DrawBola(bola);
-            DrawSkor(skor);
-            DrawStopwatch(sw);
+        ClearBackground(RAYWHITE);
+        DrawText("Breakout Game with Stopwatch", 250, 20, 20, BLACK);
+        DrawPaddles(paddles);
+        DrawBlocks(blocks);
+        DrawBola(bola);
+        DrawSkor(skor);
+        DrawStopwatch(sw); // Draw stopwatch on the screen
         EndDrawing();
     }
 
