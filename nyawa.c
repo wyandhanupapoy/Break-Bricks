@@ -29,6 +29,7 @@ void InitNyawa(Nyawa nyawa[NYAWA_BARIS][NYAWA_KOLOM], int totalNyawa)
 }
 
 // Fungsi untuk menggambar nyawa ke layar
+// Fungsi untuk menggambar nyawa ke layar dalam bentuk hati
 void DrawNyawa(Nyawa nyawa[NYAWA_BARIS][NYAWA_KOLOM])
 {
     for (int i = 0; i < NYAWA_BARIS; i++)
@@ -37,8 +38,29 @@ void DrawNyawa(Nyawa nyawa[NYAWA_BARIS][NYAWA_KOLOM])
         {
             if (nyawa[i][j].aktif)
             {
-                DrawRectangleRec(nyawa[i][j].rect, RED);          // Nyawa aktif berwarna merah
-                DrawRectangleLinesEx(nyawa[i][j].rect, 2, BLACK); // Garis tepi hitam
+                // Ambil posisi tengah dari rect buat titik tengah gambar hati
+                float centerX = nyawa[i][j].rect.x + nyawa[i][j].rect.width / 2;
+                float centerY = nyawa[i][j].rect.y + nyawa[i][j].rect.height / 2;
+
+                float size = nyawa[i][j].rect.width / 2;
+
+                // Gambar dua lingkaran buat bagian atas hati
+                DrawCircle(centerX - size / 2, centerY - size / 3, size / 2, RED);
+                DrawCircle(centerX + size / 2, centerY - size / 3, size / 2, RED);
+
+                // Gambar segitiga buat bagian bawah hati
+                Vector2 point1 = {centerX - size - 1, centerY - size / 5};
+                Vector2 point2 = {centerX + size + 1, centerY - size / 5};
+                Vector2 point3 = {centerX, centerY + size};
+
+                DrawTriangle(point1, point2, point3, RED);
+
+                // Optional: Tambah outline kalau mau
+                DrawCircleLines(centerX - size / 2, centerY - size / 3, size / 2, BLACK);
+                DrawCircleLines(centerX + size / 2, centerY - size / 3, size / 2, BLACK);
+                DrawLineEx(point1, point2, 2, BLACK);
+                DrawLineEx(point2, point3, 2, BLACK);
+                DrawLineEx(point3, point1, 2, BLACK);
             }
         }
     }
