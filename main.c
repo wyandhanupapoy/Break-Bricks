@@ -1,95 +1,142 @@
 #include "raylib.h"
-#include "padle.h"
+#include "paddle.h"
 #include "block.h"
 #include "BOLA.h"
-#include "skor.h"
-#include "stopwatch.h"
+#include "nyawa.h"
+#include <stdio.h>
 
-// Global define for screen dimensions
+// Ukuran layar
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
 
-int main()
-{
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Breakout Game with Stopwatch");
+int main() {
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Breakout Game");
     SetTargetFPS(60);
 
-    // Initialize game components
+    // Inisialisasi paddle
     Paddle paddles[PADDLE_ROWS][PADDLE_COLS];
     InitPaddles(paddles);
 
+    // Inisialisasi blok
     Block blocks[BLOCK_ROWS][BLOCK_COLS];
     InitBlocks(blocks);
 
+    // Inisialisasi bola
     Bola bola[BOLA_ROWS][BOLA_COLS];
     InitBola(bola);
 
-    Skor skor[MAX_PLAYERS];
-    InitSkor(skor);
+    // Inisialisasi nyawa
+    Nyawa nyawa[NYAWA_BARIS][NYAWA_KOLOM];
+    InitNyawa(nyawa, 3);  // Mulai dengan 3 nyawa
 
-    Stopwatch sw[ROWS][COLS]; // Stopwatch declaration
-    InitStopwatch(sw);        // Initialize stopwatch
+    GameState gameState = GAME_START;
+    bool isPaused = false;
 
-    // Main game loop
-    while (!WindowShouldClose())
-    {
-        // Update game logic
-        UpdatePaddles(paddles);
-        UpdateBola(bola);
-        UpdateStopwatch(sw);
+    while (!WindowShouldClose()) {
+        // Pause Game
+        if (IsKeyPressed(KEY_P)) isPaused = !isPaused;
 
-        // Check collisions between ball and blocks
-        for (int ballRow = 0; ballRow < BOLA_ROWS; ballRow++) {
-            for (int ballCol = 0; ballCol < BOLA_COLS; ballCol++) {
-                // Check ball-paddle collision
-                for (int padRow = 0; padRow < PADDLE_ROWS; padRow++) {
-                    for (int padCol = 0; padCol < PADDLE_COLS; padCol++) {
-                        if (CheckCollisionCircleRec(
-                            bola[ballRow][ballCol].position,
-                            bola[ballRow][ballCol].radius,
-                            paddles[padRow][padCol].rect))
-                        {
-                            bola[ballRow][ballCol].speed.y *= -1;
-                            float paddleCenter = paddles[padRow][padCol].rect.x + paddles[padRow][padCol].rect.width/2;
-                            float ballDistFromCenter = bola[ballRow][ballCol].position.x - paddleCenter;
-                            bola[ballRow][ballCol].speed.x = ballDistFromCenter * 0.05f;
+        if (!isPaused) {
+            switch (gameState) {
+                case GAME_START:
+                    UpdatePaddles(paddles);
+                    UpdateBola(bola, paddles, &gameState);
+                    
+                    if (IsKeyPressed(KEY_SPACE)) {
+                        gameState = GAME_PLAY;
+                    }
+                    break;
+
+                case GAME_PLAY:
+                    UpdatePaddles(paddles);
+                    UpdateBola(bola, paddles, &gameState);
+
+                    // Cek tabrakan bola dengan blok
+                    for (int ballRow = 0; ballRow < BOLA_ROWS; ballRow++) {
+                        for (int ballCol = 0; ballCol < BOLA_COLS; ballCol++) {
+                            if (!bola[ballRow][ballCol].active) continue;
+
+                            for (int blockRow = 0; blockRow < BLOCK_ROWS; blockRow++) {
+                                for (int blockCol = 0; blockCol < BLOCK_COLS; blockCol++) {
+                                    if (blocks[blockRow][blockCol].active && 
+                                        CheckBallBlockCollision(
+                                            bola[ballRow][ballCol].position,
+                                            bola[ballRow][ballCol].radius,
+                                            blocks[blockRow][blockCol].rect)) 
+                                    {
+                                        blocks[blockRow][blockCol].active = false;
+                                        bola[ballRow][ballCol].speed.y *= -1;
+
+                                        if (AllBlocksDestroyed(blocks)) {
+                                            gameState = GAME_WIN;
+                                        }
+                                        break;
+                                    }
+                                }
+                            }
+
+                            // Jika bola jatuh ke bawah layar
+                            if (bola[ballRow][ballCol].position.y + bola[ballRow][ballCol].radius > SCREEN_HEIGHT) {
+                                KurangiNyawa(nyawa);
+                                if (!AnyLivesLeft(nyawa)) {
+                                    gameState = GAME_OVER;
+                                } else {
+                                    ResetBola(bola);
+                                    gameState = GAME_START;
+                                }
+                            }
                         }
                     }
-                }
-                
-                // Check ball-block collision
-                for (int blockRow = 0; blockRow < BLOCK_ROWS; blockRow++) {
-                    for (int blockCol = 0; blockCol < BLOCK_COLS; blockCol++) {
-                        if (blocks[blockRow][blockCol].active && 
-                            CheckCollisionCircleRec(
-                                bola[ballRow][ballCol].position,
-                                bola[ballRow][ballCol].radius,
-                                blocks[blockRow][blockCol].rect))
-                        {
-                            blocks[blockRow][blockCol].active = false;
-                            bola[ballRow][ballCol].speed.y *= -1;
-                            TambahSkor(&skor[0], 10);
-                        }
+                    break;
+
+                case GAME_OVER:
+                    if (IsKeyPressed(KEY_R)) {
+                        InitBlocks(blocks);
+                        InitNyawa(nyawa, 3);
+                        InitBola(bola);
+                        gameState = GAME_START;
                     }
-                }
-                
-                // Check if ball is below screen (game over condition)
-                if (bola[ballRow][ballCol].position.y + bola[ballRow][ballCol].radius > SCREEN_HEIGHT) {
-                    bola[ballRow][ballCol].position = (Vector2){400, 300};
-                    bola[ballRow][ballCol].speed = (Vector2){4, -4};
-                }
+                    break;
+
+                case GAME_WIN:
+                    if (IsKeyPressed(KEY_R)) {
+                        InitBlocks(blocks);
+                        InitBola(bola);
+                        gameState = GAME_START;
+                    }
+                    break;
             }
         }
 
         // Drawing
         BeginDrawing();
         ClearBackground(RAYWHITE);
-        DrawText("Breakout Game with Stopwatch", 250, 20, 20, BLACK);
+
         DrawPaddles(paddles);
         DrawBlocks(blocks);
         DrawBola(bola);
-        DrawSkor(skor);
-        DrawStopwatch(sw); // Draw stopwatch on the screen
+        DrawNyawa(nyawa);
+
+        switch (gameState) {
+            case GAME_START:
+                DrawText("PRESS SPACE TO START", SCREEN_WIDTH / 2 - MeasureText("PRESS SPACE TO START", 30) / 2, SCREEN_HEIGHT / 2, 30, GRAY);
+                break;
+            case GAME_OVER:
+                DrawText("GAME OVER", SCREEN_WIDTH / 2 - MeasureText("GAME OVER", 40) / 2, SCREEN_HEIGHT / 2 - 40, 40, RED);
+                DrawText("PRESS R TO RESTART", SCREEN_WIDTH / 2 - MeasureText("PRESS R TO RESTART", 20) / 2, SCREEN_HEIGHT / 2 + 20, 20, DARKGRAY);
+                break;
+            case GAME_WIN:
+                DrawText("YOU WIN!", SCREEN_WIDTH / 2 - MeasureText("YOU WIN!", 40) / 2, SCREEN_HEIGHT / 2 - 40, 40, GREEN);
+                DrawText("PRESS R TO RESTART", SCREEN_WIDTH / 2 - MeasureText("PRESS R TO RESTART", 20) / 2, SCREEN_HEIGHT / 2 + 20, 20, DARKGRAY);
+                break;
+        }
+
+        if (isPaused) {
+            DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, Fade(BLACK, 0.7f));
+            DrawText("GAME PAUSED", SCREEN_WIDTH / 2 - MeasureText("GAME PAUSED", 40) / 2, SCREEN_HEIGHT / 2 - 40, 40, WHITE);
+            DrawText("PRESS P TO CONTINUE", SCREEN_WIDTH / 2 - MeasureText("PRESS P TO CONTINUE", 20) / 2, SCREEN_HEIGHT / 2 + 20, 20, WHITE);
+        }
+
         EndDrawing();
     }
 

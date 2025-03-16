@@ -2,22 +2,29 @@
 #define BOLA_H
 
 #include "raylib.h"
+#include "paddle.h"
 
-// Renamed to avoid conflicts with other headers
-#define BOLA_ROWS 2   // Jumlah bola dalam array 2D
-#define BOLA_COLS 2   // Bisa ditambah sesuai kebutuhan
-#define SCREEN_WIDTH 800
-#define SCREEN_HEIGHT 600
+#define BOLA_ROWS 1
+#define BOLA_COLS 1
+
+typedef enum {
+    GAME_START,
+    GAME_PLAY,
+    GAME_OVER,
+    GAME_WIN
+} GameState;
 
 typedef struct {
-    Vector2 position; // Posisi bola
-    Vector2 speed;    // Kecepatan bola
-    float radius;     // Radius bola
-    Color color;      // Warna bola
+    Vector2 position;
+    Vector2 speed;
+    float radius;
+    Color color;
+    bool active;
 } Bola;
 
 void InitBola(Bola bola[BOLA_ROWS][BOLA_COLS]);
-void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS]);
+void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PADDLE_COLS], GameState *state);
 void DrawBola(Bola bola[BOLA_ROWS][BOLA_COLS]);
+void ResetBola(Bola bola[BOLA_ROWS][BOLA_COLS]);
 
 #endif // BOLA_H

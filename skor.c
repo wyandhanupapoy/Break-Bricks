@@ -1,7 +1,7 @@
 #include "skor.h"
 #include <stdio.h>
 
-#define SCREEN_WIDTH 800  // Tambahkan ini jika SCREEN_WIDTH tidak didefinisikan di header lain
+#define SCREEN_WIDTH 800
 
 void InitSkor(Skor skor[MAX_PLAYERS]) {
     for (int i = 0; i < MAX_PLAYERS; i++) {
@@ -20,8 +20,8 @@ void DrawSkor(Skor skor[MAX_PLAYERS]) {
         
         int textWidth = MeasureText(scoreText, 20);
         int posX = SCREEN_WIDTH - textWidth - 20;
-        int posY = 20 + (i * 30);
-        
+        int posY = 20 + (i * 30); // Jarak vertikal antar pemain
+
         DrawText(scoreText, posX, posY, 20, WHITE);
     }
 }

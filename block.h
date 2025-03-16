@@ -3,7 +3,7 @@
 
 #include "raylib.h"
 
-// Renamed to avoid conflicts with other headers
+// Konstanta untuk blok
 #define BLOCK_ROWS 5
 #define BLOCK_COLS 10
 #define BLOCK_WIDTH 75
@@ -14,13 +14,13 @@
 typedef struct {
     Rectangle rect;  // Posisi dan ukuran blok
     bool active;     // Status blok (aktif/hancur)
+    Color color;     // Warna blok
 } Block;
 
 // Deklarasi fungsi
 void InitBlocks(Block blocks[BLOCK_ROWS][BLOCK_COLS]);
 void DrawBlocks(Block blocks[BLOCK_ROWS][BLOCK_COLS]);
-
-// Add collision detection function
 bool CheckBallBlockCollision(Vector2 ballPosition, float ballRadius, Rectangle blockRect);
+bool AllBlocksDestroyed(Block blocks[BLOCK_ROWS][BLOCK_COLS]);
 
-#endif
+#endif // BLOCK_H
