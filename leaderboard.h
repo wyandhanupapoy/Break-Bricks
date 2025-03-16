@@ -3,7 +3,7 @@
 
 #include <raylib.h>
 
-#define MAX_PLAYERS 10 // Maximum number of players in the leaderboard
+#define MAX_PLAYERS 1 // Maximum number of players in the leaderboard
 
 typedef struct {
     char name[20]; // Player's name

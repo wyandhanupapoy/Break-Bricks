@@ -3,6 +3,9 @@
 
 #include <raylib.h>
 #include "paddle.h"
+#include "block.h"
+#include "skor.h"
+#include "stopwatch.h"
 
 #define BOLA_ROWS 1
 #define BOLA_COLS 1
@@ -23,7 +26,7 @@ typedef struct {
 } Bola;
 
 void InitBola(Bola bola[BOLA_ROWS][BOLA_COLS]);
-void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PADDLE_COLS], GameState *state);
+void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PADDLE_COLS], Block blocks[BLOCK_ROWS][BLOCK_COLS], GameState *state, Skor *skor, Stopwatch sw[STOPWATCH_ROWS][STOPWATCH_COLS]);
 void DrawBola(Bola bola[BOLA_ROWS][BOLA_COLS]);
 void ResetBola(Bola bola[BOLA_ROWS][BOLA_COLS]);
 
