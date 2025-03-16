@@ -116,7 +116,7 @@ int main()
         DrawBola(bola);
         DrawSkor(skor);
         DrawStopwatch(sw);
-        DrawNyawa(nyawa); // Tambahkan gambar nyawa
+        DrawNyawa(nyawa); // Tambahkan gambar nyawa di atas
         EndDrawing();
     }
 
