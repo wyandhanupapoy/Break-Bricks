@@ -29,7 +29,7 @@ void DrawStopwatch(Stopwatch sw[ROWS][COLS]) {
     for (int i = 0; i < ROWS; i++) {
         for (int j = 0; j < COLS; j++) {
             sprintf(timeText, "Time: %.2f", sw[i][j].time);
-            DrawText(timeText, 350, 280, 30, BLACK); // Posisi tengah layar
+            DrawText(timeText, 600, 200, 30, BLACK); // Posisi tengah layar
         }
     }
 }
