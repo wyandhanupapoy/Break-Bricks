@@ -12,6 +12,5 @@ typedef struct {
 void InitSkor(Skor skor[MAX_PLAYERS]);
 void TambahSkor(Skor *skor, int nilai);
 void DrawSkor(Skor skor[MAX_PLAYERS]);
-void ResetSkor(Skor *skor);
 
 #endif // SKOR_H
