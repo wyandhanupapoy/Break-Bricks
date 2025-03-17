@@ -5,7 +5,7 @@ int main() {
     InitWindow(800, 600, "Stopwatch in Raylib");
     SetTargetFPS(60);
 
-    Stopwatch sw[ROWS][COLS]; // Deklarasi stopwatch sebagai array 2D
+    Stopwatch sw[STOPWATCH_ROWS][STOPWATCH_COLS]; // Deklarasi stopwatch sebagai array 2D
     InitStopwatch(sw);        // Inisialisasi stopwatch
 
     while (!WindowShouldClose()) {

@@ -1,21 +1,24 @@
 #ifndef STOPWATCH_H
 #define STOPWATCH_H
 
-#include "raylib.h"
+#include <stdbool.h>
 
-// Konstanta untuk stopwatch
-#define ROWS 1  // Bisa ditambah jika ingin lebih dari satu stopwatch
-#define COLS 1
+#define STOPWATCH_ROWS 1
+#define STOPWATCH_COLS 1
 
-// Struktur Stopwatch
 typedef struct {
-    float time;   // Waktu berjalan dalam detik
-    bool running; // Status apakah stopwatch berjalan atau tidak
+    float time;
+    bool running;
 } Stopwatch;
 
-// Deklarasi fungsi
-void InitStopwatch(Stopwatch sw[ROWS][COLS]);
-void UpdateStopwatch(Stopwatch sw[ROWS][COLS]);
-void DrawStopwatch(Stopwatch sw[ROWS][COLS]);
+void InitStopwatch(Stopwatch sw[][STOPWATCH_COLS]);
+void UpdateStopwatch(Stopwatch sw[][STOPWATCH_COLS]);
+void DrawStopwatch(Stopwatch sw[][STOPWATCH_COLS]);
+void ResetStopwatch(Stopwatch sw[][STOPWATCH_COLS]);
+void InitStopwatch(Stopwatch sw[STOPWATCH_ROWS][STOPWATCH_COLS]);
+void UpdateStopwatch(Stopwatch sw[STOPWATCH_ROWS][STOPWATCH_COLS]);
+void DrawStopwatch(Stopwatch sw[STOPWATCH_ROWS][STOPWATCH_COLS]);
+void ResetStopwatch(Stopwatch sw[STOPWATCH_ROWS][STOPWATCH_COLS]);
+
 
 #endif
