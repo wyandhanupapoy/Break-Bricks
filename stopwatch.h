@@ -15,10 +15,5 @@ void InitStopwatch(Stopwatch sw[][STOPWATCH_COLS]);
 void UpdateStopwatch(Stopwatch sw[][STOPWATCH_COLS]);
 void DrawStopwatch(Stopwatch sw[][STOPWATCH_COLS]);
 void ResetStopwatch(Stopwatch sw[][STOPWATCH_COLS]);
-void InitStopwatch(Stopwatch sw[STOPWATCH_ROWS][STOPWATCH_COLS]);
-void UpdateStopwatch(Stopwatch sw[STOPWATCH_ROWS][STOPWATCH_COLS]);
-void DrawStopwatch(Stopwatch sw[STOPWATCH_ROWS][STOPWATCH_COLS]);
-void ResetStopwatch(Stopwatch sw[STOPWATCH_ROWS][STOPWATCH_COLS]);
-
 
 #endif
