@@ -1,22 +1,51 @@
-#ifndef MAINMENU_H
-#define MAINMENU_H
-
+#include "mainmenu.h"
 #include <raylib.h>
+#include <stdio.h>
 
-// Fungsi init menu (opsional)
-void InitMainMenu(void);
+// Variabel internal buat state menu
+static bool startGame = false;
+static bool exitGame = false;
 
-// Fungsi update dan logic menu
-void UpdateMainMenu(void);
+void InitMainMenu(void)
+{
+    startGame = false;
+    exitGame = false;
+}
 
-// Fungsi gambar menu
-void DrawMainMenu(void);
+void UpdateMainMenu(void)
+{
+    // Navigasi tombol di menu
+    if (IsKeyPressed(KEY_ENTER))
+    {
+        startGame = true; // Enter = mulai game
+    }
 
-// Fungsi buat bersihin resource (opsional)
-void UnloadMainMenu(void);
+    if (IsKeyPressed(KEY_ESCAPE))
+    {
+        exitGame = true; // Escape = keluar dari game
+    }
+}
 
-// Fungsi buat ngecek kondisi: apakah start game atau exit
-bool IsStartGame(void);
-bool IsExitGame(void);
+void DrawMainMenu(void)
+{
+    ClearBackground(DARKBLUE);
 
-#endif
+    DrawText("BREAK BRICKS", 320, 150, 50, RAYWHITE);
+    DrawText("Press ENTER to Start", 350, 300, 25, RAYWHITE);
+    DrawText("Press ESC to Exit", 350, 350, 25, GRAY);
+}
+
+void UnloadMainMenu(void)
+{
+    // Bersihin resource kalau ada (misal texture, font, dll)
+}
+
+bool IsStartGame(void)
+{
+    return startGame;
+}
+
+bool IsExitGame(void)
+{
+    return exitGame;
+}
