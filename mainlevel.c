@@ -13,20 +13,32 @@ void InitGameLevel(int level) {
 }
 
 int main() {
-    InitGameLevel(1);  // Set Level Awal
-
-    // Inisialisasi Raylib
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Breakout - Level Test");
     SetTargetFPS(60);
+
+    InitGameLevel(1);  // Pastikan level diinisialisasi setelah window dibuat
+
+    // Debugging: Cetak informasi blok
+    printf("=== DEBUGGING BLOCKS ===\n");
+    for (int i = 0; i < BLOCK_ROWS; i++) {
+        for (int j = 0; j < BLOCK_COLS; j++) {
+            printf("Blok[%d][%d] -> Active: %d, Color: (%d, %d, %d, %d), Durability: %d\n",
+                   i, j, blocks[i][j].active, 
+                   blocks[i][j].color.r, blocks[i][j].color.g, blocks[i][j].color.b, blocks[i][j].color.a,
+                   blocks[i][j].durability);
+        }
+    }
 
     while (!WindowShouldClose()) {
         BeginDrawing();
         ClearBackground(RAYWHITE);
 
-        // Debugging: Cetak blok ke terminal
         for (int i = 0; i < BLOCK_ROWS; i++) {
             for (int j = 0; j < BLOCK_COLS; j++) {
-                DrawRectangle(j * 50, i * 30, 48, 28, GetColor(blocks[i][j].color));
+                if (blocks[i][j].active) { // Pastikan hanya menggambar blok aktif
+                    DrawRectangle(j * 50 + 15, i * 30 + 70, 48, 28, blocks[i][j].color);
+                    DrawRectangleLines(j * 50 + 15, i * 30 + 70, 48, 28, BLACK);
+                }
             }
         }
 
