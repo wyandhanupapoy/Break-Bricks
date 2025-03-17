@@ -15,7 +15,4 @@
 void DrawGameLayout(Block blocks[][BLOCK_COLS], Paddle paddles[][PADDLE_COLS], Bola bola[][BOLA_COLS], Stopwatch sw[][STOPWATCH_COLS], Nyawa nyawa[][NYAWA_KOLOM]);
 void SetScreenSize(int width, int height); // Fungsi untuk mengatur ukuran layar
 
-void layout();
-
- 
 #endif // LAYOUT_H

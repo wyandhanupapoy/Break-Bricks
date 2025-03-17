@@ -31,19 +31,4 @@ void DrawGameLayout(Block blocks[][BLOCK_COLS], Paddle paddles[][PADDLE_COLS], B
 
     // Gambar stopwatch di bawah nyawa
     DrawStopwatch(sw, uiX, stopwatchY);
-
-    void layout(){
-        BeginDrawing()
-        ClearBackground(BLACK);
-
-        DrawLine(835, 0, 835, SCREEN_HEIGHT, WHITE); // Garis batas vertikal
-        DrawRectangle(0, 600, 835, 50, WHITE);
-        DrawText("<- -> Bergerak       P - Pause       Esc - Exit", 150, 610, 20, BLACK);
-        DrawPaddles(paddles);
-        DrawBlocks(blocks);
-        DrawBola(bola);
-        DrawNyawa(nyawa);
-        DrawSkor(skor);           // Display score
-        DrawStopwatch(stopwatch); // Display stopwatch
-    }
 }
