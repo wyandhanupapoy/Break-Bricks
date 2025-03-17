@@ -5,44 +5,41 @@
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
+#define BLOCK_WIDTH 70
+#define BLOCK_HEIGHT 30
+#define PADDING 5
+#define START_X 60  // Posisi awal dari sisi kiri
+#define START_Y 50  // Posisi awal dari atas
 
-Block blocks[BLOCK_ROWS][BLOCK_COLS];  // Deklarasi array blok
+Block blocks[BLOCK_ROWS][BLOCK_COLS];
 
 void InitGameLevel(int level) {
     SetLevel(blocks, level);
 }
 
 int main() {
+    InitGameLevel(1);
+
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Breakout - Level Test");
     SetTargetFPS(60);
 
-    InitGameLevel(1);  // Pastikan level diinisialisasi setelah window dibuat
-
-    // Debugging: Cetak informasi blok
-    printf("=== DEBUGGING BLOCKS ===\n");
-    for (int i = 0; i < BLOCK_ROWS; i++) {
-        for (int j = 0; j < BLOCK_COLS; j++) {
-            printf("Blok[%d][%d] -> Active: %d, Color: (%d, %d, %d, %d), Durability: %d\n",
-                   i, j, blocks[i][j].active, 
-                   blocks[i][j].color.r, blocks[i][j].color.g, blocks[i][j].color.b, blocks[i][j].color.a,
-                   blocks[i][j].durability);
-        }
-    }
-
     while (!WindowShouldClose()) {
         BeginDrawing();
-        ClearBackground(RAYWHITE);
+        ClearBackground(BLACK);  // Sesuai dengan gambar referensi
 
+        // Gambar blok dengan margin agar lebih rapih
         for (int i = 0; i < BLOCK_ROWS; i++) {
             for (int j = 0; j < BLOCK_COLS; j++) {
-                if (blocks[i][j].active) { // Pastikan hanya menggambar blok aktif
-                    DrawRectangle(j * 50 + 15, i * 30 + 70, 48, 28, blocks[i][j].color);
-                    DrawRectangleLines(j * 50 + 15, i * 30 + 70, 48, 28, BLACK);
+                if (blocks[i][j].active) {
+                    int x = START_X + j * (BLOCK_WIDTH + PADDING);
+                    int y = START_Y + i * (BLOCK_HEIGHT + PADDING);
+                    DrawRectangle(x, y, BLOCK_WIDTH, BLOCK_HEIGHT, blocks[i][j].color);
+                    DrawRectangleLines(x, y, BLOCK_WIDTH, BLOCK_HEIGHT, BLACK);
                 }
             }
         }
 
-        DrawText("Tekan ESC untuk keluar", 10, 10, 20, DARKGRAY);
+        DrawText("Tekan ESC untuk keluar", 10, 10, 20, RAYWHITE);
         EndDrawing();
     }
 
