@@ -11,15 +11,15 @@
 
 typedef struct {
     Rectangle rect;
-    Color color;
-    int durability;
     bool active;
+    Color color;
+    int durability; // Ketahanan blok
 } Block;
 
-void InitBlocks(Block blocks[BLOCK_ROWS][BLOCK_COLS], int level);
+
+void InitBlocks(Block blocks[BLOCK_ROWS][BLOCK_COLS]);
 void DrawBlocks(Block blocks[BLOCK_ROWS][BLOCK_COLS]);
-bool CheckBallBlockCollision(Vector2 ballPosition, float ballRadius, Block *block);
-void UpdateBlockState(Block *block);
+bool CheckBallBlockCollision(Vector2 ballPosition, float ballRadius, Rectangle blockRect);
 bool AllBlocksDestroyed(Block blocks[BLOCK_ROWS][BLOCK_COLS]);
 
-#endif
+#endif // BLOCK_H

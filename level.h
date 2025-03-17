@@ -3,7 +3,7 @@
 
 #include "block.h"
 
-void LoadLevelSounds();
 void SetLevel(Block blocks[BLOCK_ROWS][BLOCK_COLS], int level);
+void UpdateBlockState(Block *block);
 
-#endif
+#endif // LEVEL_H
