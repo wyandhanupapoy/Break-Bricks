@@ -2,6 +2,8 @@
 #include "block.h"
 #include "stopwatch.h"
 
+#include <stdlib.h>
+
 #define SCREEN_WIDTH 830
 #define SCREEN_HEIGHT 600
 
@@ -10,7 +12,16 @@ void InitBola(Bola bola[BOLA_ROWS][BOLA_COLS])
     for (int i = 0; i < BOLA_ROWS; i++)
     {
         bola[i][0].position = (Vector2){SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2};
-        bola[i][0].speed = (Vector2){0, 0}; // Set kecepatan awal bola menjadi 0
+        
+        // Menghasilkan kecepatan acak untuk bola
+        float speedX = (float)GetRandomValue(-5, 5); // Kecepatan horizontal acak
+        float speedY = (float)GetRandomValue(-5, -1); // Kecepatan vertikal acak (harus negatif agar bergerak ke atas)
+
+        // Pastikan kecepatan tidak nol
+        if (speedX == 0) speedX = 1; // Jika speedX 0, set ke 1
+        if (speedY == 0) speedY = -1; // Jika speedY 0, set ke -1
+
+        bola[i][0].speed = (Vector2){speedX, speedY}; // Set kecepatan awal bola
         bola[i][0].radius = 10;
         bola[i][0].color = RED;
         bola[i][0].active = true;
@@ -35,8 +46,12 @@ void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PAD
                             float hitPosition = bola[i][0].position.x - paddleCenter;
                             float normalizedHitPosition = hitPosition / (PADDLE_WIDTH / 2);
 
-                            bola[i][0].speed.x = normalizedHitPosition * 5;
-                            bola[i][0].speed.y *= -1;
+                            bola[i][0].speed.x = normalizedHitPosition * 5; // Kecepatan horizontal berdasarkan posisi tabrakan
+                            bola[i][0].speed.y *= -1; // Memantul ke atas
+
+                            // Meningkatkan kecepatan bola saat memantul
+                            bola[i][0].speed.x *= 1.1; // Meningkatkan kecepatan horizontal
+                            bola[i][0].speed.y *= 1.1; // Meningkatkan kecepatan vertikal
 
                             bola[i][0].position.y = paddles[j][k].rect.y - bola[i][0].radius;
                         }
@@ -47,14 +62,17 @@ void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PAD
                 if (bola[i][0].position.x < bola[i][0].radius) {
                     bola[i][0].speed.x *= -1;
                     bola[i][0].position.x = bola[i][0].radius;
+                    bola[i][0].speed.x *= 1.1; // Meningkatkan kecepatan saat memantul dari dinding
                 }
                 if (bola[i][0].position.x > SCREEN_WIDTH - bola[i][0].radius) {
                     bola[i][0].speed.x *= -1;
                     bola[i][0].position.x = SCREEN_WIDTH - bola[i][0].radius;
+                    bola[i][0].speed.x *= 1.1; // Meningkatkan kecepatan saat memantul dari dinding
                 }
                 if (bola[i][0].position.y < bola[i][0].radius) {
                     bola[i][0].speed.y *= -1;
                     bola[i][0].position.y = bola[i][0].radius;
+                    bola[i][0].speed.y *= 1.1; // Meningkatkan kecepatan saat memantul dari dinding
                 }
 
                 // Cek tabrakan dengan blok
@@ -72,7 +90,8 @@ void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PAD
                             if (scoreToAdd > 50) scoreToAdd = 50;        
                             TambahSkor(skor, scoreToAdd);                 
 
-                            bola[i][0].speed.y *= -1;
+                            bola[i][0].speed.y *= -1; // Memantul ke atas
+                            bola[i][0].speed.x *= 1.1; // Meningkatkan kecepatan saat memantul dari blok
                             break; // Keluar dari loop setelah memecahkan satu blok
                         }
                     }

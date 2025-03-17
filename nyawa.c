@@ -13,10 +13,11 @@ void InitNyawa(Nyawa nyawa[NYAWA_BARIS][NYAWA_KOLOM], int totalNyawa) {
 void DrawNyawa(Nyawa nyawa[NYAWA_BARIS][NYAWA_KOLOM]) {
     for (int i = 0; i < NYAWA_KOLOM; i++) {
         if (nyawa[0][i].aktif) {
-            DrawRectangleRec(nyawa[0][i].rect, GREEN);
+            DrawRectangleRec(nyawa[0][i].rect, RED);
         }
     }
 }
+
 
 void KurangiNyawa(Nyawa nyawa[NYAWA_BARIS][NYAWA_KOLOM]) {
     for (int i = 0; i < NYAWA_KOLOM; i++) {
@@ -32,4 +33,11 @@ bool AnyLivesLeft(Nyawa nyawa[NYAWA_BARIS][NYAWA_KOLOM]) {
         if (nyawa[0][i].aktif) return true;
     }
     return false;
+}
+
+void SetNyawaPosition(Nyawa nyawa[NYAWA_BARIS][NYAWA_KOLOM], float x, float y) {
+    for (int i = 0; i < NYAWA_KOLOM; i++) {
+        nyawa[0][i].rect.x = x + (NYAWA_WIDTH + NYAWA_SPACING) * i;
+        nyawa[0][i].rect.y = y;
+    }
 }

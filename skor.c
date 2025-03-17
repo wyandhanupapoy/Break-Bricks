@@ -1,7 +1,7 @@
 #include "skor.h"
 #include <stdio.h>
 
-#define SCREEN_WIDTH 800
+#define SCREEN_WIDTH 1000
 
 void InitSkor(Skor skor[MAX_PLAYERS]) {
     for (int i = 0; i < MAX_PLAYERS; i++) {
@@ -18,10 +18,9 @@ void DrawSkor(Skor skor[MAX_PLAYERS]) {
         char scoreText[20];
         sprintf(scoreText, "Score: %d", skor[i].score);
         
-        int textWidth = MeasureText(scoreText, 20);
-        int posX = SCREEN_WIDTH - textWidth - 20;
-        int posY = 10; // Posisi Y diatur agar sejajar dengan nyawa
+        int posX = 870;
+        int posY = 50; // Posisi Y diatur agar sejajar dengan nyawa
 
-        DrawText(scoreText, posX, posY, 20, BLACK);
+        DrawText(scoreText, posX, posY, 20, WHITE);
     }
 }

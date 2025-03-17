@@ -30,7 +30,7 @@ void DrawStopwatch(Stopwatch sw[STOPWATCH_ROWS][STOPWATCH_COLS]) {
     for (int i = 0; i < STOPWATCH_ROWS; i++) {
         for (int j = 0; j < STOPWATCH_COLS; j++) {
             sprintf(timeText, "Time: %.2f", sw[i][j].time);
-            DrawText(timeText, 500, 11, 20, BLACK); // Posisi Y diatur agar sejajar dengan nyawa
+            DrawText(timeText, 870, 80, 20, WHITE); // Posisi Y diatur agar sejajar dengan nyawa
         }
     }
 }
