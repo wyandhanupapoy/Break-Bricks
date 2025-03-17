@@ -1,28 +1,26 @@
-// main.c - Program utama yang menggabungkan semua komponen
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <conio.h>
-#include <windows.h>
-
-// Include semua file header
-#include "definisi.h"
-#include "tampilan.h"
-#include "paddle.h"
+#include "raylib.h"
 #include "bola.h"
-#include "block.h"
-#include "game.h"
 
 int main() {
-    // Setup konsol
-    system("title Breakout Game");
-    system("mode con cols=65 lines=30");
-    
-    // Inisialisasi random seed
-    srand(time(NULL));
-    
-    // Mulai permainan
-    mainkanGame();
-    
+    const int screenWidth = 800;
+    const int screenHeight = 600;
+
+    InitWindow(screenWidth, screenHeight, "Block Bricker - Bola");
+
+    Bola bola;
+    InitBola(&bola, (Vector2){screenWidth / 2, screenHeight - 50}, (Vector2){4, -4}, 10);
+
+    SetTargetFPS(60);
+
+    while (!WindowShouldClose()) {
+        UpdateBola(&bola, screenWidth, screenHeight);
+
+        BeginDrawing();
+        ClearBackground(RAYWHITE);
+        DrawBola(&bola);
+        EndDrawing();
+    }
+
+    CloseWindow();
     return 0;
 }
