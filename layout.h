@@ -2,17 +2,20 @@
 #define LAYOUT_H
 
 #include <raylib.h>
-#include "block.h"
-#include "paddle.h"
-#include "BOLA.h"
+#include "skor.h"
 #include "nyawa.h"
-#include "stopwatch.h"
+#include "block.h"
+#include "BOLA.h"
 
-// Tambahkan definisi untuk ukuran layar
-#define DEFAULT_SCREEN_WIDTH 1000
-#define DEFAULT_SCREEN_HEIGHT 650
+// Definisi posisi dan ukuran elemen
+#define SCORE_X 870
+#define SCORE_Y 50
+#define NYAWA_X 870
+#define NYAWA_Y 10
+#define STOPWATCH_X 870
+#define STOPWATCH_Y 80
 
-void DrawGameLayout(Block blocks[][BLOCK_COLS], Paddle paddles[][PADDLE_COLS], Bola bola[][BOLA_COLS], Stopwatch sw[][STOPWATCH_COLS], Nyawa nyawa[][NYAWA_KOLOM]);
-void SetScreenSize(int width, int height); // Fungsi untuk mengatur ukuran layar
+// Fungsi untuk menggambar layout permainan
+void DrawGameLayout(Block blocks[BLOCK_ROWS][BLOCK_COLS], Paddle paddles[PADDLE_ROWS][PADDLE_COLS], Bola bola[BOLA_ROWS][BOLA_COLS], Stopwatch stopwatch[STOPWATCH_ROWS][STOPWATCH_COLS], Nyawa nyawa[NYAWA_BARIS][NYAWA_KOLOM], Skor skor[MAX_PLAYERS]);
 
 #endif // LAYOUT_H
