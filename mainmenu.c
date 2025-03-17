@@ -3,12 +3,14 @@
 #include <stdbool.h>
 
 // State Enum
-typedef enum {
+typedef enum
+{
     MENU_MAIN,
     MENU_LEVEL
 } MenuState;
 
 // Variables
+static int selectedLevel = 0;
 static int selectedOption = 0;
 static float highlightAlpha = 0.0f;
 static bool exitGame = false;
@@ -16,8 +18,8 @@ static bool startGame = false;
 static MenuState currentMenu = MENU_MAIN;
 
 // Rectangles for main menu
-Rectangle startRect = { 350, 300, 300, 40 };
-Rectangle exitRect = { 350, 350, 300, 40 };
+Rectangle startRect = {350, 300, 300, 40};
+Rectangle exitRect = {350, 350, 300, 40};
 
 // Dummy sound functions
 Sound navigateSound;
@@ -50,58 +52,75 @@ void UpdateMainMenu(void)
     {
         static int lastSelectedOption = selectedOption;
 
-        if (IsKeyPressed(KEY_DOWN)) {
+        if (IsKeyPressed(KEY_DOWN))
+        {
             selectedOption++;
-            if (selectedOption > 1) selectedOption = 0;
-            if (selectedOption != lastSelectedOption) PlaySound(navigateSound);
+            if (selectedOption > 1)
+                selectedOption = 0;
+            if (selectedOption != lastSelectedOption)
+                PlaySound(navigateSound);
         }
 
-        if (IsKeyPressed(KEY_UP)) {
+        if (IsKeyPressed(KEY_UP))
+        {
             selectedOption--;
-            if (selectedOption < 0) selectedOption = 1;
-            if (selectedOption != lastSelectedOption) PlaySound(navigateSound);
+            if (selectedOption < 0)
+                selectedOption = 1;
+            if (selectedOption != lastSelectedOption)
+                PlaySound(navigateSound);
         }
 
         lastSelectedOption = selectedOption;
 
         Vector2 mousePoint = GetMousePosition();
 
-        if (CheckCollisionPointRec(mousePoint, startRect)) {
-            if (selectedOption != 0) PlaySound(navigateSound);
+        if (CheckCollisionPointRec(mousePoint, startRect))
+        {
+            if (selectedOption != 0)
+                PlaySound(navigateSound);
             selectedOption = 0;
 
-            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+            {
                 currentMenu = MENU_LEVEL;
                 PlaySound(selectSound);
                 selectedOption = 0;
             }
         }
 
-        if (CheckCollisionPointRec(mousePoint, exitRect)) {
-            if (selectedOption != 1) PlaySound(navigateSound);
+        if (CheckCollisionPointRec(mousePoint, exitRect))
+        {
+            if (selectedOption != 1)
+                PlaySound(navigateSound);
             selectedOption = 1;
 
-            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+            {
                 exitGame = true;
                 PlaySound(selectSound);
             }
         }
 
-        if (IsKeyPressed(KEY_ENTER)) {
-            if (selectedOption == 0) {
+        if (IsKeyPressed(KEY_ENTER))
+        {
+            if (selectedOption == 0)
+            {
                 currentMenu = MENU_LEVEL;
                 PlaySound(selectSound);
                 selectedOption = 0;
             }
-            else if (selectedOption == 1) {
+            else if (selectedOption == 1)
+            {
                 exitGame = true;
                 PlaySound(selectSound);
             }
         }
 
         highlightAlpha += (selectedOption >= 0 ? 0.1f : -0.1f);
-        if (highlightAlpha > 0.5f) highlightAlpha = 0.5f;
-        if (highlightAlpha < 0.0f) highlightAlpha = 0.0f;
+        if (highlightAlpha > 0.5f)
+            highlightAlpha = 0.5f;
+        if (highlightAlpha < 0.0f)
+            highlightAlpha = 0.0f;
     }
     else if (currentMenu == MENU_LEVEL)
     {
@@ -152,53 +171,71 @@ void UpdateLevelMenu(void)
 {
     static int lastSelectedOption = selectedOption;
 
-    if (IsKeyPressed(KEY_DOWN)) {
+    if (IsKeyPressed(KEY_DOWN))
+    {
         selectedOption++;
-        if (selectedOption > 2) selectedOption = 0;
-        if (selectedOption != lastSelectedOption) PlaySound(navigateSound);
+        if (selectedOption > 2)
+            selectedOption = 0;
+        if (selectedOption != lastSelectedOption)
+            PlaySound(navigateSound);
     }
 
-    if (IsKeyPressed(KEY_UP)) {
+    if (IsKeyPressed(KEY_UP))
+    {
         selectedOption--;
-        if (selectedOption < 0) selectedOption = 2;
-        if (selectedOption != lastSelectedOption) PlaySound(navigateSound);
+        if (selectedOption < 0)
+            selectedOption = 2;
+        if (selectedOption != lastSelectedOption)
+            PlaySound(navigateSound);
     }
 
     lastSelectedOption = selectedOption;
 
     Vector2 mousePoint = GetMousePosition();
 
-    Rectangle level1Rect = { 350, 300, 300, 40 };
-    Rectangle level2Rect = { 350, 350, 300, 40 };
-    Rectangle level3Rect = { 350, 400, 300, 40 };
+    Rectangle level1Rect = {350, 300, 300, 40};
+    Rectangle level2Rect = {350, 350, 300, 40};
+    Rectangle level3Rect = {350, 400, 300, 40};
 
-    if (CheckCollisionPointRec(mousePoint, level1Rect)) {
-        if (selectedOption != 0) PlaySound(navigateSound);
+    if (CheckCollisionPointRec(mousePoint, level1Rect))
+    {
+        if (selectedOption != 0)
+            PlaySound(navigateSound);
         selectedOption = 0;
-        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) StartLevel(1);
+        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+            StartLevel(1);
     }
-    if (CheckCollisionPointRec(mousePoint, level2Rect)) {
-        if (selectedOption != 1) PlaySound(navigateSound);
+    if (CheckCollisionPointRec(mousePoint, level2Rect))
+    {
+        if (selectedOption != 1)
+            PlaySound(navigateSound);
         selectedOption = 1;
-        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) StartLevel(2);
+        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+            StartLevel(2);
     }
-    if (CheckCollisionPointRec(mousePoint, level3Rect)) {
-        if (selectedOption != 2) PlaySound(navigateSound);
+    if (CheckCollisionPointRec(mousePoint, level3Rect))
+    {
+        if (selectedOption != 2)
+            PlaySound(navigateSound);
         selectedOption = 2;
-        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) StartLevel(3);
+        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+            StartLevel(3);
     }
 
-    if (IsKeyPressed(KEY_ENTER)) {
+    if (IsKeyPressed(KEY_ENTER))
+    {
         StartLevel(selectedOption + 1);
     }
 
-    if (IsKeyPressed(KEY_BACKSPACE) || IsKeyPressed(KEY_ESCAPE)) {
+    if (IsKeyPressed(KEY_BACKSPACE) || IsKeyPressed(KEY_ESCAPE))
+    {
         currentMenu = MENU_MAIN;
         selectedOption = 0;
     }
 
     highlightAlpha += 0.1f;
-    if (highlightAlpha > 0.5f) highlightAlpha = 0.5f;
+    if (highlightAlpha > 0.5f)
+        highlightAlpha = 0.5f;
 }
 
 // Draw Level Menu
@@ -208,9 +245,9 @@ void DrawLevelMenu(void)
 
     DrawText("SELECT LEVEL", 350, 200, 40, BLACK);
 
-    Rectangle level1Rect = { 350, 300, 300, 40 };
-    Rectangle level2Rect = { 350, 350, 300, 40 };
-    Rectangle level3Rect = { 350, 400, 300, 40 };
+    Rectangle level1Rect = {350, 300, 300, 40};
+    Rectangle level2Rect = {350, 350, 300, 40};
+    Rectangle level3Rect = {350, 400, 300, 40};
 
     Color level1Color = (selectedOption == 0) ? DARKGRAY : BLACK;
     Color level2Color = (selectedOption == 1) ? DARKGRAY : BLACK;
@@ -231,9 +268,12 @@ void DrawLevelMenu(void)
 
     if (CheckCollisionPointRec(mousePoint, level1Rect) ||
         CheckCollisionPointRec(mousePoint, level2Rect) ||
-        CheckCollisionPointRec(mousePoint, level3Rect)) {
+        CheckCollisionPointRec(mousePoint, level3Rect))
+    {
         SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
-    } else {
+    }
+    else
+    {
         SetMouseCursor(MOUSE_CURSOR_DEFAULT);
     }
 }

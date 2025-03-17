@@ -1,46 +1,33 @@
 #include "mainmenu.h"
-#include <raylib.h>
 
-#define SCREEN_WIDTH 1000
-#define SCREEN_HEIGHT 650
-
-int main(void)
+int main()
 {
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "BREAK BRICKS - Main Menu");
-    SetTargetFPS(60);
-
-    InitMainMenu(); // Init state awal menu
+    InitWindow(1000, 650, "Break Bricks - Main Menu");
+    InitMainMenu();
 
     while (!WindowShouldClose())
     {
-        // Update menu logic
-        UpdateMainMenu();
-
-        // Cek apakah user milih mulai game / keluar
-        if (IsStartGame())
-        {
-            // Kalo udah ada logic ke game, disini kamu redirect
-            // Misal, panggil GameLoop(); atau pindah ke scene lain
-            // Sekarang cuma keluar window dulu buat contoh
-            CloseWindow();
-            // Bisa return nilai khusus buat ke game, nanti diatur
-            return 1;
-        }
-
-        if (IsExitGame())
-        {
-            CloseWindow();
-            return 0;
-        }
-
-        // Draw main menu
         BeginDrawing();
-        DrawMainMenu();
+        ClearBackground(WHITE);
+
+        UpdateMainMenu(); // Logic menu jalan terus
+        DrawMainMenu();   // Gambar menu
+
         EndDrawing();
+
+        // Contoh ngecek menu state
+        if (GetMenuState() == MENU_LEVEL_SELECT)
+        {
+            int level = GetSelectedLevel();
+            if (level > 0)
+            {
+                // Mulai game di level yang dipilih
+                // Misalnya: StartGame(level);
+                CloseWindow(); // Buat contoh, window ditutup dulu
+            }
+        }
     }
 
-    UnloadMainMenu(); // Clean up resource menu
     CloseWindow();
-
     return 0;
 }
