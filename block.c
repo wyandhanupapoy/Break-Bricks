@@ -1,6 +1,6 @@
 #include "block.h"
 #include <raylib.h>
-#include <raymath.h>
+#include <stdio.h>
 
 void InitBlocks(Block blocks[BLOCK_ROWS][BLOCK_COLS], int level) {
     for (int i = 0; i < BLOCK_ROWS; i++) {
@@ -13,16 +13,16 @@ void InitBlocks(Block blocks[BLOCK_ROWS][BLOCK_COLS], int level) {
 
             // Menentukan jenis blok berdasarkan level
             if (level == 1) {
-                blocks[i][j].durability = 1; // Kayu
-                blocks[i][j].color = BROWN;
+                blocks[i][j].durability = 1;
+                blocks[i][j].color = (Color){139, 69, 19, 255}; // Brown
             } else if (level == 2) {
-                blocks[i][j].durability = (i < BLOCK_ROWS / 2) ? 2 : 1; // Batu bata dan kayu
-                blocks[i][j].color = (blocks[i][j].durability == 2) ? RED : BROWN;
+                blocks[i][j].durability = (i < BLOCK_ROWS / 2) ? 2 : 1;
+                blocks[i][j].color = (blocks[i][j].durability == 2) ? (Color){255, 0, 0, 255} : (Color){139, 69, 19, 255};
             } else {
-                blocks[i][j].durability = (i < BLOCK_ROWS / 3) ? 3 : (i < 2 * BLOCK_ROWS / 3) ? 2 : 1; // Besi, batu bata, kayu
-                if (blocks[i][j].durability == 3) blocks[i][j].color = GRAY;
-                else if (blocks[i][j].durability == 2) blocks[i][j].color = RED;
-                else blocks[i][j].color = BROWN;
+                blocks[i][j].durability = (i < BLOCK_ROWS / 3) ? 3 : (i < 2 * BLOCK_ROWS / 3) ? 2 : 1;
+                if (blocks[i][j].durability == 3) blocks[i][j].color = (Color){105, 105, 105, 255};
+                else if (blocks[i][j].durability == 2) blocks[i][j].color = (Color){255, 0, 0, 255};
+                else blocks[i][j].color = (Color){139, 69, 19, 255};
             }
         }
     }
@@ -50,8 +50,8 @@ bool CheckBallBlockCollision(Vector2 ballPosition, float ballRadius, Block *bloc
 void UpdateBlockState(Block *block) {
     if (block->durability > 1) {
         block->durability--;
-        if (block->durability == 2) block->color = RED;
-        else if (block->durability == 1) block->color = BROWN;
+        if (block->durability == 2) block->color = (Color){255, 0, 0, 255}; // RED
+        else if (block->durability == 1) block->color = (Color){139, 69, 19, 255}; // BROWN
     } else {
         block->active = false;
     }

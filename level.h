@@ -2,9 +2,8 @@
 #define LEVEL_H
 
 #include "block.h"
-#include <raylib.h>
 
+void LoadLevelSounds();
 void SetLevel(Block blocks[BLOCK_ROWS][BLOCK_COLS], int level);
-void UpdateBlockState(Block *block);
 
-#endif // LEVEL_H
+#endif
