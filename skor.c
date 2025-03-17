@@ -1,6 +1,8 @@
 #include "skor.h"
 #include <stdio.h>
 
+#define SCREEN_WIDTH 1000
+
 // Inisialisasi skor untuk semua pemain
 void InitSkor(Skor skor[MAX_PLAYERS]) {
     for (int i = 0; i < MAX_PLAYERS; i++) {
@@ -20,9 +22,8 @@ void DrawSkor(Skor skor[MAX_PLAYERS]) {
         sprintf(scoreText, "Score: %d", skor[i].score);
         
         // Hitung posisi x agar teks berada di pojok kanan atas
-        int textWidth = MeasureText(scoreText, 20);  // Hitung lebar teks
-        int posX = SCREEN_WIDTH - textWidth - 20;    // Posisi pojok kanan atas
-        int posY = 20 + (i * 30);                    // Jarak vertikal antar pemain
+        int posX = 870;    // Posisi pojok kanan atas
+        int posY = 50;     // Jarak vertikal antar pemain
         
         DrawText(scoreText, posX, posY, 20, WHITE);
     }
