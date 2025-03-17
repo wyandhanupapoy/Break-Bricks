@@ -1,20 +1,33 @@
 #ifndef BOLA_H
 #define BOLA_H
 
-#include "raylib.h"
+#include <raylib.h>
+#include "paddle.h"
+#include "block.h"
+#include "skor.h"
+#include "stopwatch.h"
 
-#define ROWS 1   // Jumlah bola dalam array 2D (bisa ditambah jika ingin lebih dari satu bola)
-#define COLS 1   // Saat ini hanya satu bola, tapi bisa diperluas
+#define BOLA_ROWS 1
+#define BOLA_COLS 1
+
+typedef enum {
+    GAME_START,
+    GAME_PLAY,
+    GAME_OVER,
+    GAME_WIN
+} GameState;
 
 typedef struct {
-    Vector2 position; // Posisi bola
-    Vector2 speed;    // Kecepatan bola
-    float radius;     // Radius bola
-    Color color;      // Warna bola
+    Vector2 position;
+    Vector2 speed;
+    float radius;
+    Color color;
+    bool active;
 } Bola;
 
-void InitBola(Bola bola[ROWS][COLS]);
-void UpdateBola(Bola bola[ROWS][COLS]);
-void DrawBola(Bola bola[ROWS][COLS]);
+void InitBola(Bola bola[BOLA_ROWS][BOLA_COLS]);
+void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PADDLE_COLS], Block blocks[BLOCK_ROWS][BLOCK_COLS], GameState *state, Skor *skor, Stopwatch sw[STOPWATCH_ROWS][STOPWATCH_COLS]);
+void DrawBola(Bola bola[BOLA_ROWS][BOLA_COLS]);
+void ResetBola(Bola bola[BOLA_ROWS][BOLA_COLS]);
 
 #endif // BOLA_H

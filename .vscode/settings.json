@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "raylib.h": "c",
+        "stdio.h": "c",
+        "bola.h": "c",
+        "stopwatch.h": "c"
+    }
+}
