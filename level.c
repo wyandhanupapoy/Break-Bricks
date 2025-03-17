@@ -46,18 +46,4 @@ void SetLevel(Block blocks[BLOCK_ROWS][BLOCK_COLS], int level) {
     }
 }
 
-void UpdateBlockState(Block *block) {
-    if (block->active) {
-        block->durability--;
-        if (block->durability == 2) {
-            block->color = GRAY;
-            PlaySound(soundMetalToBrick);
-        } else if (block->durability == 1) {
-            block->color = BROWN;
-            PlaySound(soundBrickToWood);
-        } else if (block->durability <= 0) {
-            block->active = false;
-            PlaySound(soundWoodBreak);
-        }
-    }
-}
+void UpdateBlockState(Block *block);
