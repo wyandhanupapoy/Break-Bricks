@@ -42,5 +42,5 @@ int main(void)
     UnloadMainMenu(); // Clean up resource menu
     CloseWindow();
 
-    return 0;
+    return 0;
 }
