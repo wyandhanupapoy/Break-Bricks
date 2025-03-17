@@ -62,7 +62,7 @@ int main()
             }
         }
 
-        if (IsKeyPressed(KEY_P))
+        if (IsKeyPressed(KEY_P) && gameState == GAME_PLAY) // Hanya izinkan pause saat GAME_PLAY
             isPaused = !isPaused;
 
         if (!isPaused)
@@ -142,6 +142,7 @@ int main()
                     InitBola(bola);
                     InitSkor(skor);
                     InitStopwatch(stopwatch);
+                    SetNyawaPosition(nyawa, 870, 10);
                     gameState = GAME_START;
                 }
                 break;
@@ -154,6 +155,7 @@ int main()
                     InitBola(bola);
                     InitSkor(skor);
                     InitStopwatch(stopwatch);
+                    SetNyawaPosition(nyawa, 870, 10);
                     gameState = GAME_START;
                 }
                 break;
@@ -176,7 +178,8 @@ int main()
         switch (gameState)
         {
         case GAME_START:
-            if (AnyLivesLeft(nyawa) && nyawa[0][0].aktif == false) {
+            if (AnyLivesLeft(nyawa) && nyawa[0][0].aktif == false)
+            {
                 DrawText("NYAWA BERKURANG!!!", 290, 380, 25, RED);
             }
             DrawText("PRESS SPACE TO START", 220, SCREEN_HEIGHT / 2, 30, WHITE);
@@ -208,7 +211,8 @@ int main()
             DrawText("PRESS P TO CONTINUE", SCREEN_WIDTH / 2 - MeasureText("PRESS P TO CONTINUE", 20) / 2, SCREEN_HEIGHT / 2 + 20, 20, BLACK);
             stopwatch[0][0].running = false; // Hentikan stopwatch saat dijeda
         }
-        else{
+        else
+        {
             stopwatch[0][0].running = true; // Jalankan stopwatch saat tidak dijeda
         }
 
