@@ -13,6 +13,7 @@ typedef struct {
     Rectangle rect;
     bool active;
     Color color;
+    int durability; // Tambahan untuk menyesuaikan level
 } Block;
 
 void InitBlocks(Block blocks[BLOCK_ROWS][BLOCK_COLS]);
