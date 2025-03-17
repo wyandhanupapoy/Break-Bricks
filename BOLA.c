@@ -7,6 +7,8 @@
 #define SCREEN_WIDTH 830
 #define SCREEN_HEIGHT 600
 
+#define MAX_BALL_SPEED 9.0f
+
 void InitBola(Bola bola[BOLA_ROWS][BOLA_COLS])
 {
     for (int i = 0; i < BOLA_ROWS; i++)
@@ -35,6 +37,13 @@ void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PAD
                 bola[i][0].position.x += bola[i][0].speed.x;
                 bola[i][0].position.y += bola[i][0].speed.y;
 
+                // Batasi kecepatan maksimum
+                float speedMagnitude = sqrt(bola[i][0].speed.x * bola[i][0].speed.x + bola[i][0].speed.y * bola[i][0].speed.y);
+                if (speedMagnitude > MAX_BALL_SPEED) {
+                    bola[i][0].speed.x *= (MAX_BALL_SPEED / speedMagnitude);
+                    bola[i][0].speed.y *= (MAX_BALL_SPEED / speedMagnitude);
+                }
+
                 bool hasHitBlock = false;
 
                 // Cek tabrakan dengan paddle
@@ -53,6 +62,13 @@ void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PAD
                             bola[i][0].speed.x *= 1.1; // Meningkatkan kecepatan horizontal
                             bola[i][0].speed.y *= 1.1; // Meningkatkan kecepatan vertikal
 
+                            // Batasi kecepatan maksimum setelah memantul
+                            speedMagnitude = sqrt(bola[i][0].speed.x * bola[i][0].speed.x + bola[i][0].speed.y * bola[i][0].speed.y);
+                            if (speedMagnitude > MAX_BALL_SPEED) {
+                                bola[i][0].speed.x *= (MAX_BALL_SPEED / speedMagnitude);
+                                bola[i][0].speed.y *= (MAX_BALL_SPEED / speedMagnitude);
+                            }
+
                             bola[i][0].position.y = paddles[j][k].rect.y - bola[i][0].radius;
                         }
                     }
@@ -62,17 +78,14 @@ void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PAD
                 if (bola[i][0].position.x < bola[i][0].radius) {
                     bola[i][0].speed.x *= -1;
                     bola[i][0].position.x = bola[i][0].radius;
-                    bola[i][0].speed.x *= 1.1; // Meningkatkan kecepatan saat memantul dari dinding
                 }
                 if (bola[i][0].position.x > SCREEN_WIDTH - bola[i][0].radius) {
                     bola[i][0].speed.x *= -1;
                     bola[i][0].position.x = SCREEN_WIDTH - bola[i][0].radius;
-                    bola[i][0].speed.x *= 1.1; // Meningkatkan kecepatan saat memantul dari dinding
                 }
                 if (bola[i][0].position.y < bola[i][0].radius) {
                     bola[i][0].speed.y *= -1;
                     bola[i][0].position.y = bola[i][0].radius;
-                    bola[i][0].speed.y *= 1.1; // Meningkatkan kecepatan saat memantul dari dinding
                 }
 
                 // Cek tabrakan dengan blok
@@ -92,6 +105,14 @@ void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PAD
 
                             bola[i][0].speed.y *= -1; // Memantul ke atas
                             bola[i][0].speed.x *= 1.1; // Meningkatkan kecepatan saat memantul dari blok
+
+                            // Batasi kecepatan maksimum setelah memantul
+                            speedMagnitude = sqrt(bola[i][0].speed.x * bola[i][0].speed.x + bola[i][0].speed.y * bola[i][0].speed.y);
+                            if (speedMagnitude > MAX_BALL_SPEED) {
+                                bola[i][0].speed.x *= (MAX_BALL_SPEED / speedMagnitude);
+                                bola[i][0].speed.y *= (MAX_BALL_SPEED / speedMagnitude);
+                            }
+
                             break; // Keluar dari loop setelah memecahkan satu blok
                         }
                     }
