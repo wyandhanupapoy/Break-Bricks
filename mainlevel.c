@@ -26,8 +26,7 @@ int main() {
         // Debugging: Cetak blok ke terminal
         for (int i = 0; i < BLOCK_ROWS; i++) {
             for (int j = 0; j < BLOCK_COLS; j++) {
-                printf("Block[%d][%d]: Warna = %d, Durability = %d\n",
-                       i, j, blocks[i][j].color, blocks[i][j].durability);
+                DrawRectangle(j * 50, i * 30, 48, 28, GetColor(blocks[i][j].color));
             }
         }
 
