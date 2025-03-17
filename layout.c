@@ -1,29 +1,36 @@
 #include "layout.h"
-#include "raylib.h"
+#include <stdio.h>
 
-#define PANEL_WIDTH 230
-#define SCREEN_WIDTH 800
-#define SCREEN_HEIGHT 600
+#define SCREEN_WIDTH 1000
+#define SCREEN_HEIGHT 650
 
-void DrawGameLayout(Block blocks[][BLOCK_COLS], Paddle paddles[][PADDLE_COLS], Bola bola[][BOLA_COLS], Stopwatch sw[][STOPWATCH_COLS], Nyawa nyawa[][NYAWA_KOLOM]) {
-    ClearBackground(RAYWHITE);
-    
-    // Panel kanan (warna abu-abu muda)
-    DrawRectangle(SCREEN_WIDTH - PANEL_WIDTH, 0, PANEL_WIDTH, SCREEN_HEIGHT, LIGHTGRAY);
-    
-    // Gambar blok, paddle, dan bola di area utama
+void DrawGameLayout(Block blocks[BLOCK_ROWS][BLOCK_COLS], Paddle paddles[PADDLE_ROWS][PADDLE_COLS], Bola bola[BOLA_ROWS][BOLA_COLS], Stopwatch stopwatch[STOPWATCH_ROWS][STOPWATCH_COLS], Nyawa nyawa[NYAWA_BARIS][NYAWA_KOLOM], Skor skor[MAX_PLAYERS]) {
+    // Menggambar background
+    ClearBackground(BLACK); // Menggunakan warna latar belakang yang sesuai
+
+    // Menggambar garis pembatas
+    DrawLine(835, 0, 835, SCREEN_HEIGHT, WHITE);
+
+    // Menggambar TataCaraPembatas
+    DrawRectangle(0, 600, 835, 50, WHITE);
+    DrawText("<- -> Bergerak       P - Pause       Esc - Exit", 150, 610, 20, BLACK);
+
+    // Menggambar blok
     DrawBlocks(blocks);
+
+    // Menggambar paddle
     DrawPaddles(paddles);
+
+    // Menggambar bola
     DrawBola(bola);
-    
-    // Posisi awal untuk UI di panel kanan
-    int uiX = SCREEN_WIDTH - PANEL_WIDTH + 20;  // Geser sedikit dari tepi
-    int nyawaY = 20;  // Nyawa di bagian atas
-    int stopwatchY = nyawaY + 40;  // Stopwatch di bawah nyawa dengan jarak 40px
 
-    // Gambar nyawa di pojok kanan atas
-    DrawNyawa(nyawa, uiX, nyawaY);
+    // Menggambar nyawa
+    SetNyawaPosition(nyawa, NYAWA_X, NYAWA_Y);
+    DrawNyawa(nyawa);
 
-    // Gambar stopwatch di bawah nyawa
-    DrawStopwatch(sw, uiX, stopwatchY);
+    // Menggambar skor
+    DrawSkor(skor); // Modifikasi DrawSkor untuk menerima posisi
+
+    // Menggambar stopwatch
+    DrawStopwatch(stopwatch); // Modifikasi DrawStopwatch untuk menerima posisi
 }

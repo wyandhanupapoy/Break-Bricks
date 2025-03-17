@@ -6,6 +6,7 @@
 #include "block.h"
 #include "skor.h"
 #include "stopwatch.h"
+#include <math.h>
 
 #define BOLA_ROWS 1
 #define BOLA_COLS 1
