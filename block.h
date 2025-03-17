@@ -3,8 +3,8 @@
 
 #include <raylib.h>
 
-#define BLOCK_ROWS 5
-#define BLOCK_COLS 10
+#define BLOCK_ROWS 5   // 5 Baris
+#define BLOCK_COLS 7   // 7 Kolom
 #define BLOCK_WIDTH 75
 #define BLOCK_HEIGHT 25
 #define BLOCK_SPACING 5

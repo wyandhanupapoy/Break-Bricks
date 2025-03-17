@@ -1,13 +1,16 @@
 #include "paddle.h"
-
-#define SCREEN_WIDTH 830
-#define SCREEN_HEIGHT 600
+#include "layout.h"
+#include "raylib.h"
 
 void InitPaddles(Paddle paddles[PADDLE_ROWS][PADDLE_COLS]) {
     for (int i = 0; i < PADDLE_ROWS; i++) {
         for (int j = 0; j < PADDLE_COLS; j++) {
-            paddles[i][j].rect = (Rectangle){(SCREEN_WIDTH - PADDLE_WIDTH) / 2, SCREEN_HEIGHT - PADDLE_HEIGHT - 10, PADDLE_WIDTH, PADDLE_HEIGHT};
-            paddles[i][j].speed = (Vector2){PADDLE_SPEED, 0};
+            paddles[i][j].rect.x = (GAME_AREA_WIDTH - PADDLE_WIDTH) / 2;
+            paddles[i][j].rect.y = SCREEN_HEIGHT - PADDLE_HEIGHT - 10;
+            paddles[i][j].rect.width = PADDLE_WIDTH;
+            paddles[i][j].rect.height = PADDLE_HEIGHT;
+            paddles[i][j].speed.x = PADDLE_SPEED;
+            paddles[i][j].speed.y = 0;
         }
     }
 }
@@ -18,7 +21,7 @@ void UpdatePaddles(Paddle paddles[PADDLE_ROWS][PADDLE_COLS]) {
             if (IsKeyDown(KEY_LEFT) && paddles[i][j].rect.x > 0) {
                 paddles[i][j].rect.x -= paddles[i][j].speed.x;
             }
-            if (IsKeyDown(KEY_RIGHT) && paddles[i][j].rect.x < SCREEN_WIDTH - PADDLE_WIDTH) {
+            if (IsKeyDown(KEY_RIGHT) && paddles[i][j].rect.x < GAME_AREA_WIDTH - PADDLE_WIDTH) {
                 paddles[i][j].rect.x += paddles[i][j].speed.x;
             }
         }
