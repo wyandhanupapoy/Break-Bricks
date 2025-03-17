@@ -1,16 +1,21 @@
 #ifndef LAYOUT_H
 #define LAYOUT_H
 
-#define SCREEN_WIDTH 800  
-#define SCREEN_HEIGHT 600 
-#define GAME_AREA_WIDTH (SCREEN_WIDTH - 200)  // 200 px untuk panel kanan
-
+#include <raylib.h>
 #include "block.h"
 #include "paddle.h"
-#include "bola.h"
+#include "BOLA.h"
+#include "nyawa.h"
 #include "stopwatch.h"
-#include "nyawa.h"  // Tambahkan nyawa di layout
+
+// Tambahkan definisi untuk ukuran layar
+#define DEFAULT_SCREEN_WIDTH 1000
+#define DEFAULT_SCREEN_HEIGHT 650
 
 void DrawGameLayout(Block blocks[][BLOCK_COLS], Paddle paddles[][PADDLE_COLS], Bola bola[][BOLA_COLS], Stopwatch sw[][STOPWATCH_COLS], Nyawa nyawa[][NYAWA_KOLOM]);
+void SetScreenSize(int width, int height); // Fungsi untuk mengatur ukuran layar
 
-#endif
+void layout();
+
+ 
+#endif // LAYOUT_H
