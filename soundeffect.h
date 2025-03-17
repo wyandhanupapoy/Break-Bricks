@@ -1,34 +1,22 @@
-#ifndef SOUND_EFFECTS_H
-#define SOUND_EFFECTS_H
+#ifndef SOUNDEFFECT_H
+#define SOUNDEFFECT_H
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_mixer.h>
+#include <raylib.h>
 
-// Deklarasi variabel untuk menyimpan efek suara dan musik latar
-extern Mix_Music *backgroundMusic;
-extern Mix_Chunk *clickSound;
-extern Mix_Chunk *paddleBounce;
-extern Mix_Chunk *wallBounce;
-extern Mix_Chunk *blockBreak;
-extern Mix_Chunk *winSound;
-extern Mix_Chunk *loseSound;
+#define SOUND_ROWS 2
+#define SOUND_COLS 3
 
-// Fungsi untuk inisialisasi audio
-int initAudio();
+typedef enum {
+    SOUND_BACKSOUND,
+    SOUND_BUTTON,
+    SOUND_BLOCK_BREAK,
+    SOUND_LOSE,
+    SOUND_BOUNCE,
+    SOUND_WIN
+} SoundType;
 
-// Fungsi untuk memuat semua sound effect
-int loadSounds();
+void InitSoundEffects(Sound soundEffects[SOUND_ROWS][SOUND_COLS]);
+void PlaySoundEffect(Sound soundEffects[SOUND_ROWS][SOUND_COLS], SoundType type);
+void UnloadSoundEffects(Sound soundEffects[SOUND_ROWS][SOUND_COLS]);
 
-// Fungsi untuk memainkan efek suara tertentu
-void playBackgroundMusic();
-void playClickSound();
-void playPaddleBounceSound();
-void playWallBounceSound();
-void playBlockBreakSound();
-void playWinSound();
-void playLoseSound();
-
-// Fungsi untuk membersihkan dan membebaskan memory SDL_mixer
-void cleanUpAudio();
-
-#endif // SOUND_EFFECTS_H
+#endif
