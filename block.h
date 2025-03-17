@@ -5,8 +5,8 @@
 
 #define BLOCK_ROWS 5
 #define BLOCK_COLS 10
-#define BLOCK_WIDTH 50
-#define BLOCK_HEIGHT 30
+#define BLOCK_WIDTH 75
+#define BLOCK_HEIGHT 25
 #define BLOCK_SPACING 5
 
 typedef struct {
