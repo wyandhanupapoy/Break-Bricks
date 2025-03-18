@@ -9,12 +9,14 @@
 #define BLOCK_HEIGHT 25
 #define BLOCK_SPACING 5
 
-typedef struct Block {
+typedef struct {
     Rectangle rect;
     bool active;
     Color color;
-    int colorIndex; // 0 = DARKGRAY, 1 = BROWN, 2 = BEIGE
+    int durability; 
+    int colorIndex;
 } Block;
+
 
 void InitBlocks(Block blocks[BLOCK_ROWS][BLOCK_COLS]);
 void DrawBlocks(Block blocks[BLOCK_ROWS][BLOCK_COLS]);

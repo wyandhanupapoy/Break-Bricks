@@ -4,6 +4,7 @@
         "stdio.h": "c",
         "bola.h": "c",
         "stopwatch.h": "c",
-        "block.h": "c"
+        "block.h": "c",
+        "stdlib.h": "c"
     }
 }
