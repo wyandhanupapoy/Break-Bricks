@@ -5,12 +5,22 @@
 #include "skor.h"
 #include "stopwatch.h"
 #include "leaderboard.h"
+#include "mainmenu.h" // Tambahkan header menu
 
 #include <stdio.h>
 #include <raylib.h>
 
 #define SCREEN_WIDTH 1000
 #define SCREEN_HEIGHT 650
+
+// Deklarasi fungsi dari mainmenu.h
+void InitMainMenu(void);
+void UpdateMainMenu(void);
+void DrawMainMenu(void);
+MenuState GetMenuState(void);
+int GetSelectedLevel(void);
+bool IsExitGame(void);
+bool IsStartGame(void); // Tambahkan deklarasi ini
 
 int main()
 {
@@ -19,6 +29,9 @@ int main()
 
     // Variabel untuk menyimpan status fullscreen
     bool isFullscreen = false;
+
+    // Inisialisasi menu
+    InitMainMenu();
 
     Paddle paddles[PADDLE_ROWS][PADDLE_COLS];
     InitPaddles(paddles);
@@ -46,6 +59,29 @@ int main()
 
     while (!WindowShouldClose())
     {
+        // Update menu
+        UpdateMainMenu();
+
+        // Cek apakah permainan harus dimulai
+        if (IsStartGame())
+        {
+            // Reset game state
+            gameState = GAME_START;
+            // Reset game elements
+            InitBlocks(blocks);
+            InitNyawa(nyawa, 3);
+            InitBola(bola);
+            InitSkor(skor);
+            InitStopwatch(stopwatch);
+            SetNyawaPosition(nyawa, 870, 10);
+        }
+
+        // Cek apakah permainan harus keluar
+        if (IsExitGame())
+        {
+            break; // Keluar dari loop jika exit
+        }
+
         // Toggle fullscreen saat F2 ditekan
         if (IsKeyPressed(KEY_F))
         {
