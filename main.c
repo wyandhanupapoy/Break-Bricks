@@ -1,4 +1,5 @@
 #include "mainmenu.h"
+#include "raylib.h"
 
 int main()
 {

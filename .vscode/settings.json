@@ -4,5 +4,6 @@
         "stdio.h": "c",
         "bola.h": "c",
         "stopwatch.h": "c"
-    }
+    },
+    "C_Cpp.errorSquiggles": "disabled"
 }
