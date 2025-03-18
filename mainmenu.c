@@ -329,5 +329,5 @@ void ToggleSound()
 
 bool IsSoundOn()
 {
-    return soundOn;
+    return soundOn;
 }

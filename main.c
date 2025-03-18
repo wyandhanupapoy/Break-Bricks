@@ -1,5 +1,5 @@
 #include "mainmenu.h"
-#include "raylib.h"
+#include <stdbool.h>
 
 int main()
 {
@@ -9,21 +9,26 @@ int main()
     while (!WindowShouldClose())
     {
         BeginDrawing();
-        ClearBackground(WHITE);
+        ClearBackground(BLACK);
 
-        UpdateMainMenu(); // Logic menu jalan terus
+        UpdateMainMenu(); // Logic menu berjalan terus
         DrawMainMenu();   // Gambar menu
 
         EndDrawing();
 
-        // Contoh ngecek menu state
-        if (GetMenuState() == MENU_LEVEL_SELECT)
+        // Periksa jika exitGame sudah diaktifkan
+        if (IsExitGame())
+        {
+            CloseWindow();
+            break; // Keluar dari loop utama
+        }
+
+        if (GetMenuState() == MENU_LEVEL)
         {
             int level = GetSelectedLevel();
             if (level > 0)
             {
                 // Mulai game di level yang dipilih
-                // Misalnya: StartGame(level);
                 CloseWindow(); // Buat contoh, window ditutup dulu
             }
         }
