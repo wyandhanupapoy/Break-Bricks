@@ -3,14 +3,12 @@
 
 #include <raylib.h>
 
-#define MAX_PLAYERS 1 // Jumlah pemain maksimal
-
 typedef struct {
     int score; // Skor pemain
 } Skor;
 
-void InitSkor(Skor skor[MAX_PLAYERS]);
+void InitSkor(Skor *skor);
 void TambahSkor(Skor *skor, int nilai);
-void DrawSkor(Skor skor[MAX_PLAYERS]);
+void DrawSkor(const Skor *skor);
 
 #endif // SKOR_H

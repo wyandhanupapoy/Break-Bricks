@@ -1,25 +1,28 @@
 #include "skor.h"
+#include "raylib.h"  // Tambahkan ini agar bisa menggunakan DrawText
 #include <stdio.h>
 
 #define SCREEN_WIDTH 1000
 
-void InitSkor(Skor skor[MAX_PLAYERS]) {
-    for (int i = 0; i < MAX_PLAYERS; i++) {
-        skor[i].score = 0;
+void InitSkor(Skor *skor) {
+    if (skor != NULL) {
+        skor->score = 0;
     }
 }
 
 void TambahSkor(Skor *skor, int nilai) {
-    skor->score += nilai;
+    if (skor != NULL) {
+        skor->score += nilai;
+    }
 }
 
-void DrawSkor(Skor skor[MAX_PLAYERS]) {
-    for (int i = 0; i < MAX_PLAYERS; i++) {
+void DrawSkor(const Skor *skor) {
+    if (skor != NULL) {
         char scoreText[20];
-        sprintf(scoreText, "Score: %d", skor[i].score);
+        sprintf(scoreText, "Score: %d", skor->score);
         
-        int posX = 870;
-        int posY = 50; // Posisi Y diatur agar sejajar dengan nyawa
+        int posX = SCREEN_WIDTH - 130; // Pindahkan ke pojok kanan atas
+        int posY = 50; // Sejajar dengan nyawa
 
         DrawText(scoreText, posX, posY, 20, WHITE);
     }

@@ -1,8 +1,21 @@
 #include "level.h"
 #include "raylib.h"
+#include <stdlib.h>  // Untuk rand()
+#include <time.h>    // Untuk srand()
 
 void InitLevelBlocks(Block blocks[BLOCK_ROWS][BLOCK_COLS], int level) {
-    Color colors[] = { DARKGRAY, BROWN, BEIGE };
+    srand(time(NULL));  // Seed angka acak agar variasi tiap run berbeda
+
+    Color colors[3] = { DARKGRAY, BROWN, BEIGE };  // Warna blok tersedia
+
+    int maxColorIndex;
+    if (level == 1) {
+        maxColorIndex = 2;  // Hanya BEIGE (index 2)
+    } else if (level == 2) {
+        maxColorIndex = 1;  // BROWN (1) dan BEIGE (2)
+    } else {
+        maxColorIndex = 0;  // DARKGRAY (0), BROWN (1), dan BEIGE (2)
+    }
 
     for (int i = 0; i < BLOCK_ROWS; i++) {
         for (int j = 0; j < BLOCK_COLS; j++) {
@@ -12,16 +25,10 @@ void InitLevelBlocks(Block blocks[BLOCK_ROWS][BLOCK_COLS], int level) {
             blocks[i][j].rect.height = BLOCK_HEIGHT;
             blocks[i][j].active = true;
 
-            if (level == 1) {
-                blocks[i][j].color = BEIGE;
-                blocks[i][j].colorIndex = 2;
-            } else if (level == 2) {
-                blocks[i][j].colorIndex = (j % 2 == 0) ? 2 : 1;  // Beige atau Brown
-                blocks[i][j].color = colors[blocks[i][j].colorIndex];
-            } else if (level == 3) {
-                blocks[i][j].colorIndex = i % 3;  // Dark Gray, Brown, Beige
-                blocks[i][j].color = colors[blocks[i][j].colorIndex];
-            }
+            // Pilih warna acak sesuai batas level
+            int randomIndex = rand() % (3 - maxColorIndex) + maxColorIndex;
+            blocks[i][j].color = colors[randomIndex];
+            blocks[i][j].colorIndex = randomIndex;
         }
     }
 }
@@ -38,4 +45,9 @@ void UpdateBlockState(Block *block) {
     } else if (block->colorIndex == 2) { // BEIGE -> Hancur
         block->active = false;
     }
+}
+
+// **Implementasi SetLevel**
+void SetLevel(Block blocks[BLOCK_ROWS][BLOCK_COLS], int level) {
+    InitLevelBlocks(blocks, level);
 }
