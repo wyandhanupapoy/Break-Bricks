@@ -1,18 +1,8 @@
 #include "block.h"
+#include "level.h"  // Tambahkan ini agar bisa menggunakan InitLevelBlocks
 
-void InitBlocks(Block blocks[BLOCK_ROWS][BLOCK_COLS]) {
-    Color colors[BLOCK_ROWS] = { BLUE, GREEN, YELLOW, ORANGE, RED };
-
-    for (int i = 0; i < BLOCK_ROWS; i++) {
-        for (int j = 0; j < BLOCK_COLS; j++) {
-            blocks[i][j].rect.x = j * (BLOCK_WIDTH + BLOCK_SPACING) + 15;
-            blocks[i][j].rect.y = i * (BLOCK_HEIGHT + BLOCK_SPACING) + 70;
-            blocks[i][j].rect.width = BLOCK_WIDTH;
-            blocks[i][j].rect.height = BLOCK_HEIGHT;
-            blocks[i][j].active = true;
-            blocks[i][j].color = colors[i];
-        }
-    }
+void InitBlocks(Block blocks[BLOCK_ROWS][BLOCK_COLS], int level) {
+    InitLevelBlocks(blocks, level);  // Gunakan fungsi dari level.c untuk inisialisasi blok
 }
 
 void DrawBlocks(Block blocks[BLOCK_ROWS][BLOCK_COLS]) {

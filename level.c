@@ -1,8 +1,8 @@
 #include "level.h"
 #include "raylib.h"
 
-void InitLevelBlocks(Block blocks[BLOCK_ROWS][BLOCK_COLS]) {
-    Color colors[3] = { DARKGRAY, BROWN, BEIGE };
+void InitLevelBlocks(Block blocks[BLOCK_ROWS][BLOCK_COLS], int level) {
+    Color colors[] = { DARKGRAY, BROWN, BEIGE };
 
     for (int i = 0; i < BLOCK_ROWS; i++) {
         for (int j = 0; j < BLOCK_COLS; j++) {
@@ -12,10 +12,16 @@ void InitLevelBlocks(Block blocks[BLOCK_ROWS][BLOCK_COLS]) {
             blocks[i][j].rect.height = BLOCK_HEIGHT;
             blocks[i][j].active = true;
 
-            // Pilih warna acak dan simpan indeksnya
-            int colorIndex = GetRandomValue(0, 2);
-            blocks[i][j].color = colors[colorIndex];
-            blocks[i][j].colorIndex = colorIndex;
+            if (level == 1) {
+                blocks[i][j].color = BEIGE;
+                blocks[i][j].colorIndex = 2;
+            } else if (level == 2) {
+                blocks[i][j].colorIndex = (j % 2 == 0) ? 2 : 1;  // Beige atau Brown
+                blocks[i][j].color = colors[blocks[i][j].colorIndex];
+            } else if (level == 3) {
+                blocks[i][j].colorIndex = i % 3;  // Dark Gray, Brown, Beige
+                blocks[i][j].color = colors[blocks[i][j].colorIndex];
+            }
         }
     }
 }
@@ -23,18 +29,13 @@ void InitLevelBlocks(Block blocks[BLOCK_ROWS][BLOCK_COLS]) {
 void UpdateBlockState(Block *block) {
     if (!block->active) return;
 
-    // Jika warna sekarang DARKGRAY (0), ubah ke BROWN (1)
-    if (block->colorIndex == 0) {
+    if (block->colorIndex == 0) { // DARKGRAY -> BROWN
         block->colorIndex = 1;
         block->color = BROWN;
-    } 
-    // Jika warna sekarang BROWN (1), ubah ke BEIGE (2)
-    else if (block->colorIndex == 1) {
+    } else if (block->colorIndex == 1) { // BROWN -> BEIGE
         block->colorIndex = 2;
         block->color = BEIGE;
-    } 
-    // Jika warna sekarang BEIGE (2), blok hancur
-    else if (block->colorIndex == 2) {
+    } else if (block->colorIndex == 2) { // BEIGE -> Hancur
         block->active = false;
     }
 }

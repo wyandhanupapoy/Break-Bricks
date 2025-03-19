@@ -3,7 +3,7 @@
 
 #include "block.h"
 
-void InitLevelBlocks(Block blocks[BLOCK_ROWS][BLOCK_COLS]);
+void InitLevelBlocks(Block blocks[BLOCK_ROWS][BLOCK_COLS], int level);
 void SetLevel(Block blocks[BLOCK_ROWS][BLOCK_COLS], int level);
 void UpdateBlockState(Block *block);
 

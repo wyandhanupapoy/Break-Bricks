@@ -42,19 +42,36 @@ int main() {
     SetTargetFPS(60);
 
     Block blocks[BLOCK_ROWS][BLOCK_COLS];
-    InitLevelBlocks(blocks);
-
     Ball ball;
-    ResetBall(&ball);
-
     Paddle paddle;
-    ResetPaddle(&paddle);
-
     int lives = MAX_LIVES;
     int score = 0;
+    int level = 1;
+    bool levelSelected = false;
+
+    while (!levelSelected) {
+        BeginDrawing();
+        ClearBackground(RAYWHITE);
+        DrawText("Press 1, 2, or 3 to Select Level", SCREEN_WIDTH / 2 - 150, SCREEN_HEIGHT / 2, 20, BLACK);
+        EndDrawing();
+
+        if (IsKeyPressed(KEY_ONE)) {
+            level = 1;
+            levelSelected = true;
+        } else if (IsKeyPressed(KEY_TWO)) {
+            level = 2;
+            levelSelected = true;
+        } else if (IsKeyPressed(KEY_THREE)) {
+            level = 3;
+            levelSelected = true;
+        }
+    }
+
+    SetLevel(blocks, level);
+    ResetBall(&ball);
+    ResetPaddle(&paddle);
 
     while (!WindowShouldClose()) {
-        // Kontrol Paddle
         if (IsKeyDown(KEY_LEFT) && paddle.rect.x > 0) {
             paddle.rect.x -= paddle.speed;
         }
@@ -62,28 +79,23 @@ int main() {
             paddle.rect.x += paddle.speed;
         }
 
-        // Update posisi bola
         if (ball.active) {
             ball.position.x += ball.speed.x;
             ball.position.y += ball.speed.y;
 
-            // Pantulan dari dinding kiri dan kanan
             if (ball.position.x - BALL_RADIUS <= 0 || ball.position.x + BALL_RADIUS >= SCREEN_WIDTH) {
                 ball.speed.x *= -1;
             }
 
-            // Pantulan dari atas
             if (ball.position.y - BALL_RADIUS <= 0) {
                 ball.speed.y *= -1;
             }
 
-            // Pantulan dari paddle
             if (CheckCollisionCircleRec(ball.position, BALL_RADIUS, paddle.rect)) {
                 ball.speed.y *= -1;
                 ball.position.y = paddle.rect.y - BALL_RADIUS;
             }
 
-            // Cek tabrakan dengan blok
             for (int i = 0; i < BLOCK_ROWS; i++) {
                 for (int j = 0; j < BLOCK_COLS; j++) {
                     Block *block = &blocks[i][j];
@@ -96,32 +108,24 @@ int main() {
                 }
             }
 
-            // Jika bola jatuh ke bawah
             if (ball.position.y + BALL_RADIUS > SCREEN_HEIGHT) {
                 lives--;
                 if (lives <= 0) {
-                    ball.active = false;  // Game over
+                    ball.active = false;
                 } else {
-                    ResetBall(&ball);  // Reset bola jika masih ada nyawa
+                    ResetBall(&ball);
                 }
             }
         }
 
-        // Gambar semua elemen di layar
         BeginDrawing();
         ClearBackground(RAYWHITE);
-
         DrawBlocks(blocks);
-
-        // Gambar bola
+        
         if (ball.active) {
             DrawCircleV(ball.position, BALL_RADIUS, RED);
         }
-
-        // Gambar paddle
         DrawRectangleRec(paddle.rect, BLUE);
-
-        // Tampilkan skor dan nyawa
         DrawText(TextFormat("Score: %d", score), 20, 20, 20, BLACK);
         DrawText(TextFormat("Lives: %d", lives), SCREEN_WIDTH - 100, 20, 20, BLACK);
 
