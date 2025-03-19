@@ -1,12 +1,12 @@
 #include "level.h"
 #include "raylib.h"
-#include <stdlib.h>  // Untuk rand()
-#include <time.h>    // Untuk srand()
+#include <stdlib.h>  // Untuk fungsi rand()
+#include <time.h>    // Untuk seeding angka acak
 
 void InitLevelBlocks(Block blocks[BLOCK_ROWS][BLOCK_COLS], int level) {
     srand(time(NULL));  // Seed angka acak agar variasi tiap run berbeda
 
-    Color colors[3] = { DARKGRAY, BROWN, BEIGE };  // Warna blok tersedia
+    Color colors[3] = { DARKGRAY, BROWN, BEIGE };  // Warna blok yang tersedia
 
     int maxColorIndex;
     if (level == 1) {

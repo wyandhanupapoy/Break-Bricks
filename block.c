@@ -2,7 +2,7 @@
 #include "level.h"  // Tambahkan ini agar bisa menggunakan InitLevelBlocks
 
 void InitBlocks(Block blocks[BLOCK_ROWS][BLOCK_COLS], int level) {
-    InitLevelBlocks(blocks, level);  // Gunakan fungsi dari level.c untuk inisialisasi blok
+    InitLevelBlocks(blocks, level);  // Gunakan sistem level
 }
 
 void DrawBlocks(Block blocks[BLOCK_ROWS][BLOCK_COLS]) {
