@@ -3,20 +3,13 @@
 
 #include <raylib.h>
 
-#define SOUND_ROWS 2
-#define SOUND_COLS 3
+#define SOUNDEFFECT_ROWS 2
+#define SOUNDEFFECT_COLS 3
 
-typedef enum {
-    SOUND_BACKSOUND,
-    SOUND_BUTTON,
-    SOUND_BLOCK_BREAK,
-    SOUND_LOSE,
-    SOUND_BOUNCE,
-    SOUND_WIN
-} SoundType;
+extern Sound soundEffects[SOUNDEFFECT_ROWS][SOUNDEFFECT_COLS];
 
-void InitSoundEffects(Sound soundEffects[SOUND_ROWS][SOUND_COLS]);
-void PlaySoundEffect(Sound soundEffects[SOUND_ROWS][SOUND_COLS], SoundType type);
-void UnloadSoundEffects(Sound soundEffects[SOUND_ROWS][SOUND_COLS]);
+void LoadSoundEffects();
+void UnloadSoundEffects();
+void PlaySoundEffect(int row, int col);
 
 #endif

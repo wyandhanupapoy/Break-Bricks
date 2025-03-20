@@ -1,45 +1,39 @@
 #include "soundeffect.h"
-#include <stdio.h>
+#include <stdio.h> // Untuk debug
 
-void InitSoundEffects(Sound soundEffects[SOUND_ROWS][SOUND_COLS]) {
+Sound soundEffects[SOUNDEFFECT_ROWS][SOUNDEFFECT_COLS];
+
+void LoadSoundEffects()
+{
     InitAudioDevice();
 
-    soundEffects[0][0] = LoadSound("assets/sounds/background.mp3");
-    soundEffects[0][1] = LoadSound("assets/sounds/click_3.wav");
-    soundEffects[0][2] = LoadSound("assets/sounds/Explosion4.wav");
-    soundEffects[1][0] = LoadSound("assets/sounds/losetrumpet.wav");
-    soundEffects[1][1] = LoadSound("assets/sounds/Random2.wav");
-    soundEffects[1][2] = LoadSound("assets/sounds/Won!.wav");
+    soundEffects[0][0] = LoadSound("assets/sounds/menu_click.wav");
+    soundEffects[0][1] = LoadSound("assets/sounds/background.mp3");
+    soundEffects[0][2] = LoadSound("assets/sounds/ball_bounce.wav");
+
+    soundEffects[1][0] = LoadSound("assets/sounds/block_break.wav");
+    soundEffects[1][1] = LoadSound("assets/sounds/win.wav");
+    soundEffects[1][2] = LoadSound("assets/sounds/lose.wav");
+
+    PlaySound(soundEffects[0][1]); // Backsound otomatis dimainkan saat game dimulai
 }
 
-void PlaySoundEffect(Sound soundEffects[SOUND_ROWS][SOUND_COLS], SoundType type) {
-    switch (type) {
-        case SOUND_BACKSOUND:
-            PlaySound(soundEffects[0][0]);
-            break;
-        case SOUND_BUTTON:
-            PlaySound(soundEffects[0][1]);
-            break;
-        case SOUND_BLOCK_BREAK:
-            PlaySound(soundEffects[0][2]);
-            break;
-        case SOUND_LOSE:
-            PlaySound(soundEffects[1][0]);
-            break;
-        case SOUND_BOUNCE:
-            PlaySound(soundEffects[1][1]);
-            break;
-        case SOUND_WIN:
-            PlaySound(soundEffects[1][2]);
-            break;
-    }
-}
-
-void UnloadSoundEffects(Sound soundEffects[SOUND_ROWS][SOUND_COLS]) {
-    for (int i = 0; i < SOUND_ROWS; i++) {
-        for (int j = 0; j < SOUND_COLS; j++) {
+void UnloadSoundEffects()
+{
+    for (int i = 0; i < SOUNDEFFECT_ROWS; i++)
+    {
+        for (int j = 0; j < SOUNDEFFECT_COLS; j++)
+        {
             UnloadSound(soundEffects[i][j]);
         }
     }
     CloseAudioDevice();
+}
+
+void PlaySoundEffect(int row, int col)
+{
+    if (row < SOUNDEFFECT_ROWS && col < SOUNDEFFECT_COLS)
+    {
+        PlaySound(soundEffects[row][col]);
+    }
 }

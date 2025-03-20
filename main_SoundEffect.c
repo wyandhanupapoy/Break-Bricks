@@ -1,36 +1,35 @@
 #include "soundeffect.h"
-#include <raylib.h>
+#include <raylib.h>         // Untuk fungsi grafis dan input
 
-#define SCREEN_WIDTH 1000
-#define SCREEN_HEIGHT 650
+// Panggil saat game dimulai
+LoadSoundEffects();
 
-int main() {
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Test Sound Effects");
-    SetTargetFPS(60);
-
-    Sound soundEffects[SOUND_ROWS][SOUND_COLS];
-    InitSoundEffects(soundEffects);
-
-    while (!WindowShouldClose()) {
-        if (IsKeyPressed(KEY_ONE)) PlaySoundEffect(soundEffects, SOUND_BACKSOUND);
-        if (IsKeyPressed(KEY_TWO)) PlaySoundEffect(soundEffects, SOUND_BUTTON);
-        if (IsKeyPressed(KEY_THREE)) PlaySoundEffect(soundEffects, SOUND_BLOCK_BREAK);
-        if (IsKeyPressed(KEY_FOUR)) PlaySoundEffect(soundEffects, SOUND_LOSE);
-        if (IsKeyPressed(KEY_FIVE)) PlaySoundEffect(soundEffects, SOUND_BOUNCE);
-        if (IsKeyPressed(KEY_SIX)) PlaySoundEffect(soundEffects, SOUND_WIN);
-
-        BeginDrawing();
-        ClearBackground(BLACK);
-        DrawText("Press 1: Play Backsound", 20, 20, 20, WHITE);
-        DrawText("Press 2: Play Button Click", 20, 50, 20, WHITE);
-        DrawText("Press 3: Play Block Break", 20, 80, 20, WHITE);
-        DrawText("Press 4: Play Lose Sound", 20, 110, 20, WHITE);
-        DrawText("Press 5: Play Bounce Sound", 20, 140, 20, WHITE);
-        DrawText("Press 6: Play Win Sound", 20, 170, 20, WHITE);
-        EndDrawing();
-    }
-
-    UnloadSoundEffects(soundEffects);
-    CloseWindow();
-    return 0;
+// Contoh pemakaian suara dalam game:
+if (IsKeyPressed(KEY_SPACE))
+{
+    PlaySoundEffect(0, 0); // Menu Click Sound
+    gameState = GAME_PLAY;
 }
+
+if (bola mengenai paddle atau dinding)
+{
+    PlaySoundEffect(0, 2); // Ball Bounce Sound
+}
+
+if (bola menghancurkan blok)
+{
+    PlaySoundEffect(1, 0); // Block Break Sound
+}
+
+if (game menang)
+{
+    PlaySoundEffect(1, 1); // Win Sound
+}
+
+if (game kalah)
+{
+    PlaySoundEffect(1, 2); // Lose Sound
+}
+
+// Panggil saat game selesai
+UnloadSoundEffects();

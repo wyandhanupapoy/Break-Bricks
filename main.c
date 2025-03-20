@@ -5,6 +5,7 @@
 #include "skor.h"
 #include "stopwatch.h"
 #include "leaderboard.h"
+#include "soundeffect.h"
 
 #include <stdio.h>
 #include <raylib.h>
@@ -15,6 +16,8 @@
 int main()
 {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "F - Fullscreen                                                        Break Bricks");
+    InitAudioDevice();  // 🔹 Inisialisasi audio untuk efek suara
+    LoadSoundEffects(); // 🔹 Load semua efek suara sebelum game mulai
     SetTargetFPS(60);
 
     // Variabel untuk menyimpan status fullscreen
@@ -46,23 +49,13 @@ int main()
 
     while (!WindowShouldClose())
     {
-        // Toggle fullscreen saat F2 ditekan
         if (IsKeyPressed(KEY_F))
         {
-            isFullscreen = !isFullscreen; // Toggle status fullscreen
-            if (isFullscreen)
-            {
-                // Masuk ke mode fullscreen
-                ToggleFullscreen();
-            }
-            else
-            {
-                // Kembali ke mode windowed
-                ToggleFullscreen();
-            }
+            isFullscreen = !isFullscreen;
+            ToggleFullscreen();
         }
 
-        if (IsKeyPressed(KEY_P) && gameState == GAME_PLAY) // Hanya izinkan pause saat GAME_PLAY
+        if (IsKeyPressed(KEY_P) && gameState == GAME_PLAY)
             isPaused = !isPaused;
 
         if (!isPaused)
@@ -75,6 +68,7 @@ int main()
 
                 if (IsKeyPressed(KEY_SPACE))
                 {
+                    PlaySoundEffect(0, 0); // 🔹 Menu Click Sound
                     gameState = GAME_PLAY;
                 }
                 break;
@@ -82,10 +76,16 @@ int main()
             case GAME_PLAY:
                 UpdatePaddles(paddles);
                 UpdateBola(bola, paddles, blocks, &gameState, &skor[0], stopwatch);
-                UpdateStopwatch(stopwatch); // Update stopwatch
+                UpdateStopwatch(stopwatch);
 
+                // 🔹 Deteksi bola mengenai paddle/dinding
                 for (int ballRow = 0; ballRow < BOLA_ROWS; ballRow++)
                 {
+                    if (CheckBallPaddleCollision(bola[ballRow][0].position, bola[ballRow][0].radius, paddles))
+                    {
+                        PlaySoundEffect(0, 2); // 🔹 Ball Bounce Sound
+                    }
+
                     for (int blockRow = 0; blockRow < BLOCK_ROWS; blockRow++)
                     {
                         for (int blockCol = 0; blockCol < BLOCK_COLS; blockCol++)
@@ -98,19 +98,21 @@ int main()
                             {
                                 blocks[blockRow][blockCol].active = false;
 
-                                // Calculate score based on time
-                                int timeElapsed = (int)stopwatch[0][0].time; // Get elapsed time
-                                int scoreToAdd = 50 - timeElapsed;           // Score decreases over time
+                                PlaySoundEffect(1, 0); // 🔹 Block Break Sound
+
+                                int timeElapsed = (int)stopwatch[0][0].time;
+                                int scoreToAdd = 50 - timeElapsed;
                                 if (scoreToAdd < 5)
-                                    scoreToAdd = 5; // Ensure score is not less than 5
+                                    scoreToAdd = 5;
                                 if (scoreToAdd > 50)
-                                    scoreToAdd = 50; // Ensure score is not more than 50
+                                    scoreToAdd = 50;
                                 TambahSkor(&skor[0], scoreToAdd);
 
                                 bola[ballRow][0].speed.y *= -1;
 
                                 if (AllBlocksDestroyed(blocks))
                                 {
+                                    PlaySoundEffect(1, 1); // 🔹 Win Sound
                                     gameState = GAME_WIN;
                                 }
                                 break;
@@ -123,6 +125,7 @@ int main()
                         KurangiNyawa(nyawa);
                         if (!AnyLivesLeft(nyawa))
                         {
+                            PlaySoundEffect(1, 2); // 🔹 Lose Sound
                             gameState = GAME_OVER;
                         }
                         else
@@ -165,15 +168,15 @@ int main()
         BeginDrawing();
         ClearBackground(BLACK);
 
-        DrawLine(835, 0, 835, SCREEN_HEIGHT, WHITE); // Garis batas vertikal
+        DrawLine(835, 0, 835, SCREEN_HEIGHT, WHITE);
         DrawRectangle(0, 600, 835, 50, WHITE);
         DrawText("<- -> Bergerak       P - Pause       Esc - Exit", 150, 610, 20, BLACK);
         DrawPaddles(paddles);
         DrawBlocks(blocks);
         DrawBola(bola);
         DrawNyawa(nyawa);
-        DrawSkor(skor);           // Display score
-        DrawStopwatch(stopwatch); // Display stopwatch
+        DrawSkor(skor);
+        DrawStopwatch(stopwatch);
 
         switch (gameState)
         {
@@ -188,19 +191,11 @@ int main()
             DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, WHITE);
             DrawText("GAME OVER", SCREEN_WIDTH / 2 - MeasureText("GAME OVER", 40) / 2, SCREEN_HEIGHT / 2 - 40, 40, RED);
             DrawText("PRESS R TO RESTART", SCREEN_WIDTH / 2 - MeasureText("PRESS R TO RESTART", 20) / 2, SCREEN_HEIGHT / 2 + 20, 20, DARKGRAY);
-            // Display the leaderboard
-            DrawText("LEADERBOARD", 60, 10, 30, BLACK);
-            DrawLeaderboard(leaderboard); // Draw the leaderboard
             break;
         case GAME_WIN:
             DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, WHITE);
             DrawText("YOU WIN!", SCREEN_WIDTH / 2 - MeasureText("YOU WIN!", 40) / 2, SCREEN_HEIGHT / 2 - 40, 40, GREEN);
             DrawText("PRESS R TO RESTART", SCREEN_WIDTH / 2 - MeasureText("PRESS R TO RESTART", 20) / 2, SCREEN_HEIGHT / 2 + 20, 20, DARKGRAY);
-            // Add to leaderboard on win
-            AddToLeaderboard(leaderboard, "Player", skor[0].score, stopwatch[0][0].time);
-            // Display the leaderboard
-            DrawText("LEADERBOARD", 60, 10, 30, BLACK);
-            DrawLeaderboard(leaderboard); // Draw the leaderboard
             break;
         }
 
@@ -208,17 +203,12 @@ int main()
         {
             DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, Fade(WHITE, 0.7f));
             DrawText("GAME PAUSED", SCREEN_WIDTH / 2 - MeasureText("GAME PAUSED", 40) / 2, SCREEN_HEIGHT / 2 - 40, 40, BLACK);
-            DrawText("PRESS P TO CONTINUE", SCREEN_WIDTH / 2 - MeasureText("PRESS P TO CONTINUE", 20) / 2, SCREEN_HEIGHT / 2 + 20, 20, BLACK);
-            stopwatch[0][0].running = false; // Hentikan stopwatch saat dijeda
-        }
-        else
-        {
-            stopwatch[0][0].running = true; // Jalankan stopwatch saat tidak dijeda
         }
 
         EndDrawing();
     }
 
+    UnloadSoundEffects(); // 🔹 Bebaskan memori suara sebelum keluar
     CloseWindow();
     return 0;
 }
