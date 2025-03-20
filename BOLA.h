@@ -6,17 +6,12 @@
 #include "block.h"
 #include "skor.h"
 #include "stopwatch.h"
+#include "game_state.h"  // Pastikan GameState diambil dari sini, bukan dideklarasikan ulang
+
 #include <math.h>
 
 #define BOLA_ROWS 1
 #define BOLA_COLS 1
-
-typedef enum {
-    GAME_START,
-    GAME_PLAY,
-    GAME_OVER,
-    GAME_WIN
-} GameState;
 
 typedef struct {
     Vector2 position;

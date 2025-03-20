@@ -1,6 +1,8 @@
 #include "BOLA.h"
 #include "block.h"
 #include "stopwatch.h"
+#include "main.h"
+#include "game_state.h"
 
 #include <stdlib.h>
 
