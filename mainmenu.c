@@ -125,7 +125,7 @@ void DrawMainMenu()
         DrawRectangleRec(exitBtn, exitColor);
         DrawText("EXIT GAME", exitBtn.x + 80, exitBtn.y + 10, 30, BLACK);
 
-        Color soundColor = CheckCollisionPointRec(mousePoint, soundBtn) ? YELLOW : GRAY;
+        Color soundColor = CheckCollisionPointRec(mousePoint, soundBtn) ? YELLOW : LIGHTGRAY;
         DrawRectangleRec(soundBtn, soundColor);
         DrawText(soundOn ? "SOUND ON" : "SOUND OFF", soundBtn.x + 10, soundBtn.y + 10, 20, BLACK);
     }
@@ -169,6 +169,7 @@ int GetSelectedLevel()
 void ToggleSound()
 {
     soundOn = !soundOn;
+    ToggleMusic();
 }
 
 bool IsSoundOn()

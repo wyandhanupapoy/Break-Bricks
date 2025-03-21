@@ -30,6 +30,7 @@ int main()
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "BREAK BRICKS");
     SetTargetFPS(60);
     InitSoundEffects();
+    PlayBackgroundMusic();
 
     // Game State & Control
     GameState gameState = GAME_MENU;
@@ -55,6 +56,14 @@ int main()
 
     while (!WindowShouldClose())
     {
+        UpdateMusic();
+
+        if (IsKeyPressed(KEY_M))
+            ToggleMusic();
+        if (IsKeyPressed(KEY_W))
+            IncreaseVolume();
+        if (IsKeyPressed(KEY_S))
+            DecreaseVolume();
 
         // === MENU STATE ===
         if (gameState == GAME_MENU)
@@ -98,6 +107,7 @@ int main()
         // === PAUSE CONTROL ===
         if (IsKeyPressed(KEY_P) && gameState == GAME_PLAY)
         {
+            PauseMusic();
             isPaused = !isPaused;
         }
 
@@ -108,6 +118,8 @@ int main()
             {
 
             case GAME_START:
+                ChangeMusic("assets/sounds/gameplay_music.mp3");
+                UpdateMusic();
                 // Bola nempel paddle
                 bola[0][0].position.x = paddles[0][0].rect.x + PADDLE_WIDTH / 2;
                 bola[0][0].position.y = paddles[0][0].rect.y - bola[0][0].radius - 1;
@@ -130,12 +142,11 @@ int main()
                     KurangiNyawa(nyawa);
                     if (!AnyLivesLeft(nyawa))
                     {
-                        PlayGameOver();
                         gameState = GAME_OVER;
                     }
                     else
                     {
-                        PlayLoseLife();
+                        PlayGameOver();
                         ResetBola(bola);
                         gameState = GAME_START;
                     }
@@ -144,6 +155,9 @@ int main()
 
             case GAME_OVER:
             case GAME_WIN:
+                ChangeMusic("assets/sounds/background_music.mp3");
+                UpdateMusic();
+                PlayGameWin();
                 gameEndTimer += GetFrameTime();
 
                 if (gameEndTimer >= returnDelay || IsKeyPressed(KEY_R))
@@ -172,7 +186,7 @@ int main()
         // Layout garis & panel bawah
         DrawLine(835, 0, 835, SCREEN_HEIGHT, WHITE);
         DrawRectangle(0, 600, 835, 50, WHITE);
-        DrawText("<- -> Move     |     P - Pause     |     F - Fullscreen     |     Esc - Exit", 60, 610, 20, BLACK);
+        DrawText("<- -> Move   |   P - Pause   |   F - Fullscreen   |   Esc - Exit  |  M - Mute Music", 15, 610, 20, BLACK);
 
         // Draw game layout
         DrawPaddles(paddles);
