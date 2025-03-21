@@ -1,3 +1,6 @@
+#include "raylib.h"
+
+// Game Modules
 #include "paddle.h"
 #include "block.h"
 #include "BOLA.h"
@@ -7,31 +10,34 @@
 #include "leaderboard.h"
 #include "mainmenu.h"
 #include "game_state.h"
-#include "main.h"
 #include "level.h"
-#include "layout.h"
+#include "layout.h" // Untuk SCORE_X, SCORE_Y
 
 #include <stdio.h>
-#include <raylib.h>
 
+// Screen size
 #define SCREEN_WIDTH 1000
 #define SCREEN_HEIGHT 650
-int currentLevel = 0;
+
+// Timer buat auto return ke menu
+float gameEndTimer = 0.0f;
+const float returnDelay = 3.0f; // 3 detik balik ke menu
 
 int main()
 {
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "F - Fullscreen                                                        Break Bricks");
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "BREAK BRICKS");
     SetTargetFPS(60);
-    InitMainMenu();
 
-    // Variabel fullscreen
-    bool isFullscreen = false;
-
-    // Inisialisasi game state
+    // Game State & Control
     GameState gameState = GAME_MENU;
     bool isPaused = false;
+    bool isFullscreen = false;
+    bool leaderboardUpdated = false;
 
-    // Variabel permainan
+    // Level
+    int currentLevel = 0;
+
+    // Game Data
     Paddle paddles[PADDLE_ROWS][PADDLE_COLS];
     Block blocks[BLOCK_ROWS][BLOCK_COLS];
     Bola bola[BOLA_ROWS][BOLA_COLS];
@@ -40,71 +46,71 @@ int main()
     Skor skor[MAX_PLAYERS];
     LeaderboardEntry leaderboard[MAX_PLAYERS];
 
-    // Loop utama
+    // Initialize
+    InitLeaderboard(leaderboard);
+    InitMainMenu();
+
     while (!WindowShouldClose())
     {
-        // **1. Tampilkan Menu Utama**
+
+        // === MENU STATE ===
         if (gameState == GAME_MENU)
         {
+            leaderboardUpdated = false; // Reset leaderboard
+            gameEndTimer = 0.0f;        // Reset end timer
+            currentLevel = 0;           // Reset level pilihannya
+            isPaused = false;           // Reset pause
+
+            UpdateMainMenu();
+
             BeginDrawing();
-            ClearBackground(BLACK);
-
-            DrawText("BREAK BRICKS", 300, 150, 40, WHITE);
-            DrawText("Press 1, 2, or 3 to choose level", 280, 250, 20, WHITE);
-            DrawText("Press ESC to quit", 330, 300, 20, WHITE);
-
+            DrawMainMenu();
             EndDrawing();
 
-            if (IsKeyPressed(KEY_ONE))
-            {
-                currentLevel = 1;
-            }
-            else if (IsKeyPressed(KEY_TWO))
-            {
-                currentLevel = 2;
-            }
-            else if (IsKeyPressed(KEY_THREE))
-            {
-                currentLevel = 3;
-            }
-
-            if (currentLevel > 0)
-            {
-                // Inisialisasi semua di sini setelah level dipilih
-                InitPaddles(paddles);
-                InitBola(bola);
-                InitNyawa(nyawa, 3);
-                InitStopwatch(stopwatch);
-                InitSkor(skor);
-                InitLeaderboard(leaderboard);
-
-                SetLevel(blocks, currentLevel); // Custom blocks sesuai level
-
-                gameState = GAME_START;
-                continue;
-            }
-
-            if (IsKeyPressed(KEY_ESCAPE))
-            {
+            if (IsExitGame())
                 break;
+
+            if (IsStartGame())
+            {
+                int level = GetSelectedLevel();
+
+                if (level > 0)
+                {
+                    InitPaddles(paddles);
+                    InitBola(bola);
+                    SetNyawaPosition(NYAWA_X, NYAWA_Y);
+                    InitNyawa(nyawa, 3);
+                    InitStopwatch(stopwatch);
+                    InitSkor(skor);
+                    SetLevel(blocks, level);
+
+                    gameState = GAME_START;
+                    SetStartGame(false);
+                }
             }
+
             continue;
         }
 
-        // **3. Update input game**
+        // === PAUSE CONTROL ===
         if (IsKeyPressed(KEY_P) && gameState == GAME_PLAY)
         {
             isPaused = !isPaused;
         }
 
-        // **4. Jalankan logika permainan**
+        // === GAME LOGIC ===
         if (!isPaused)
         {
             switch (gameState)
             {
+
             case GAME_START:
-                UpdatePaddles(paddles);
-                UpdateBola(bola, paddles, blocks, &gameState, &skor[0], stopwatch);
+                // Bola nempel paddle
+                bola[0][0].position.x = paddles[0][0].rect.x + PADDLE_WIDTH / 2;
+                bola[0][0].position.y = paddles[0][0].rect.y - bola[0][0].radius - 1;
+
+                UpdatePaddles(paddles); // Bisa gerakin paddle sebelum space
+
                 if (IsKeyPressed(KEY_SPACE))
                 {
                     gameState = GAME_PLAY;
@@ -116,70 +122,54 @@ int main()
                 UpdateBola(bola, paddles, blocks, &gameState, &skor[0], stopwatch);
                 UpdateStopwatch(stopwatch);
 
-                for (int ballRow = 0; ballRow < BOLA_ROWS; ballRow++)
+                if (!bola[0][0].active)
                 {
-                    for (int blockRow = 0; blockRow < BLOCK_ROWS; blockRow++)
+                    KurangiNyawa(nyawa);
+                    if (!AnyLivesLeft(nyawa))
                     {
-                        for (int blockCol = 0; blockCol < BLOCK_COLS; blockCol++)
-                        {
-                            if (blocks[blockRow][blockCol].active &&
-                                CheckBallBlockCollision(
-                                    bola[ballRow][0].position,
-                                    bola[ballRow][0].radius,
-                                    blocks[blockRow][blockCol].rect))
-                            {
-                                blocks[blockRow][blockCol].active = false;
-                                TambahSkor(&skor[0], 50);
-                                bola[ballRow][0].speed.y *= -1;
-
-                                if (AllBlocksDestroyed(blocks))
-                                {
-                                    gameState = GAME_WIN;
-                                }
-                                break;
-                            }
-                        }
+                        gameState = GAME_OVER;
                     }
-
-                    if (bola[ballRow][0].position.y + bola[ballRow][0].radius > SCREEN_HEIGHT)
+                    else
                     {
-                        KurangiNyawa(nyawa);
-                        if (!AnyLivesLeft(nyawa))
-                        {
-                            gameState = GAME_OVER;
-                        }
-                        else
-                        {
-                            ResetBola(bola);
-                            gameState = GAME_START;
-                        }
+                        ResetBola(bola);
+                        gameState = GAME_START;
                     }
                 }
                 break;
 
             case GAME_OVER:
             case GAME_WIN:
-                if (IsKeyPressed(KEY_R))
+                gameEndTimer += GetFrameTime();
+
+                if (gameEndTimer >= returnDelay || IsKeyPressed(KEY_R))
                 {
-                    InitBlocks(blocks);
-                    InitNyawa(nyawa, 3);
-                    InitBola(bola);
-                    InitSkor(skor);
-                    InitStopwatch(stopwatch);
-                    SetNyawaPosition(nyawa, 870, 10);
-                    gameState = GAME_START;
+                    gameState = GAME_MENU;
+                    gameEndTimer = 0.0f;
                 }
+
+                if (gameState == GAME_WIN && !leaderboardUpdated)
+                {
+                    AddToLeaderboard(leaderboard, "Player", skor[0].score, stopwatch[0][0].time);
+                    leaderboardUpdated = true;
+                }
+
+                break;
+
+            default:
                 break;
             }
         }
 
-        // **5. Gambar permainan**
+        // === DRAWING ===
         BeginDrawing();
         ClearBackground(BLACK);
 
+        // Layout garis & panel bawah
         DrawLine(835, 0, 835, SCREEN_HEIGHT, WHITE);
         DrawRectangle(0, 600, 835, 50, WHITE);
-        DrawText("<- -> Bergerak       P - Pause       Esc - Exit", 150, 610, 20, BLACK);
+        DrawText("<- -> Move  |  P - Pause  |  F - Fullscreen  |  Esc - Exit", 150, 610, 20, BLACK);
+
+        // Draw game layout
         DrawPaddles(paddles);
         DrawBlocks(blocks);
         DrawBola(bola);
@@ -187,33 +177,38 @@ int main()
         DrawSkor(skor, SCORE_X, SCORE_Y);
         DrawStopwatch(stopwatch);
 
-        // **Tampilkan status game**
+        // === GAME STATE UI ===
         switch (gameState)
         {
+
         case GAME_START:
-            DrawText("PRESS SPACE TO START", 220, SCREEN_HEIGHT / 2, 30, WHITE);
+            DrawText("PRESS SPACE TO LAUNCH", 300, SCREEN_HEIGHT / 2, 30, WHITE);
             break;
+
         case GAME_OVER:
             DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, WHITE);
-            DrawText("GAME OVER", 450, 300, 40, RED);
-            DrawText("PRESS R TO RESTART", 420, 350, 20, DARKGRAY);
+            DrawText("GAME OVER", 400, 300, 40, RED);
+            DrawText("Returning to menu...", 350, 350, 20, DARKGRAY);
             DrawLeaderboard(leaderboard);
             break;
+
         case GAME_WIN:
             DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, WHITE);
-            DrawText("YOU WIN!", 450, 300, 40, GREEN);
-            DrawText("PRESS R TO RESTART", 420, 350, 20, DARKGRAY);
-            AddToLeaderboard(leaderboard, "Player", skor[0].score, stopwatch[0][0].time);
+            DrawText("YOU WIN!", 400, 300, 40, GREEN);
+            DrawText("Returning to menu...", 350, 350, 20, DARKGRAY);
             DrawLeaderboard(leaderboard);
+            break;
+
+        default:
             break;
         }
 
-        // **Tampilkan layar pause**
-        if (isPaused)
+        // === PAUSE UI ===
+        if (isPaused && gameState == GAME_PLAY)
         {
             DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, Fade(WHITE, 0.7f));
-            DrawText("GAME PAUSED", 450, 300, 40, BLACK);
-            DrawText("PRESS P TO CONTINUE", 420, 350, 20, BLACK);
+            DrawText("GAME PAUSED", 400, 300, 40, BLACK);
+            DrawText("PRESS P TO CONTINUE", 380, 350, 20, BLACK);
             stopwatch[0][0].running = false;
         }
         else
@@ -223,7 +218,7 @@ int main()
 
         EndDrawing();
 
-        // **6. Toggle fullscreen**
+        // === FULLSCREEN TOGGLE ===
         if (IsKeyPressed(KEY_F))
         {
             isFullscreen = !isFullscreen;

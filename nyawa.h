@@ -10,15 +10,19 @@
 #define NYAWA_HEIGHT 30
 #define NYAWA_SPACING 10
 
-typedef struct {
+typedef struct
+{
     Rectangle rect;
     bool aktif;
 } Nyawa;
 
+// Fungsi dasar
 void InitNyawa(Nyawa nyawa[NYAWA_BARIS][NYAWA_KOLOM], int totalNyawa);
 void DrawNyawa(Nyawa nyawa[NYAWA_BARIS][NYAWA_KOLOM]);
 void KurangiNyawa(Nyawa nyawa[NYAWA_BARIS][NYAWA_KOLOM]);
 bool AnyLivesLeft(Nyawa nyawa[NYAWA_BARIS][NYAWA_KOLOM]);
-void SetNyawaPosition(Nyawa nyawa[NYAWA_BARIS][NYAWA_KOLOM], float x, float y);
 
-#endif // NYAWA_H
+// Setter posisi
+void SetNyawaPosition(float x, float y);
+
+#endif

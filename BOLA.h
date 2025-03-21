@@ -6,14 +6,13 @@
 #include "block.h"
 #include "skor.h"
 #include "stopwatch.h"
-#include "game_state.h"  // Pastikan GameState diambil dari sini, bukan dideklarasikan ulang
-
-#include <math.h>
+#include "game_state.h"
 
 #define BOLA_ROWS 1
 #define BOLA_COLS 1
 
-typedef struct {
+typedef struct
+{
     Vector2 position;
     Vector2 speed;
     float radius;
