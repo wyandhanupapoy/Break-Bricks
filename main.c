@@ -11,18 +11,16 @@
 #include "mainmenu.h"
 #include "game_state.h"
 #include "level.h"
-#include "layout.h" // Untuk SCORE_X, SCORE_Y
+#include "layout.h"
 #include "background.h"
-
 #include "sound.h"
 
 #include <stdio.h>
 
-// Timer buat auto return ke menu
+// Timer untuk auto return ke menu
 float gameEndTimer = 0.0f;
-const float returnDelay = 3.0f; // 3 detik balik ke menu
+const float returnDelay = 3.0f; // 3 detik kembali ke menu
 LeaderboardEntry leaderboard[MAX_LEADERBOARD_ENTRIES];
-
 
 int main()
 {
@@ -32,9 +30,9 @@ int main()
     InitBackground();
     InitSoundEffects();
     PlayBackgroundMusic();
-// Leaderboard
-LeaderboardEntry leaderboard[MAX_LEADERBOARD_ENTRIES];
-LoadLeaderboard(leaderboard);
+
+    // 🔹 Load leaderboard dari file
+    LoadLeaderboard(leaderboard);
 
     // Game State & Control
     GameState gameState = GAME_MENU;
@@ -54,7 +52,6 @@ LoadLeaderboard(leaderboard);
     Skor skor[MAX_PLAYERS];
 
     // Initialize
-    InitLeaderboard(leaderboard);
     InitMainMenu();
 
     while (!WindowShouldClose())
@@ -75,10 +72,12 @@ LoadLeaderboard(leaderboard);
         // === MENU STATE ===
         if (gameState == GAME_MENU)
         {
-            leaderboardUpdated = false; // Reset leaderboard
+            leaderboardUpdated = false; // Reset flag update leaderboard
             gameEndTimer = 0.0f;        // Reset end timer
-            currentLevel = 0;           // Reset level pilihannya
+            currentLevel = 0;           // Reset level
             isPaused = false;           // Reset pause
+
+            LoadLeaderboard(leaderboard); // ⬅️ **Memuat ulang leaderboard setiap masuk ke menu utama!**
 
             UpdateMainMenu();
 
@@ -89,25 +88,25 @@ LoadLeaderboard(leaderboard);
             if (IsExitGame())
                 break;
 
-                if (IsStartGame())
+            if (IsStartGame())
+            {
+                int level = GetSelectedLevel();
+
+                if (level > 0)
                 {
-                    int level = GetSelectedLevel();
-                
-                    if (level > 0)
-                    {
-                        InitPaddles(paddles);
-                        InitBola(bola);
-                        SetNyawaPosition(NYAWA_X, NYAWA_Y);
-                        InitNyawa(nyawa, 3);
-                        InitStopwatch(stopwatch);
-                        InitSkor(skor);
-                        SetLevel(blocks, level);
-                        currentLevel = level; // Store the current level
-                
-                        gameState = GAME_START;
-                        SetStartGame(false);
-                    }
+                    InitPaddles(paddles);
+                    InitBola(bola);
+                    SetNyawaPosition(NYAWA_X, NYAWA_Y);
+                    InitNyawa(nyawa, 3);
+                    InitStopwatch(stopwatch);
+                    InitSkor(skor);
+                    SetLevel(blocks, level);
+                    currentLevel = level;
+
+                    gameState = GAME_START;
+                    SetStartGame(false);
                 }
+            }
 
             continue;
         }
@@ -124,15 +123,14 @@ LoadLeaderboard(leaderboard);
         {
             switch (gameState)
             {
-
             case GAME_START:
                 ChangeMusic("assets/sounds/gameplay_music.mp3");
                 UpdateMusic();
-                // Bola nempel paddle
+                // Bola nempel paddle sebelum diluncurkan
                 bola[0][0].position.x = paddles[0][0].rect.x + PADDLE_WIDTH / 2;
                 bola[0][0].position.y = paddles[0][0].rect.y - bola[0][0].radius - 1;
 
-                UpdatePaddles(paddles); // Bisa gerakin paddle sebelum space
+                UpdatePaddles(paddles);
 
                 if (IsKeyPressed(KEY_SPACE))
                 {
@@ -161,43 +159,46 @@ LoadLeaderboard(leaderboard);
                 }
                 break;
 
-            case GAME_OVER:
+                case GAME_OVER:
                 PlayGameOver();
                 ChangeMusic("assets/sounds/background_music.mp3");
                 UpdateMusic();
                 gameEndTimer += GetFrameTime();
-                
+            
+                if (!leaderboardUpdated) {
+                    AddToLeaderboard(leaderboard, GetPlayerName(), skor[0].score, stopwatch[0][0].time, currentLevel, "GAME OVER");
+                    SaveLeaderboard(leaderboard);
+                    LoadLeaderboard(leaderboard); // ⬅️ **Langsung reload leaderboard**
+                    leaderboardUpdated = true;
+                }
+            
                 if (gameEndTimer >= returnDelay || IsKeyPressed(KEY_R))
                 {
                     gameState = GAME_MENU;
                     gameEndTimer = 0.0f;
                 }
                 break;
+            
             case GAME_WIN:
                 ChangeMusic("assets/sounds/background_music.mp3");
                 UpdateMusic();
                 PlayGameWin();
-                SaveLeaderboard(leaderboard);
                 gameEndTimer += GetFrameTime();
-
+            
+                if (!leaderboardUpdated) {
+                    AddToLeaderboard(leaderboard, GetPlayerName(), skor[0].score, stopwatch[0][0].time, currentLevel, "WIN");
+                    SaveLeaderboard(leaderboard);
+                    LoadLeaderboard(leaderboard); // ⬅️ **Langsung reload leaderboard**
+                    leaderboardUpdated = true;
+                }
+            
                 if (gameEndTimer >= returnDelay || IsKeyPressed(KEY_R))
                 {
                     gameState = GAME_MENU;
                     gameEndTimer = 0.0f;
                 }
-
-                if (gameState == GAME_WIN && !leaderboardUpdated)
-                {
-                    AddToLeaderboard(leaderboard, GetPlayerName(), skor[0].score, stopwatch[0][0].time, currentLevel);
-            leaderboardUpdated = true;
-            SaveLeaderboard(leaderboard);
-                }
-
                 break;
-
-            default:
-                break;
-            }
+            }            
         }
 
         // === DRAWING ===
@@ -219,46 +220,21 @@ LoadLeaderboard(leaderboard);
         DrawMainMenuMini(gameState);
 
         // === GAME STATE UI ===
-        switch (gameState)
+        if (gameState == GAME_START)
         {
-
-        case GAME_START:
             DrawText("PRESS SPACE TO LAUNCH", 210, SCREEN_HEIGHT / 2, 30, WHITE);
-            break;
-
-        case GAME_OVER:
+        }
+        else if (gameState == GAME_OVER)
+        {
             DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, WHITE);
             DrawText("GAME OVER", 370, 300, 40, RED);
             DrawText("Returning to menu...", 400, 350, 20, DARKGRAY);
-            break;
-
-        case GAME_WIN:
+        }
+        else if (gameState == GAME_WIN)
+        {
             DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, WHITE);
             DrawText("YOU WIN!", 370, 300, 40, GREEN);
             DrawText("Returning to menu...", 370, 350, 20, DARKGRAY);
-            break;
-
-        default:
-            break;
-        }
-
-        // === PAUSE UI ===
-        if (isPaused && gameState == GAME_PLAY)
-        {
-            DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, Fade(WHITE, 0.7f));
-            DrawText("GAME PAUSED", 370, 300, 40, BLACK);
-            DrawText("PRESS P TO CONTINUE", 400, 350, 20, BLACK);
-            DrawText("PRESS L TO VIEW LEADERBOARD", 345, 470, 20, BLACK);
-            stopwatch[0][0].running = false;
-
-            if (IsKeyDown(KEY_L))
-            {
-                DrawLeaderboard(leaderboard);
-            }
-        }
-        else
-        {
-            stopwatch[0][0].running = true;
         }
 
         EndDrawing();
