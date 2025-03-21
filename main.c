@@ -23,6 +23,7 @@ float gameEndTimer = 0.0f;
 const float returnDelay = 3.0f; // 3 detik balik ke menu
 LeaderboardEntry leaderboard[MAX_LEADERBOARD_ENTRIES];
 
+
 int main()
 {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "BREAK BRICKS");
@@ -62,6 +63,7 @@ LoadLeaderboard(leaderboard);
         SetNyawaSize(8);
         SetNyawaPosition(NYAWA_X, NYAWA_Y);
         UpdateMusic();
+        UpdateMainMenuMini(&gameState);
 
         if (IsKeyPressed(KEY_M))
             ToggleMusic();
@@ -213,6 +215,7 @@ LoadLeaderboard(leaderboard);
         DrawNyawa(nyawa);
         DrawSkor(skor, SCORE_X, SCORE_Y);
         DrawStopwatch(stopwatch);
+        DrawMainMenuMini(gameState);
 
         // === GAME STATE UI ===
         switch (gameState)
@@ -231,7 +234,7 @@ LoadLeaderboard(leaderboard);
         case GAME_WIN:
             DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, WHITE);
             DrawText("YOU WIN!", 370, 300, 40, GREEN);
-            DrawText("Returning to menu...", 400, 350, 20, DARKGRAY);
+            DrawText("Returning to menu...", 370, 350, 20, DARKGRAY);
             break;
 
         default:
@@ -244,7 +247,13 @@ LoadLeaderboard(leaderboard);
             DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, Fade(WHITE, 0.7f));
             DrawText("GAME PAUSED", 370, 300, 40, BLACK);
             DrawText("PRESS P TO CONTINUE", 400, 350, 20, BLACK);
+            DrawText("PRESS L TO VIEW LEADERBOARD", 345, 470, 20, BLACK);
             stopwatch[0][0].running = false;
+
+            if (IsKeyDown(KEY_L))
+            {
+                DrawLeaderboard(leaderboard);
+            }
         }
         else
         {

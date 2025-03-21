@@ -13,7 +13,7 @@
 #define SCORE_X 870
 #define SCORE_Y 50
 #define NYAWA_X 940
-#define NYAWA_Y 10
+#define NYAWA_Y 5
 #define STOPWATCH_X 870
 #define STOPWATCH_Y 80
 

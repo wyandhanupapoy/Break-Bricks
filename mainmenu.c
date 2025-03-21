@@ -18,6 +18,8 @@ static int letterCount = 0;
 static Rectangle textBox = { 350, 300, 300, 50 };
 static bool mouseOnText = false;
 
+static Rectangle miniMenuBtn = { 850, 580, 140, 40 };
+
 // 🔹 Tombol utama
 static Rectangle buttons[] = {
     {350, 250, 320, 50},  // Start Game
@@ -64,6 +66,38 @@ void DrawRainbowText(const char *text, int centerX, int posY, int fontSize)
                    (Vector2){startX + xOffset, posY}, fontSize, 2, letterColor);
         xOffset += letterWidths[i] + 5; // Spacing antar huruf
     }
+}
+
+// 🔹 Update Mini Menu (Hanya saat game berjalan)
+void UpdateMainMenuMini(GameState *state)
+{
+    Vector2 mouse = GetMousePosition();
+    
+    if (*state == GAME_PLAY && CheckCollisionPointRec(mouse, miniMenuBtn) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+    {
+        ChangeMusic("assets/sounds/background_music.mp3");
+        UpdateMusic();
+        PlayButtonClick();
+        *state = GAME_MENU;  // Kembali ke Main Menu
+    }
+}
+
+// 🔹 Gambar Mini Menu (Hanya saat game berjalan)
+void DrawMainMenuMini(GameState state)
+{
+    if (state != GAME_PLAY) return;  // Tampilkan hanya jika sedang bermain
+
+    Vector2 mouse = GetMousePosition();
+
+    Color miniColor = CheckCollisionPointRec(mouse, miniMenuBtn) ? BLUE : YELLOW;
+    DrawRectangleRec(miniMenuBtn, miniColor);
+    
+    // **Pastikan teks berada di tengah tombol**
+    int textWidth = MeasureText("Main Menu", 20);
+    int textX = 870;
+    int textY = 590;
+
+    DrawText("Main Menu", textX, textY, 20, BLACK);
 }
 
 // 🔹 Gambar Title "BREAK BRICKS"

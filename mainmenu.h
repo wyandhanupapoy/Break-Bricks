@@ -15,6 +15,8 @@ typedef enum {
 void InitMainMenu();
 void UpdateMainMenu();
 void DrawMainMenu();
+void DrawMainMenuMini();
+void UpdateMainMenuMini();
 
 // 🔹 Kontrol game
 bool IsExitGame();
