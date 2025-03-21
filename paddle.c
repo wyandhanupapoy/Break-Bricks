@@ -28,7 +28,7 @@ void UpdatePaddles(Paddle paddles[PADDLE_ROWS][PADDLE_COLS]) {
 void DrawPaddles(Paddle paddles[PADDLE_ROWS][PADDLE_COLS]) {
     for (int i = 0; i < PADDLE_ROWS; i++) {
         for (int j = 0; j < PADDLE_COLS; j++) {
-            DrawRectangleRec(paddles[i][j].rect, BLUE);
+            DrawRectangleRec(paddles[i][j].rect, (Color){0, 255, 255, 255});
         }
     }
 }

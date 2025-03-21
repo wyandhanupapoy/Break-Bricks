@@ -110,7 +110,7 @@ void UpdateMainMenu()
 
 void DrawMainMenu()
 {
-    ClearBackground((Color){29, 29, 29, 255});
+    ClearBackground((Color){30, 0, 60, 255});
     Vector2 mousePoint = GetMousePosition();
 
     if (currentMenu == MENU_MAIN)

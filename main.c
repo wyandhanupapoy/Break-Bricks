@@ -167,7 +167,7 @@ int main()
 
         // === DRAWING ===
         BeginDrawing();
-        ClearBackground(BLACK);
+        ClearBackground((Color){30, 0, 60, 255});
 
         // Layout garis & panel bawah
         DrawLine(835, 0, 835, SCREEN_HEIGHT, WHITE);
