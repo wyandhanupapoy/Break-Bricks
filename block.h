@@ -9,10 +9,12 @@
 #define BLOCK_HEIGHT 25
 #define BLOCK_SPACING 5
 
-typedef struct {
+typedef struct
+{
     Rectangle rect;
     bool active;
     Color color;
+    int hitPoints; // JUMLAH SENTUHAN YANG DIPERLUKAN
 } Block;
 
 void InitBlocks(Block blocks[BLOCK_ROWS][BLOCK_COLS]);

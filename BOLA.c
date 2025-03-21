@@ -118,41 +118,69 @@ void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PAD
                         if (blocks[blockRow][blockCol].active &&
                             CheckBallBlockCollision(bola[i][0].position, bola[i][0].radius, blocks[blockRow][blockCol].rect) && !hasHitBlock)
                         {
-                            blocks[blockRow][blockCol].active = false;
-                            hasHitBlock = true;
+                            // Kurangi hitPoints
+                            blocks[blockRow][blockCol].hitPoints--;
 
-                            // Tambah skor
-                            int timeElapsed = (int)sw[0][0].time; // Use the passed stopwatch
-                            int scoreToAdd = 50 - timeElapsed;
-                            if (scoreToAdd < 5)
-                                scoreToAdd = 5;
-                            if (scoreToAdd > 50)
-                                scoreToAdd = 50;
-                            TambahSkor(skor, scoreToAdd);
-
-                            bola[i][0].speed.y *= -1;  // Memantul ke atas
-                            bola[i][0].speed.x *= 1.1; // Meningkatkan kecepatan saat memantul dari blok
-
-                            // Batasi kecepatan maksimum setelah memantul
-                            speedMagnitude = sqrt(bola[i][0].speed.x * bola[i][0].speed.x + bola[i][0].speed.y * bola[i][0].speed.y);
-                            if (speedMagnitude > MAX_BALL_SPEED)
+                            // Cek apakah sudah habis
+                            if (blocks[blockRow][blockCol].hitPoints <= 0)
                             {
-                                bola[i][0].speed.x *= (MAX_BALL_SPEED / speedMagnitude);
-                                bola[i][0].speed.y *= (MAX_BALL_SPEED / speedMagnitude);
+                                blocks[blockRow][blockCol].active = false;
+                            }
+                            else
+                            {
+                                // Ubah warna blok tergantung sisa hitPoints
+                                if (blocks[blockRow][blockCol].hitPoints == 2)
+                                {
+                                    blocks[blockRow][blockCol].color = BROWN;
+                                }
+                                else if (blocks[blockRow][blockCol].hitPoints == 1)
+                                {
+                                    blocks[blockRow][blockCol].color = BEIGE;
+                                }
                             }
 
-                            break; // Keluar dari loop setelah memecahkan satu blok
-                        }
-                    }
-                    if (hasHitBlock)
-                        break; // Keluar dari loop jika sudah memecahkan satu blok
-                }
+                            hasHitBlock = true;
 
-                // Cek apakah semua blok telah dihancurkan
-                if (AllBlocksDestroyed(blocks))
-                {
-                    *state = GAME_WIN; // Ubah status permainan menjadi menang
+                            // Tambah skor sesuai aturanmu
+                            int scoreToAdd = 50; // Bisa diubah biar beda tiap blok
+                            TambahSkor(skor, scoreToAdd);
+
+                            bola[i][0].speed.y *= -1;
+
+                            break;
+                        }
+
+                        // Tambah skor
+                        int timeElapsed = (int)sw[0][0].time; // Use the passed stopwatch
+                        int scoreToAdd = 50 - timeElapsed;
+                        if (scoreToAdd < 5)
+                            scoreToAdd = 5;
+                        if (scoreToAdd > 50)
+                            scoreToAdd = 50;
+                        TambahSkor(skor, scoreToAdd);
+
+                        bola[i][0].speed.y *= -1;  // Memantul ke atas
+                        bola[i][0].speed.x *= 1.1; // Meningkatkan kecepatan saat memantul dari blok
+
+                        // Batasi kecepatan maksimum setelah memantul
+                        speedMagnitude = sqrt(bola[i][0].speed.x * bola[i][0].speed.x + bola[i][0].speed.y * bola[i][0].speed.y);
+                        if (speedMagnitude > MAX_BALL_SPEED)
+                        {
+                            bola[i][0].speed.x *= (MAX_BALL_SPEED / speedMagnitude);
+                            bola[i][0].speed.y *= (MAX_BALL_SPEED / speedMagnitude);
+                        }
+
+                        break; // Keluar dari loop setelah memecahkan satu blok
+                    }
                 }
+                if (hasHitBlock)
+                    break; // Keluar dari loop jika sudah memecahkan satu blok
+            }
+
+            // Cek apakah semua blok telah dihancurkan
+            if (AllBlocksDestroyed(blocks))
+            {
+                *state = GAME_WIN; // Ubah status permainan menjadi menang
             }
         }
     }

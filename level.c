@@ -1,53 +1,88 @@
 #include "level.h"
 #include "raylib.h"
-#include <stdlib.h>  // Untuk fungsi rand()
-#include <time.h>    // Untuk seeding angka acak
+#include <stdlib.h> // Untuk fungsi rand()
+#include <time.h>   // Untuk seeding angka acak
 
-void InitLevelBlocks(Block blocks[BLOCK_ROWS][BLOCK_COLS], int level) {
-    srand(time(NULL));  // Seed angka acak agar variasi tiap run berbeda
+void InitLevelBlocks(Block blocks[BLOCK_ROWS][BLOCK_COLS], int level)
+{
+    srand(time(NULL));
 
-    Color colors[3] = { DARKGRAY, BROWN, BEIGE };  // Warna blok yang tersedia
+    Color colors[3] = {DARKGRAY, BROWN, BEIGE};
 
-    int maxColorIndex;
-    if (level == 1) {
-        maxColorIndex = 2;  // Hanya BEIGE (index 2)
-    } else if (level == 2) {
-        maxColorIndex = 1;  // BROWN (1) dan BEIGE (2)
-    } else {
-        maxColorIndex = 0;  // DARKGRAY (0), BROWN (1), dan BEIGE (2)
-    }
-
-    for (int i = 0; i < BLOCK_ROWS; i++) {
-        for (int j = 0; j < BLOCK_COLS; j++) {
+    for (int i = 0; i < BLOCK_ROWS; i++)
+    {
+        for (int j = 0; j < BLOCK_COLS; j++)
+        {
             blocks[i][j].rect.x = j * (BLOCK_WIDTH + BLOCK_SPACING) + 15;
             blocks[i][j].rect.y = i * (BLOCK_HEIGHT + BLOCK_SPACING) + 70;
             blocks[i][j].rect.width = BLOCK_WIDTH;
             blocks[i][j].rect.height = BLOCK_HEIGHT;
             blocks[i][j].active = true;
 
-            // Pilih warna acak sesuai batas level
-            int randomIndex = rand() % (3 - maxColorIndex) + maxColorIndex;
-            blocks[i][j].color = colors[randomIndex];
-            blocks[i][j].colorIndex = randomIndex;
+            if (level == 1)
+            {
+                blocks[i][j].hitPoints = 1;
+                blocks[i][j].color = BEIGE;
+            }
+            else if (level == 2)
+            {
+                int randomType = rand() % 2; // 0 atau 1
+                if (randomType == 0)
+                {
+                    blocks[i][j].hitPoints = 1;
+                    blocks[i][j].color = BEIGE;
+                }
+                else
+                {
+                    blocks[i][j].hitPoints = 2;
+                    blocks[i][j].color = BROWN;
+                }
+            }
+            else if (level == 3)
+            {
+                int randomType = rand() % 2; // 0 atau 1
+                if (randomType == 0)
+                {
+                    blocks[i][j].hitPoints = 1;
+                    blocks[i][j].color = BEIGE;
+                }
+                else
+                {
+                    blocks[i][j].hitPoints = 3;
+                    blocks[i][j].color = DARKGRAY;
+                }
+            }
         }
     }
 }
 
-void UpdateBlockState(Block *block) {
-    if (!block->active) return;
+void UpdateBlockState(Block *block)
+{
+    if (!block->active)
+        return;
 
-    if (block->colorIndex == 0) { // DARKGRAY -> BROWN
-        block->colorIndex = 1;
-        block->color = BROWN;
-    } else if (block->colorIndex == 1) { // BROWN -> BEIGE
-        block->colorIndex = 2;
-        block->color = BEIGE;
-    } else if (block->colorIndex == 2) { // BEIGE -> Hancur
+    block->hitPoints--;
+
+    if (block->hitPoints <= 0)
+    {
         block->active = false;
+    }
+    else
+    {
+        // Update warna blok sesuai sisa hitPoints
+        if (block->hitPoints == 2)
+        {
+            block->color = BROWN;
+        }
+        else if (block->hitPoints == 1)
+        {
+            block->color = BEIGE;
+        }
     }
 }
 
 // **Implementasi SetLevel**
-void SetLevel(Block blocks[BLOCK_ROWS][BLOCK_COLS], int level) {
+void SetLevel(Block blocks[BLOCK_ROWS][BLOCK_COLS], int level)
+{
     InitLevelBlocks(blocks, level);
 }

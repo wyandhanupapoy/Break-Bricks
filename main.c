@@ -8,12 +8,15 @@
 #include "mainmenu.h"
 #include "game_state.h"
 #include "main.h"
+#include "level.h"
+#include "layout.h"
 
 #include <stdio.h>
 #include <raylib.h>
 
 #define SCREEN_WIDTH 1000
 #define SCREEN_HEIGHT 650
+int currentLevel = 0;
 
 int main()
 {
@@ -43,39 +46,49 @@ int main()
         // **1. Tampilkan Menu Utama**
         if (gameState == GAME_MENU)
         {
-            UpdateMainMenu();
-
             BeginDrawing();
             ClearBackground(BLACK);
-            DrawMainMenu();
+
+            DrawText("BREAK BRICKS", 300, 150, 40, WHITE);
+            DrawText("Press 1, 2, or 3 to choose level", 280, 250, 20, WHITE);
+            DrawText("Press ESC to quit", 330, 300, 20, WHITE);
+
             EndDrawing();
 
-            // Jika exit ditekan, keluar dari loop utama
-            if (IsExitGame())
+            if (IsKeyPressed(KEY_ONE))
+            {
+                currentLevel = 1;
+            }
+            else if (IsKeyPressed(KEY_TWO))
+            {
+                currentLevel = 2;
+            }
+            else if (IsKeyPressed(KEY_THREE))
+            {
+                currentLevel = 3;
+            }
+
+            if (currentLevel > 0)
+            {
+                // Inisialisasi semua di sini setelah level dipilih
+                InitPaddles(paddles);
+                InitBola(bola);
+                InitNyawa(nyawa, 3);
+                InitStopwatch(stopwatch);
+                InitSkor(skor);
+                InitLeaderboard(leaderboard);
+
+                SetLevel(blocks, currentLevel); // Custom blocks sesuai level
+
+                gameState = GAME_START;
+                continue;
+            }
+
+            if (IsKeyPressed(KEY_ESCAPE))
             {
                 break;
             }
-
-            // Jika menu level dipilih, mulai inisialisasi game
-            if (GetMenuState() == MENU_LEVEL)
-            {
-                int level = GetSelectedLevel();
-                if (level > 0)
-                {
-                    // **2. Inisialisasi game baru**
-                    InitPaddles(paddles);
-                    InitBlocks(blocks);
-                    InitBola(bola);
-                    InitNyawa(nyawa, 3);
-                    InitStopwatch(stopwatch);
-                    InitSkor(skor);
-                    InitLeaderboard(leaderboard);
-                    SetNyawaPosition(nyawa, 870, 10);
-
-                    gameState = GAME_START; // Masuk ke tahap awal permainan
-                }
-            }
-            continue; // Skip ke loop berikutnya, agar tidak menggambar game
+            continue;
         }
 
         // **3. Update input game**
@@ -171,7 +184,7 @@ int main()
         DrawBlocks(blocks);
         DrawBola(bola);
         DrawNyawa(nyawa);
-        DrawSkor(skor);
+        DrawSkor(skor, SCORE_X, SCORE_Y);
         DrawStopwatch(stopwatch);
 
         // **Tampilkan status game**

@@ -5,12 +5,13 @@
 
 #define MAX_PLAYERS 1 // Jumlah pemain maksimal
 
-typedef struct {
+typedef struct
+{
     int score; // Skor pemain
 } Skor;
 
 void InitSkor(Skor skor[MAX_PLAYERS]);
 void TambahSkor(Skor *skor, int nilai);
-void DrawSkor(Skor skor[MAX_PLAYERS]);
+void DrawSkor(Skor skor[MAX_PLAYERS], int x, int y);
 
 #endif // SKOR_H
