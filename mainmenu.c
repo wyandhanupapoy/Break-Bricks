@@ -25,7 +25,7 @@ static Rectangle buttons[] = {
     {350, 250, 320, 50},  // Start Game
     {350, 320, 320, 50},  // Leaderboard
     {350, 390, 320, 50},  // Exit Game
-    {850, 600, 140, 40},  // Sound Toggle
+    {10, 600, 140, 40},  // Sound Toggle
 };
 
 // 🔹 Tombol level select
@@ -73,19 +73,19 @@ void UpdateMainMenuMini(GameState *state)
 {
     Vector2 mouse = GetMousePosition();
     
-    if (*state == GAME_PLAY && CheckCollisionPointRec(mouse, miniMenuBtn) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+    if ((*state == GAME_START || *state == GAME_PLAY) && CheckCollisionPointRec(mouse, miniMenuBtn) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
     {
-        ChangeMusic("assets/sounds/background_music.mp3");
-        UpdateMusic();
         PlayButtonClick();
         *state = GAME_MENU;  // Kembali ke Main Menu
+        ChangeMusic("assets/sounds/background_music.mp3");
+        UpdateMusic();
     }
 }
 
 // 🔹 Gambar Mini Menu (Hanya saat game berjalan)
 void DrawMainMenuMini(GameState state)
 {
-    if (state != GAME_PLAY) return;  // Tampilkan hanya jika sedang bermain
+    if (state != GAME_START && state != GAME_PLAY) return;  // Tampilkan hanya jika sedang bermain
 
     Vector2 mouse = GetMousePosition();
 

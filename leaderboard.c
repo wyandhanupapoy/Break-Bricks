@@ -1,4 +1,5 @@
 #include "leaderboard.h"
+#include "game_state.h"
 #include <stdio.h>
 #include <string.h>
 

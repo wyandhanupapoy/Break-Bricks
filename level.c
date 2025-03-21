@@ -1,13 +1,11 @@
 #include "level.h"
-#include "raylib.h"
-#include <stdlib.h> // Untuk fungsi rand()
+#include "block.h"
+#include <stdlib.h> // Untuk fungsi `rand()`
 #include <time.h>   // Untuk seeding angka acak
 
 void InitLevelBlocks(Block blocks[BLOCK_ROWS][BLOCK_COLS], int level)
 {
     srand(time(NULL));
-
-    Color colors[3] = {DARKGRAY, BROWN, BEIGE};
 
     for (int i = 0; i < BLOCK_ROWS; i++)
     {
@@ -22,66 +20,42 @@ void InitLevelBlocks(Block blocks[BLOCK_ROWS][BLOCK_COLS], int level)
             if (level == 1)
             {
                 blocks[i][j].hitPoints = 1;
-                blocks[i][j].color = BEIGE;
+                blocks[i][j].color = (Color){255, 204, 77, 255}; // **Kuning Retro**
             }
             else if (level == 2)
             {
-                int randomType = rand() % 2; // 0 atau 1
+                int randomType = rand() % 2;
                 if (randomType == 0)
                 {
                     blocks[i][j].hitPoints = 1;
-                    blocks[i][j].color = BEIGE;
+                    blocks[i][j].color = (Color){255, 204, 77, 255}; // **Kuning Retro**
                 }
                 else
                 {
                     blocks[i][j].hitPoints = 2;
-                    blocks[i][j].color = BROWN;
+                    blocks[i][j].color = (Color){255, 140, 26, 255}; // **Orange Retro**
                 }
             }
             else if (level == 3)
             {
-                int randomType = rand() % 2; // 0 atau 1
+                int randomType = rand() % 2;
                 if (randomType == 0)
                 {
                     blocks[i][j].hitPoints = 1;
-                    blocks[i][j].color = BEIGE;
+                    blocks[i][j].color = (Color){255, 204, 77, 255}; // **Kuning Retro**
                 }
                 else
                 {
                     blocks[i][j].hitPoints = 3;
-                    blocks[i][j].color = DARKGRAY;
+                    blocks[i][j].color = (Color){140, 90, 200, 255}; // **Ungu Retro**
                 }
             }
         }
     }
 }
 
-void UpdateBlockState(Block *block)
-{
-    if (!block->active)
-        return;
 
-    block->hitPoints--;
-
-    if (block->hitPoints <= 0)
-    {
-        block->active = false;
-    }
-    else
-    {
-        // Update warna blok sesuai sisa hitPoints
-        if (block->hitPoints == 2)
-        {
-            block->color = BROWN;
-        }
-        else if (block->hitPoints == 1)
-        {
-            block->color = BEIGE;
-        }
-    }
-}
-
-// **Implementasi SetLevel**
+// 🔹 Atur Level (Memanggil `InitLevelBlocks`)
 void SetLevel(Block blocks[BLOCK_ROWS][BLOCK_COLS], int level)
 {
     InitLevelBlocks(blocks, level);

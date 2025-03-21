@@ -130,8 +130,8 @@ void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PAD
                 }
                 else
                 {
-                    if (closestBlock->hitPoints == 2) closestBlock->color = BROWN;
-                    if (closestBlock->hitPoints == 1) closestBlock->color = BEIGE;
+                    if (closestBlock->hitPoints == 2) closestBlock->color = (Color){255, 140, 26, 255};;
+                    if (closestBlock->hitPoints == 1) closestBlock->color = (Color){255, 204, 77, 255};
                 }
 
                 // 🔹 Tentukan sisi tabrakan

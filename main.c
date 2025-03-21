@@ -177,6 +177,7 @@ LoadLeaderboard(leaderboard);
                 ChangeMusic("assets/sounds/background_music.mp3");
                 UpdateMusic();
                 PlayGameWin();
+                SaveLeaderboard(leaderboard);
                 gameEndTimer += GetFrameTime();
 
                 if (gameEndTimer >= returnDelay || IsKeyPressed(KEY_R))

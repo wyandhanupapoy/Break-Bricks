@@ -9,17 +9,20 @@
 #define BLOCK_HEIGHT 25
 #define BLOCK_SPACING 5
 
-typedef struct
-{
+typedef struct {
     Rectangle rect;
     bool active;
     Color color;
-    int hitPoints; // JUMLAH SENTUHAN YANG DIPERLUKAN
+    int hitPoints;
 } Block;
 
-void InitBlocks(Block blocks[BLOCK_ROWS][BLOCK_COLS]);
+// 🔹 Fungsi Blok
+void InitBlocks(Block blocks[BLOCK_ROWS][BLOCK_COLS], int level);
 void DrawBlocks(Block blocks[BLOCK_ROWS][BLOCK_COLS]);
 bool CheckBallBlockCollision(Vector2 ballPosition, float ballRadius, Rectangle blockRect);
 bool AllBlocksDestroyed(Block blocks[BLOCK_ROWS][BLOCK_COLS]);
+
+// 🔹 Tambahkan `extern` agar hanya sebagai referensi
+extern void UpdateBlockState(Block *block); 
 
 #endif // BLOCK_H
