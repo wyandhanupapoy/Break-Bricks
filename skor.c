@@ -3,24 +3,25 @@
 
 #define SCREEN_WIDTH 1000
 
-void InitSkor(Skor skor[MAX_PLAYERS]) {
-    for (int i = 0; i < MAX_PLAYERS; i++) {
+void InitSkor(Skor skor[MAX_PLAYERS])
+{
+    for (int i = 0; i < MAX_PLAYERS; i++)
+    {
         skor[i].score = 0;
     }
 }
 
-void TambahSkor(Skor *skor, int nilai) {
+void TambahSkor(Skor *skor, int nilai)
+{
     skor->score += nilai;
 }
 
-void DrawSkor(Skor skor[MAX_PLAYERS]) {
-    for (int i = 0; i < MAX_PLAYERS; i++) {
+void DrawSkor(Skor skor[MAX_PLAYERS], int x, int y)
+{
+    for (int i = 0; i < MAX_PLAYERS; i++)
+    {
         char scoreText[20];
         sprintf(scoreText, "Score: %d", skor[i].score);
-        
-        int posX = 870;
-        int posY = 50; // Posisi Y diatur agar sejajar dengan nyawa
-
-        DrawText(scoreText, posX, posY, 20, WHITE);
+        DrawText(scoreText, x, y, 20, WHITE);
     }
 }

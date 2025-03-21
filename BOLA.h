@@ -6,19 +6,13 @@
 #include "block.h"
 #include "skor.h"
 #include "stopwatch.h"
-#include <math.h>
+#include "game_state.h"
 
 #define BOLA_ROWS 1
 #define BOLA_COLS 1
 
-typedef enum {
-    GAME_START,
-    GAME_PLAY,
-    GAME_OVER,
-    GAME_WIN
-} GameState;
-
-typedef struct {
+typedef struct
+{
     Vector2 position;
     Vector2 speed;
     float radius;
