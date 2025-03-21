@@ -1,4 +1,5 @@
 #include "mainmenu.h"
+#include "sound.h"
 #include "raylib.h"
 
 // Variabel global
@@ -40,6 +41,7 @@ void UpdateMainMenu()
         {
             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
             {
+                PlayButtonClick(); // Tambahkan ini
                 currentMenu = MENU_LEVEL_SELECT;
             }
         }

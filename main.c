@@ -13,6 +13,8 @@
 #include "level.h"
 #include "layout.h" // Untuk SCORE_X, SCORE_Y
 
+#include "sound.h"
+
 #include <stdio.h>
 
 // Screen size
@@ -27,6 +29,7 @@ int main()
 {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "BREAK BRICKS");
     SetTargetFPS(60);
+    InitSoundEffects();
 
     // Game State & Control
     GameState gameState = GAME_MENU;
@@ -127,10 +130,12 @@ int main()
                     KurangiNyawa(nyawa);
                     if (!AnyLivesLeft(nyawa))
                     {
+                        PlayGameOver();
                         gameState = GAME_OVER;
                     }
                     else
                     {
+                        PlayLoseLife();
                         ResetBola(bola);
                         gameState = GAME_START;
                     }
@@ -226,6 +231,7 @@ int main()
         }
     }
 
+    UnloadSoundEffects();
     CloseWindow();
     return 0;
 }

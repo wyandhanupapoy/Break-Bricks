@@ -2,6 +2,7 @@
 #include "block.h"
 #include "stopwatch.h"
 #include "game_state.h"
+#include "sound.h"
 #include <math.h>
 
 #define SCREEN_WIDTH 830
@@ -61,6 +62,7 @@ void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PAD
 
                         bola[i][0].speed.x = normalizedHit * 7.0f; // Pantulan ke kiri-kanan
                         bola[i][0].speed.y *= -1;                  // Pantulan vertikal
+                        PlayPaddleHit();
 
                         // Boost sedikit setelah kena paddle
                         bola[i][0].speed.x *= 1.05f;
@@ -103,16 +105,19 @@ void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PAD
 
                         if (block->hitPoints <= 0)
                         {
+                            PlayBlockHit();
                             block->active = false;
                         }
                         else
                         {
                             if (block->hitPoints == 2)
                             {
+                                PlayBlockHit();
                                 block->color = BROWN;
                             }
                             else if (block->hitPoints == 1)
                             {
+                                PlayBlockHit();
                                 block->color = BEIGE;
                             }
                         }
