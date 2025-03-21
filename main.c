@@ -17,10 +17,6 @@
 
 #include <stdio.h>
 
-// Screen size
-#define SCREEN_WIDTH 1000
-#define SCREEN_HEIGHT 650
-
 // Timer buat auto return ke menu
 float gameEndTimer = 0.0f;
 const float returnDelay = 3.0f; // 3 detik balik ke menu
@@ -56,6 +52,9 @@ int main()
 
     while (!WindowShouldClose())
     {
+        LoadNyawaTexture();
+        SetNyawaSize(8);
+        SetNyawaPosition(NYAWA_X, NYAWA_Y);
         UpdateMusic();
 
         if (IsKeyPressed(KEY_M))
@@ -146,7 +145,7 @@ int main()
                     }
                     else
                     {
-                        PlayGameOver();
+                        PlayLoseLife();
                         ResetBola(bola);
                         gameState = GAME_START;
                     }
@@ -154,6 +153,16 @@ int main()
                 break;
 
             case GAME_OVER:
+                PlayGameOver();
+                ChangeMusic("assets/sounds/background_music.mp3");
+                UpdateMusic();
+                gameEndTimer += GetFrameTime();
+                if (gameEndTimer >= returnDelay || IsKeyPressed(KEY_R))
+                {
+                    gameState = GAME_MENU;
+                    gameEndTimer = 0.0f;
+                }
+                break;
             case GAME_WIN:
                 ChangeMusic("assets/sounds/background_music.mp3");
                 UpdateMusic();
@@ -245,6 +254,7 @@ int main()
         }
     }
 
+    UnloadNyawaTexture();
     UnloadSoundEffects();
     CloseWindow();
     return 0;

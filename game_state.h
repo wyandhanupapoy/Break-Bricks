@@ -9,4 +9,8 @@ typedef enum {
     GAME_WIN
 } GameState;
 
+// Screen size
+#define SCREEN_WIDTH 1000
+#define SCREEN_HEIGHT 650
+
 #endif // GAME_STATE_H

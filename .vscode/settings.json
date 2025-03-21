@@ -4,6 +4,7 @@
         "stdio.h": "c",
         "bola.h": "c",
         "stopwatch.h": "c",
-        "game_state.h": "c"
+        "game_state.h": "c",
+        "mainmenu.h": "c"
     }
 }

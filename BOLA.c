@@ -5,8 +5,8 @@
 #include "sound.h"
 #include <math.h>
 
-#define SCREEN_WIDTH 830
-#define SCREEN_HEIGHT 600
+#define SCREEN_W 830
+#define SCREEN_H 600
 
 #define MIN_BALL_SPEED 6.0f
 #define MAX_BALL_SPEED 9.0f
@@ -15,7 +15,7 @@ void InitBola(Bola bola[BOLA_ROWS][BOLA_COLS])
 {
     for (int i = 0; i < BOLA_ROWS; i++)
     {
-        bola[i][0].position = (Vector2){SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2};
+        bola[i][0].position = (Vector2){SCREEN_W / 2, SCREEN_H / 2};
         bola[i][0].speed = (Vector2){6, -6}; // Speed awal
         bola[i][0].radius = 10;
         bola[i][0].color = RED;
@@ -80,10 +80,10 @@ void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PAD
                 bola[i][0].speed.x *= -1;
                 bola[i][0].position.x = bola[i][0].radius;
             }
-            if (bola[i][0].position.x > SCREEN_WIDTH - bola[i][0].radius)
+            if (bola[i][0].position.x > SCREEN_W - bola[i][0].radius)
             {
                 bola[i][0].speed.x *= -1;
-                bola[i][0].position.x = SCREEN_WIDTH - bola[i][0].radius;
+                bola[i][0].position.x = SCREEN_W - bola[i][0].radius;
             }
             if (bola[i][0].position.y < bola[i][0].radius)
             {
@@ -141,7 +141,7 @@ void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PAD
             }
 
             // Cek jatuh ke bawah
-            if (bola[i][0].position.y > SCREEN_HEIGHT)
+            if (bola[i][0].position.y > SCREEN_H)
             {
                 bola[i][0].active = false; // Matikan bola, tunggu reset di luar fungsi
             }
@@ -164,7 +164,7 @@ void ResetBola(Bola bola[BOLA_ROWS][BOLA_COLS])
 {
     for (int i = 0; i < BOLA_ROWS; i++)
     {
-        bola[i][0].position = (Vector2){SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2};
+        bola[i][0].position = (Vector2){SCREEN_W / 2, SCREEN_H / 2};
 
         // Diam dulu, nanti diatur lagi saat mulai game
         bola[i][0].speed = (Vector2){6, -6};
