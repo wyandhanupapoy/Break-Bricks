@@ -1,25 +1,26 @@
 #ifndef MAINMENU_H
 #define MAINMENU_H
 
-#include <stdbool.h>
+#include "raylib.h"
 
-// Menu state enum
-typedef enum
-{
+typedef enum {
     MENU_MAIN,
     MENU_LEVEL_SELECT
 } MenuState;
 
-// Fungsi-fungsi utama menu
+// 🔹 Fungsi utama menu
 void InitMainMenu();
 void UpdateMainMenu();
 void DrawMainMenu();
 
+// 🔹 Kontrol game
 bool IsExitGame();
 bool IsStartGame();
 int GetSelectedLevel();
+void SetStartGame(bool value);
+
+// 🔹 Kontrol suara
 void ToggleSound();
 bool IsSoundOn();
-void SetStartGame(bool value); // Tambahan jika pakai SetStartGame()
 
 #endif

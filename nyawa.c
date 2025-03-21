@@ -5,17 +5,18 @@ static Texture2D heartTexture;  // Gambar nyawa
 static float nyawaPosX = 850;   // Posisi default X
 static float nyawaPosY = 20;    // Posisi default Y
 static float nyawaScale = (float)DEFAULT_NYAWA_SIZE / 100.0f;  // Skala nyawa
+static Texture2D nyawaTexture;
 
 // 🔹 Memuat gambar nyawa
 void LoadNyawaTexture()
 {
-    heartTexture = LoadTexture("assets/images/heart.png");
+    nyawaTexture = LoadTexture("assets/images/heart.png");
 }
 
 // 🔹 Membersihkan gambar nyawa dari memori
 void UnloadNyawaTexture()
 {
-    UnloadTexture(heartTexture);
+    UnloadTexture(nyawaTexture);
 }
 
 // 🔹 Mengatur posisi nyawa
@@ -73,9 +74,9 @@ void DrawNyawa(Nyawa nyawa[NYAWA_BARIS][NYAWA_KOLOM])
     {
         if (nyawa[0][i].aktif)
         {
-            float posX = nyawaPosX - (i * ((heartTexture.width * nyawaScale) + NYAWA_SPACING));
+            float posX = nyawaPosX - (i * ((nyawaTexture.width * nyawaScale) + NYAWA_SPACING));
             float posY = nyawaPosY;
-            DrawTextureEx(heartTexture, (Vector2){posX, posY}, 0.0f, nyawaScale, WHITE);
+            DrawTextureEx(nyawaTexture, (Vector2){posX, posY}, 0.0f, nyawaScale, WHITE);
         }
     }
 }

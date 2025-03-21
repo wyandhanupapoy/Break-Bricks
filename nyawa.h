@@ -11,6 +11,7 @@
 
 typedef struct
 {
+    Rectangle rect;
     bool aktif;
 } Nyawa;
 

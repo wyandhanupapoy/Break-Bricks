@@ -12,6 +12,7 @@
 #include "game_state.h"
 #include "level.h"
 #include "layout.h" // Untuk SCORE_X, SCORE_Y
+#include "background.h"
 
 #include "sound.h"
 
@@ -25,6 +26,8 @@ int main()
 {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "BREAK BRICKS");
     SetTargetFPS(60);
+    LoadNyawaTexture();
+    InitBackground();
     InitSoundEffects();
     PlayBackgroundMusic();
 
@@ -52,7 +55,7 @@ int main()
 
     while (!WindowShouldClose())
     {
-        LoadNyawaTexture();
+        UpdateBackground();
         SetNyawaSize(8);
         SetNyawaPosition(NYAWA_X, NYAWA_Y);
         UpdateMusic();
