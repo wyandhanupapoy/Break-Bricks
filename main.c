@@ -1,4 +1,4 @@
-#include "raylib.h"
+#include <raylib.h>
 
 // Game Modules
 #include "paddle.h"
@@ -172,7 +172,7 @@ int main()
         // Layout garis & panel bawah
         DrawLine(835, 0, 835, SCREEN_HEIGHT, WHITE);
         DrawRectangle(0, 600, 835, 50, WHITE);
-        DrawText("<- -> Move  |  P - Pause  |  F - Fullscreen  |  Esc - Exit", 150, 610, 20, BLACK);
+        DrawText("<- -> Move     |     P - Pause     |     F - Fullscreen     |     Esc - Exit", 60, 610, 20, BLACK);
 
         // Draw game layout
         DrawPaddles(paddles);
@@ -187,20 +187,20 @@ int main()
         {
 
         case GAME_START:
-            DrawText("PRESS SPACE TO LAUNCH", 300, SCREEN_HEIGHT / 2, 30, WHITE);
+            DrawText("PRESS SPACE TO LAUNCH", 210, SCREEN_HEIGHT / 2, 30, WHITE);
             break;
 
         case GAME_OVER:
             DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, WHITE);
-            DrawText("GAME OVER", 400, 300, 40, RED);
-            DrawText("Returning to menu...", 350, 350, 20, DARKGRAY);
+            DrawText("GAME OVER", 370, 300, 40, RED);
+            DrawText("Returning to menu...", 400, 350, 20, DARKGRAY);
             DrawLeaderboard(leaderboard);
             break;
 
         case GAME_WIN:
             DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, WHITE);
-            DrawText("YOU WIN!", 400, 300, 40, GREEN);
-            DrawText("Returning to menu...", 350, 350, 20, DARKGRAY);
+            DrawText("YOU WIN!", 370, 300, 40, GREEN);
+            DrawText("Returning to menu...", 400, 350, 20, DARKGRAY);
             DrawLeaderboard(leaderboard);
             break;
 
@@ -212,8 +212,8 @@ int main()
         if (isPaused && gameState == GAME_PLAY)
         {
             DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, Fade(WHITE, 0.7f));
-            DrawText("GAME PAUSED", 400, 300, 40, BLACK);
-            DrawText("PRESS P TO CONTINUE", 380, 350, 20, BLACK);
+            DrawText("GAME PAUSED", 370, 300, 40, BLACK);
+            DrawText("PRESS P TO CONTINUE", 400, 350, 20, BLACK);
             stopwatch[0][0].running = false;
         }
         else

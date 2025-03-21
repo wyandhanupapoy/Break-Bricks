@@ -11,8 +11,8 @@ static bool soundOn = true;
 static int selectedLevel = 0;
 
 // Tombol utama
-static Rectangle startBtn = {350, 300, 300, 50};
-static Rectangle exitBtn = {350, 370, 300, 50};
+static Rectangle startBtn = {350, 300, 320, 50};
+static Rectangle exitBtn = {350, 370, 320, 50};
 static Rectangle soundBtn = {850, 600, 140, 40};
 
 // Tombol level select
@@ -110,22 +110,22 @@ void UpdateMainMenu()
 
 void DrawMainMenu()
 {
-    ClearBackground(DARKGRAY);
+    ClearBackground((Color){29, 29, 29, 255});
     Vector2 mousePoint = GetMousePosition();
 
     if (currentMenu == MENU_MAIN)
     {
-        DrawText("BREAK BRICKS", 350, 150, 50, WHITE);
+        DrawText("BREAK BRICKS", 320, 150, 50, WHITE);
 
-        Color startColor = CheckCollisionPointRec(mousePoint, startBtn) ? YELLOW : LIGHTGRAY;
+        Color startColor = CheckCollisionPointRec(mousePoint, startBtn) ? ((Color){60, 125, 198, 255}) : LIGHTGRAY;
         DrawRectangleRec(startBtn, startColor);
         DrawText("START GAME", startBtn.x + 60, startBtn.y + 10, 30, BLACK);
 
-        Color exitColor = CheckCollisionPointRec(mousePoint, exitBtn) ? RED : LIGHTGRAY;
+        Color exitColor = CheckCollisionPointRec(mousePoint, exitBtn) ?  ((Color){198, 60, 60, 255}) :LIGHTGRAY;
         DrawRectangleRec(exitBtn, exitColor);
         DrawText("EXIT GAME", exitBtn.x + 80, exitBtn.y + 10, 30, BLACK);
 
-        Color soundColor = CheckCollisionPointRec(mousePoint, soundBtn) ? SKYBLUE : GRAY;
+        Color soundColor = CheckCollisionPointRec(mousePoint, soundBtn) ? YELLOW : GRAY;
         DrawRectangleRec(soundBtn, soundColor);
         DrawText(soundOn ? "SOUND ON" : "SOUND OFF", soundBtn.x + 10, soundBtn.y + 10, 20, BLACK);
     }
@@ -135,15 +135,15 @@ void DrawMainMenu()
 
         Color level1Color = CheckCollisionPointRec(mousePoint, level1Btn) ? YELLOW : LIGHTGRAY;
         DrawRectangleRec(level1Btn, level1Color);
-        DrawText("LEVEL 1", level1Btn.x + 100, level1Btn.y + 10, 30, BLACK);
+        DrawText("LEVEL 1", level1Btn.x + 95, level1Btn.y + 10, 30, BLACK);
 
         Color level2Color = CheckCollisionPointRec(mousePoint, level2Btn) ? YELLOW : LIGHTGRAY;
         DrawRectangleRec(level2Btn, level2Color);
-        DrawText("LEVEL 2", level2Btn.x + 100, level2Btn.y + 10, 30, BLACK);
+        DrawText("LEVEL 2", level2Btn.x + 95, level2Btn.y + 10, 30, BLACK);
 
         Color level3Color = CheckCollisionPointRec(mousePoint, level3Btn) ? YELLOW : LIGHTGRAY;
         DrawRectangleRec(level3Btn, level3Color);
-        DrawText("LEVEL 3", level3Btn.x + 100, level3Btn.y + 10, 30, BLACK);
+        DrawText("LEVEL 3", level3Btn.x + 95, level3Btn.y + 10, 30, BLACK);
 
         Color backColor = CheckCollisionPointRec(mousePoint, backBtn) ? RED : LIGHTGRAY;
         DrawRectangleRec(backBtn, backColor);
