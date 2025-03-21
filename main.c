@@ -21,6 +21,7 @@
 // Timer buat auto return ke menu
 float gameEndTimer = 0.0f;
 const float returnDelay = 3.0f; // 3 detik balik ke menu
+LeaderboardEntry leaderboard[MAX_LEADERBOARD_ENTRIES];
 
 int main()
 {
@@ -30,6 +31,9 @@ int main()
     InitBackground();
     InitSoundEffects();
     PlayBackgroundMusic();
+// Leaderboard
+LeaderboardEntry leaderboard[MAX_LEADERBOARD_ENTRIES];
+LoadLeaderboard(leaderboard);
 
     // Game State & Control
     GameState gameState = GAME_MENU;
@@ -47,7 +51,6 @@ int main()
     Nyawa nyawa[NYAWA_BARIS][NYAWA_KOLOM];
     Stopwatch stopwatch[STOPWATCH_ROWS][STOPWATCH_COLS];
     Skor skor[MAX_PLAYERS];
-    LeaderboardEntry leaderboard[MAX_PLAYERS];
 
     // Initialize
     InitLeaderboard(leaderboard);
@@ -84,24 +87,25 @@ int main()
             if (IsExitGame())
                 break;
 
-            if (IsStartGame())
-            {
-                int level = GetSelectedLevel();
-
-                if (level > 0)
+                if (IsStartGame())
                 {
-                    InitPaddles(paddles);
-                    InitBola(bola);
-                    SetNyawaPosition(NYAWA_X, NYAWA_Y);
-                    InitNyawa(nyawa, 3);
-                    InitStopwatch(stopwatch);
-                    InitSkor(skor);
-                    SetLevel(blocks, level);
-
-                    gameState = GAME_START;
-                    SetStartGame(false);
+                    int level = GetSelectedLevel();
+                
+                    if (level > 0)
+                    {
+                        InitPaddles(paddles);
+                        InitBola(bola);
+                        SetNyawaPosition(NYAWA_X, NYAWA_Y);
+                        InitNyawa(nyawa, 3);
+                        InitStopwatch(stopwatch);
+                        InitSkor(skor);
+                        SetLevel(blocks, level);
+                        currentLevel = level; // Store the current level
+                
+                        gameState = GAME_START;
+                        SetStartGame(false);
+                    }
                 }
-            }
 
             continue;
         }
@@ -160,6 +164,7 @@ int main()
                 ChangeMusic("assets/sounds/background_music.mp3");
                 UpdateMusic();
                 gameEndTimer += GetFrameTime();
+                
                 if (gameEndTimer >= returnDelay || IsKeyPressed(KEY_R))
                 {
                     gameState = GAME_MENU;
@@ -180,8 +185,9 @@ int main()
 
                 if (gameState == GAME_WIN && !leaderboardUpdated)
                 {
-                    AddToLeaderboard(leaderboard, "Player", skor[0].score, stopwatch[0][0].time);
-                    leaderboardUpdated = true;
+                    AddToLeaderboard(leaderboard, GetPlayerName(), skor[0].score, stopwatch[0][0].time, currentLevel);
+            leaderboardUpdated = true;
+            SaveLeaderboard(leaderboard);
                 }
 
                 break;
@@ -220,14 +226,12 @@ int main()
             DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, WHITE);
             DrawText("GAME OVER", 370, 300, 40, RED);
             DrawText("Returning to menu...", 400, 350, 20, DARKGRAY);
-            DrawLeaderboard(leaderboard);
             break;
 
         case GAME_WIN:
             DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, WHITE);
             DrawText("YOU WIN!", 370, 300, 40, GREEN);
             DrawText("Returning to menu...", 400, 350, 20, DARKGRAY);
-            DrawLeaderboard(leaderboard);
             break;
 
         default:
@@ -257,6 +261,7 @@ int main()
         }
     }
 
+    SaveLeaderboard(leaderboard);
     UnloadNyawaTexture();
     UnloadSoundEffects();
     CloseWindow();

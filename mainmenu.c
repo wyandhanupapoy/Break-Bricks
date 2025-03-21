@@ -1,18 +1,28 @@
+// mainmenu.c
 #include "mainmenu.h"
 #include "sound.h"
 #include "game_state.h"
 #include "background.h"
 #include "raylib.h"
+#include "leaderboard.h"
+#include "game_state.h"
+
+#include <string.h>
 
 // 🔹 Variabel Global
 static MenuState currentMenu = MENU_MAIN;
 static bool exitGame = false, startGame = false, soundOn = true;
 static int selectedLevel = 0;
+static char playerName[MAX_NAME_LENGTH] = "";
+static int letterCount = 0;
+static Rectangle textBox = { 350, 300, 300, 50 };
+static bool mouseOnText = false;
 
 // 🔹 Tombol utama
 static Rectangle buttons[] = {
-    {350, 300, 320, 50},  // Start Game
-    {350, 370, 320, 50},  // Exit Game
+    {350, 250, 320, 50},  // Start Game
+    {350, 320, 320, 50},  // Leaderboard
+    {350, 390, 320, 50},  // Exit Game
     {850, 600, 140, 40},  // Sound Toggle
 };
 
@@ -67,6 +77,8 @@ void InitMainMenu() {
     exitGame = startGame = false;
     selectedLevel = 0;
     soundOn = true;
+    letterCount = 0;
+    strcpy(playerName, "");
 }
 
 // 🔹 Update Menu
@@ -79,21 +91,79 @@ void UpdateMainMenu() {
             currentMenu = MENU_LEVEL_SELECT;
         }
         if (CheckCollisionPointRec(mouse, buttons[1]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-            exitGame = true;
+            PlayButtonClick();
+            currentMenu = MENU_LEADERBOARD;
         }
         if (CheckCollisionPointRec(mouse, buttons[2]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            exitGame = true;
+        }
+        if (CheckCollisionPointRec(mouse, buttons[3]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             ToggleSound();
         }
-    } else if (currentMenu == MENU_LEVEL_SELECT) {
+    } 
+    else if (currentMenu == MENU_LEVEL_SELECT) {
         for (int i = 0; i < 3; i++) {
             if (CheckCollisionPointRec(mouse, levelButtons[i]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                PlayButtonClick();
                 selectedLevel = i + 1;
-                startGame = true;
+                letterCount = 0;
+                strcpy(playerName, "");
+                currentMenu = MENU_NAME_INPUT;
             }
         }
         if (CheckCollisionPointRec(mouse, levelButtons[3]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            PlayButtonClick();
             currentMenu = MENU_MAIN;
         }
+        if (IsKeyPressed(KEY_BACKSPACE)) {
+            currentMenu = MENU_MAIN;
+        }
+    }
+    else if (currentMenu == MENU_NAME_INPUT) {
+        mouseOnText = CheckCollisionPointRec(mouse, textBox);
+
+        if (mouseOnText) {
+            SetMouseCursor(MOUSE_CURSOR_IBEAM);
+            
+            // Get char pressed (unicode character) on the queue
+            int key = GetCharPressed();
+            
+            // Check if more characters can be added
+            if (letterCount < MAX_NAME_LENGTH - 1) {
+                // Add characters (Only allow alphabetical and numbers)
+                if (((key >= 32) && (key <= 125)) && (key != '\\') && (key != '/') && (key != ':') && (key != '*') && (key != '?') && (key != '\"') && (key != '<') && (key != '>') && (key != '|')) {
+                    playerName[letterCount] = (char)key;
+                    playerName[letterCount + 1] = '\0'; // Add null terminator
+                    letterCount++;
+                }
+            }
+
+            // Delete button (backspace)
+            if (IsKeyPressed(KEY_BACKSPACE)) {
+                if (letterCount > 0) {
+                    letterCount--;
+                    playerName[letterCount] = '\0';
+                }
+            }
+            
+            // Submit button (enter)
+            if (IsKeyPressed(KEY_ENTER) && letterCount > 0) {
+                PlayButtonClick();
+                startGame = true;
+                currentMenu = MENU_MAIN;
+            }
+        } else SetMouseCursor(MOUSE_CURSOR_DEFAULT);
+        
+        if (mouseOnText && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            PlayButtonClick();
+        }
+        
+        // Back to level select
+        if (IsKeyPressed(KEY_BACKSPACE)) {
+            currentMenu = MENU_LEVEL_SELECT;
+        }
+    }
+    else if (currentMenu == MENU_LEADERBOARD) {
         if (IsKeyPressed(KEY_BACKSPACE)) {
             currentMenu = MENU_MAIN;
         }
@@ -109,17 +179,27 @@ void DrawMainMenu() {
     if (currentMenu == MENU_MAIN) {
         DrawTitle();
         
-        Color startColor = CheckCollisionPointRec(mouse, buttons[0]) ? GREEN : LIGHTGRAY;
-        DrawRectangleRec(buttons[0], startColor);
-        DrawText("START GAME", buttons[0].x + 60, buttons[0].y + 10, 30, BLACK);
+        const char* buttonTexts[] = { "START GAME", "LEADERBOARD", "EXIT GAME" };
+        
+        for (int i = 0; i < 3; i++) {
+            Color buttonColor;
+            if (i == 0) buttonColor = CheckCollisionPointRec(mouse, buttons[i]) ? GREEN : LIGHTGRAY;
+            else if (i == 1) buttonColor = CheckCollisionPointRec(mouse, buttons[i]) ? BLUE : LIGHTGRAY;
+            else buttonColor = CheckCollisionPointRec(mouse, buttons[i]) ? (Color){198, 60, 60, 255} : LIGHTGRAY;
+            
+            DrawRectangleRec(buttons[i], buttonColor);
+            
+            // Center text in button
+            int textWidth = MeasureText(buttonTexts[i], 30);
+            int textX = buttons[i].x + (buttons[i].width - textWidth) / 2;
+            int textY = buttons[i].y + (buttons[i].height - 30) / 2;
+            
+            DrawText(buttonTexts[i], textX, textY, 30, BLACK);
+        }
 
-        Color exitColor = CheckCollisionPointRec(mouse, buttons[1]) ? (Color){198, 60, 60, 255} : LIGHTGRAY;
-        DrawRectangleRec(buttons[1], exitColor);
-        DrawText("EXIT GAME", buttons[1].x + 80, buttons[1].y + 10, 30, BLACK);
-
-        Color soundColor = CheckCollisionPointRec(mouse, buttons[2]) ? (Color){100, 220, 255, 255} : YELLOW;
-        DrawRectangleRec(buttons[2], soundColor);
-        DrawText(soundOn ? "SOUND ON" : "SOUND OFF", buttons[2].x + 10, buttons[2].y + 10, 20, BLACK);
+        Color soundColor = CheckCollisionPointRec(mouse, buttons[3]) ? (Color){100, 220, 255, 255} : YELLOW;
+        DrawRectangleRec(buttons[3], soundColor);
+        DrawText(soundOn ? "SOUND ON" : "SOUND OFF", buttons[3].x + 10, buttons[3].y + 10, 20, BLACK);
 
     } else if (currentMenu == MENU_LEVEL_SELECT) {
         DrawRainbowText("SELECT LEVEL", SCREEN_WIDTH / 2, 150, 45);
@@ -143,6 +223,40 @@ void DrawMainMenu() {
         Color backColor = CheckCollisionPointRec(mouse, levelButtons[3]) ? RED : LIGHTGRAY;
         DrawRectangleRec(levelButtons[3], backColor);
         DrawText("BACK", levelButtons[3].x + 20, levelButtons[3].y + 10, 20, BLACK);
+    } 
+    else if (currentMenu == MENU_NAME_INPUT) {
+        DrawRainbowText("ENTER YOUR NAME", SCREEN_WIDTH / 2, 150, 45);
+        
+        // Draw text box
+        DrawRectangleRec(textBox, LIGHTGRAY);
+        DrawRectangleLines(textBox.x, textBox.y, textBox.width, textBox.height, 
+                          mouseOnText ? RED : DARKGRAY);
+        
+        DrawText(playerName, textBox.x + 10, textBox.y + 15, 30, BLACK);
+        
+        // Draw blinking cursor
+        if (mouseOnText) {
+            if (letterCount < MAX_NAME_LENGTH) {
+                // Draw cursor at the end of the text
+                if (((int)(GetTime()*2) % 2) == 0) {
+                    DrawText("_", textBox.x + 10 + MeasureText(playerName, 30), textBox.y + 15, 30, BLACK);
+                }
+            }
+        }
+        
+        DrawText("Press ENTER to confirm", textBox.x + 5, textBox.y + 60, 20, WHITE);
+        DrawText("Press BACKSPACE to go back", textBox.x + 5, textBox.y + 90, 20, WHITE);
+    }
+    else if (currentMenu == MENU_LEADERBOARD) {
+        static LeaderboardEntry leaderboard[MAX_PLAYERS];
+        static bool leaderboardLoaded = false;
+        
+        if (!leaderboardLoaded) {
+            LoadLeaderboard(leaderboard);
+            leaderboardLoaded = true;
+        }
+        
+        DrawLeaderboard(leaderboard);
     }
 }
 
@@ -150,6 +264,7 @@ void DrawMainMenu() {
 bool IsExitGame() { return exitGame; }
 bool IsStartGame() { return startGame; }
 int GetSelectedLevel() { return selectedLevel; }
+const char* GetPlayerName() { return playerName; }
 void SetStartGame(bool value) { startGame = value; }
 void ToggleSound() { soundOn = !soundOn; ToggleMusic(); }
 bool IsSoundOn() { return soundOn; }

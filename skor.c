@@ -1,4 +1,5 @@
 #include "skor.h"
+#include "game_state.h"
 #include <stdio.h>
 
 #define SCREEN_WIDTH 1000

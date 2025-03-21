@@ -2,8 +2,8 @@
 #define SKOR_H
 
 #include <raylib.h>
-
-#define MAX_PLAYERS 1 // Jumlah pemain maksimal
+#include "leaderboard.h"
+#include "game_state.h"
 
 typedef struct
 {
