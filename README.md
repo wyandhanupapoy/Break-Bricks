@@ -11,7 +11,7 @@
 - **Muhammad Brata Hadinata** (241511082)
 - **Ahmad Habib Mutaqqin** (241511065)
 
-### 📌 Dosen Pembimbing: **Pak Djoko Cahyo Utomo**
+### 📌 Dosen Pembimbing/Manager: **Djoko Cahyo Utomo**
 
 ## 🎮 Fitur Game
 ✅ **Gameplay Klasik** - Konsep **Breakout** dengan paddle dan bola untuk menghancurkan blok.
@@ -50,12 +50,12 @@ brew install raylib              # Untuk macOS (via Homebrew)
 
 ### 3️⃣ Compile & Jalankan
 ```bash
-gcc -o break_bricks main.c -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
-./break_bricks
+gcc main.c paddle.c block.c BOLA.c nyawa.c skor.c stopwatch.c leaderboard.c mainmenu.c level.c layout.c background.c sound.c -o my_game -lraylib -lm -lpthread
+./breakbricks
 ```
 
 ## 📷 Cuplikan Layar
-*(Tambahkan screenshot gameplay di sini jika tersedia)*
+![Gameplay Screenshot](assets/images/screenshot.png)
 
 ## 📜 Lisensi
 Proyek ini dibuat untuk tujuan akademik dalam mata kuliah **Pengembangan Aplikasi Berbasis Library** di POLBAN.
