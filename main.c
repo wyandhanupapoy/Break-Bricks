@@ -46,6 +46,10 @@ int main()
     bool isFullscreen = false;
     bool leaderboardUpdated = false;
 
+    bool lifeLost = false;                  // Status apakah nyawa berkurang
+    float lifeLostTimer = 0.0f;             // Timer untuk menampilkan teks "LIFE LOST!"
+    const float lifeLostDisplayTime = 1.5f; // Durasi teks "LIFE LOST!" ditampilkan (1.5 detik)
+
     // Level
     int currentLevel = 0;
 
@@ -67,6 +71,16 @@ int main()
         SetNyawaPosition(NYAWA_X, NYAWA_Y);
         UpdateMusic();
         UpdateMainMenuMini(&gameState);
+
+        // Update timer untuk teks "LIFE LOST!"
+        if (lifeLost)
+        {
+            lifeLostTimer += GetFrameTime();
+            if (lifeLostTimer >= lifeLostDisplayTime)
+            {
+                lifeLost = false; // Sembunyikan teks setelah waktu tertentu
+            }
+        }
 
         if (IsKeyPressed(KEY_M))
             ToggleMusic();
@@ -140,6 +154,7 @@ int main()
 
                 if (IsKeyPressed(KEY_SPACE))
                 {
+                    lifeLost = false;
                     gameState = GAME_PLAY;
                 }
                 break;
@@ -161,6 +176,10 @@ int main()
                         PlayLoseLife();
                         ResetBola(bola);
                         gameState = GAME_START;
+
+                        // Tampilkan teks "LIFE LOST!"
+                        lifeLost = true;
+                        lifeLostTimer = 0.0f;
                     }
                 }
                 break;
@@ -185,7 +204,6 @@ int main()
 
                 // ⬅️ **Tambahkan ini agar leaderboard langsung terlihat**
                 DrawLeaderboard(leaderboard, 50, 400);
-
 
                 if (gameEndTimer >= returnDelay || IsKeyPressed(KEY_R))
                 {
@@ -242,7 +260,14 @@ int main()
         DrawStopwatch(stopwatch);
         DrawMainMenuMini(gameState);
 
-        if (gameState == GAME_OVER || gameState == GAME_WIN) {
+        // Tampilkan teks "LIFE LOST!" jika nyawa berkurang
+        if (lifeLost)
+        {
+            DrawText("LIFE LOST!", SCREEN_WIDTH / 2 - 230, SCREEN_HEIGHT / 2 - 50, 50, RED);
+        }
+
+        if (gameState == GAME_OVER || gameState == GAME_WIN)
+        {
             DrawRectangle(250, 100, 400, 250, WHITE); // Background kotak leaderboard
             DrawLeaderboard(leaderboard, 270, 120);
         }
@@ -265,6 +290,12 @@ int main()
             DrawText("YOU WIN!", 370, 300, 40, GREEN);
             DrawText("Returning to menu...", 370, 350, 20, DARKGRAY);
             DrawLeaderboard(leaderboard, 50, 400);
+        }
+        else if (isPaused)
+        {
+            DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, Fade(BLACK, 0.5f));
+            DrawText("PAUSED", 400, 300, 40, WHITE);
+            DrawText("Press P to resume", 390, 350, 20, WHITE);
         }
 
         EndDrawing();

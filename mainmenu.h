@@ -4,10 +4,6 @@
 
 #include "raylib.h"
 
-#define SCROLL_SPEED 10
-#define SILVER (Color){192, 192, 192, 255}  // Define silver color
-#define BRONZE (Color){205, 127, 50, 255}   // Define bronze color
-
 typedef enum {
     MENU_MAIN,
     MENU_LEVEL_SELECT,
