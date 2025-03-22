@@ -2,6 +2,32 @@
 #include <stdio.h>
 #include <string.h>
 
+static Texture2D goldMedal;
+static Texture2D silverMedal;
+static Texture2D bronzeMedal;
+static bool medalsLoaded = false;
+static float medalScale = 0.3f;  // Scale factor to resize medals (adjust as needed)
+static int medalWidth = 24;      // Desired medal width
+static int medalHeight = 24;     // Desired medal height
+
+void LoadMedalTextures() {
+    if (!medalsLoaded) {
+        goldMedal = LoadTexture("assets/images/gold_medal.png");
+        silverMedal = LoadTexture("assets/images/silver_medal.png");
+        bronzeMedal = LoadTexture("assets/images/bronze_medal.png");
+        medalsLoaded = true;
+    }
+}
+
+void UnloadMedalTextures() {
+    if (medalsLoaded) {
+        UnloadTexture(goldMedal);
+        UnloadTexture(silverMedal);
+        UnloadTexture(bronzeMedal);
+        medalsLoaded = false;
+    }
+}
+
 void InitLeaderboard(LeaderboardEntry leaderboard[MAX_LEADERBOARD_ENTRIES]) {
     for (int i = 0; i < MAX_LEADERBOARD_ENTRIES; i++) {
         strcpy(leaderboard[i].name, "");
@@ -102,6 +128,11 @@ static int leaderboardScrollOffset = 0;
 // Implementation of DrawLeaderboardMenu with scrolling and refresh button
 void DrawLeaderboardMenu(LeaderboardEntry *leaderboard, int totalEntries, int scrollOffset)
 {
+    // Make sure medal textures are loaded before drawing
+    if (!medalsLoaded) {
+        LoadMedalTextures();
+    }
+
     DrawRectangle(100, 50, 800, 500, Fade(DARKGRAY, 0.9f));
     DrawText("LEADERBOARD", 400, 70, 30, WHITE);
     DrawText("Backspace - Back to Menu", 370, 520, 20, LIGHTGRAY);
@@ -157,9 +188,39 @@ void DrawLeaderboardMenu(LeaderboardEntry *leaderboard, int totalEntries, int sc
             char rankText[5];
             sprintf(rankText, "#%d", i + 1);
             Color rankColor = WHITE;
-            if (i == 0) rankColor = GOLD;
-            else if (i == 1) rankColor = (Color){192, 192, 192, 255}; // Silver
-            else if (i == 2) rankColor = (Color){205, 127, 50, 255};  // Bronze
+            
+            // Draw medals for top 3 ranks with size control
+            if (i == 0) {
+                rankColor = GOLD;
+                // Option 1: Using DrawTextureEx with scale
+                DrawTextureEx(goldMedal, 
+                             (Vector2){120, yPos - 3}, // Position (adjust as needed)
+                             0.0f,                     // Rotation (0 = no rotation)
+                             medalScale,               // Scale factor
+                             WHITE);                   // Tint
+                
+                // Option 2: Using source/dest rectangles for precise control
+                // Rectangle source = {0, 0, goldMedal.width, goldMedal.height};
+                // Rectangle dest = {120, yPos - 3, medalWidth, medalHeight};
+                // DrawTexturePro(goldMedal, source, dest, (Vector2){0, 0}, 0.0f, WHITE);
+            }
+            else if (i == 1) {
+                rankColor = (Color){192, 192, 192, 255}; // Silver
+                DrawTextureEx(silverMedal, 
+                             (Vector2){120, yPos - 3}, 
+                             0.0f, 
+                             medalScale, 
+                             WHITE);
+            }
+            else if (i == 2) {
+                rankColor = (Color){205, 127, 50, 255};  // Bronze
+                DrawTextureEx(bronzeMedal, 
+                             (Vector2){120, yPos - 3}, 
+                             0.0f, 
+                             medalScale, 
+                             WHITE);
+            }
+            
             DrawText(rankText, 150, yPos, 20, rankColor);
             
             // Potong nama jika lebih dari 15 karakter
@@ -192,6 +253,17 @@ void DrawLeaderboardMenu(LeaderboardEntry *leaderboard, int totalEntries, int sc
             DrawText(leaderboard[i].status, 630, yPos, 20, statusColor);
         }
     }
+}
+
+// Function to set medal scale
+void SetMedalScale(float scale) {
+    medalScale = scale;
+}
+
+// Function to set medal dimensions
+void SetMedalSize(int width, int height) {
+    medalWidth = width;
+    medalHeight = height;
 }
 
 void SaveLeaderboard(LeaderboardEntry leaderboard[MAX_LEADERBOARD_ENTRIES]) {

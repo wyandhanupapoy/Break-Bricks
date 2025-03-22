@@ -49,7 +49,6 @@ int main()
     bool lifeLost = false;                  // Status apakah nyawa berkurang
     float lifeLostTimer = 0.0f;             // Timer untuk menampilkan teks "LIFE LOST!"
     const float lifeLostDisplayTime = 1.5f; // Durasi teks "LIFE LOST!" ditampilkan (1.5 detik)
-
     // Level
     int currentLevel = 0;
 
@@ -311,6 +310,7 @@ int main()
     SaveLeaderboard(leaderboard);
     UnloadNyawaTexture();
     UnloadSoundEffects();
+    UnloadMedalTextures();
     UnloadImage(icon);
     CloseWindow();
     return 0;

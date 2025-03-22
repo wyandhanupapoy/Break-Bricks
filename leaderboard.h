@@ -28,4 +28,10 @@ void SaveLeaderboard(LeaderboardEntry leaderboard[MAX_LEADERBOARD_ENTRIES]);
 void LoadLeaderboard(LeaderboardEntry leaderboard[MAX_LEADERBOARD_ENTRIES]);
 void SortLeaderboard(LeaderboardEntry leaderboard[MAX_LEADERBOARD_ENTRIES]);
 
+void LoadMedalTextures(void);
+void UnloadMedalTextures(void);
+
+void SetMedalScale(float scale);
+void SetMedalSize(int width, int height);
+
 #endif
