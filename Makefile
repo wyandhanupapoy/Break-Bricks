@@ -1,10 +1,10 @@
 # Compiler & Flags
 CC=gcc
-CFLAGS=-Wall -Wextra -std=c99
+CFLAGS=
 LIBS=-lraylib -lm -lpthread -lopengl32 -lgdi32 -lwinmm -static
 
 # Daftar File
-SRC=src/main.c src/paddle.c src/BOLA.c src/block.c src/level.c src/mainmenu.c src/skor.c src/leaderboard.c src/level.c src/sound.c src/layout.c src/nyawa.c src/stopwatch.c
+SRC=src/main.c src/paddle.c src/BOLA.c src/block.c src/stopwatch.c src/nyawa.c src/skor.c src/leaderboard.c src/level.c src/mainmenu.c src/sound.c src/layout.c src/background.c
 OBJ=$(SRC:.c=.o)
 
 # Nama Output
