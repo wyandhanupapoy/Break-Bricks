@@ -1,0 +1,15 @@
+# File object
+*.o
+
+# Binary hasil kompilasi
+BreakBricks
+build/
+
+# File backup atau sementara
+*.log
+*.tmp
+*.bak
+
+# File editor spesifik (VSCode, JetBrains, dll.)
+.vscode/
+.idea/
