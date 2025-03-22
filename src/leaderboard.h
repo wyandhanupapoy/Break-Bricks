@@ -5,7 +5,7 @@
 
 #define MAX_NAME_LENGTH 20
 #define MAX_LEADERBOARD_ENTRIES 1000
-#define LEADERBOARD_FILE "leaderboard.dat"
+#define LEADERBOARD_FILE "src/leaderboard.dat"
 #define SCROLL_SPEED 10
 #define SILVER (Color){192, 192, 192, 255}  // Define silver color
 #define BRONZE (Color){205, 127, 50, 255}   // Define bronze color
