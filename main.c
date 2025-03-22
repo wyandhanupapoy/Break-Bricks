@@ -28,7 +28,7 @@ int main()
     SetTargetFPS(60);
 
     // Muat gambar ikon dari file
-    Image icon = LoadImage("icon.png");
+    Image icon = LoadImage("assets/images/icon.png");
 
     SetWindowIcon(icon);
 
