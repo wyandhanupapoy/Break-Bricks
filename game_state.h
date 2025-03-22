@@ -13,6 +13,6 @@ typedef enum {
 #define SCREEN_WIDTH 1000
 #define SCREEN_HEIGHT 650
 
-#define MAX_PLAYERS 10
+#define MAX_PLAYERS 1000
 
 #endif // GAME_STATE_H

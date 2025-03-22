@@ -21,7 +21,7 @@ void InitSoundEffects()
     InitAudioDevice();
 
     // Load efek suara
-    buttonClick = LoadSound("assets/sounds/button_click.wav");
+    buttonClick = LoadSound("assets/sounds/click_button.mp3");
     paddleHit = LoadSound("assets/sounds/paddle_hit.wav");
     blockHit = LoadSound("assets/sounds/block_hit.wav");
     loseLife = LoadSound("assets/sounds/lose_life.wav");

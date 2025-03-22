@@ -26,6 +26,12 @@ int main()
 {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "BREAK BRICKS");
     SetTargetFPS(60);
+
+    // Muat gambar ikon dari file
+    Image icon = LoadImage("icon.png");
+
+    SetWindowIcon(icon);
+
     LoadNyawaTexture();
     InitBackground();
     InitSoundEffects();
@@ -159,46 +165,63 @@ int main()
                 }
                 break;
 
-                case GAME_OVER:
+            case GAME_OVER:
                 PlayGameOver();
                 ChangeMusic("assets/sounds/background_music.mp3");
                 UpdateMusic();
                 gameEndTimer += GetFrameTime();
-            
-                if (!leaderboardUpdated) {
+
+                if (!leaderboardUpdated)
+                {
                     AddToLeaderboard(leaderboard, GetPlayerName(), skor[0].score, stopwatch[0][0].time, currentLevel, "GAME OVER");
                     SaveLeaderboard(leaderboard);
                     LoadLeaderboard(leaderboard); // ⬅️ **Langsung reload leaderboard**
                     leaderboardUpdated = true;
                 }
-            
+
+                ClearBackground(RAYWHITE);
+                DrawText("GAME OVER", 370, 300, 40, RED);
+                DrawText("Returning to menu...", 400, 350, 20, DARKGRAY);
+
+                // ⬅️ **Tambahkan ini agar leaderboard langsung terlihat**
+                DrawLeaderboard(leaderboard, 50, 400);
+
+
                 if (gameEndTimer >= returnDelay || IsKeyPressed(KEY_R))
                 {
                     gameState = GAME_MENU;
                     gameEndTimer = 0.0f;
                 }
                 break;
-            
+
             case GAME_WIN:
+                PlayGameWin();
                 ChangeMusic("assets/sounds/background_music.mp3");
                 UpdateMusic();
-                PlayGameWin();
                 gameEndTimer += GetFrameTime();
-            
-                if (!leaderboardUpdated) {
+
+                if (!leaderboardUpdated)
+                {
                     AddToLeaderboard(leaderboard, GetPlayerName(), skor[0].score, stopwatch[0][0].time, currentLevel, "WIN");
                     SaveLeaderboard(leaderboard);
                     LoadLeaderboard(leaderboard); // ⬅️ **Langsung reload leaderboard**
                     leaderboardUpdated = true;
                 }
-            
+
+                ClearBackground(RAYWHITE);
+                DrawText("YOU WIN!", 370, 300, 40, GREEN);
+                DrawText("Returning to menu...", 370, 350, 20, DARKGRAY);
+
+                // ⬅️ **Tambahkan ini agar leaderboard langsung terlihat**
+                DrawLeaderboard(leaderboard, 50, 400);
+
                 if (gameEndTimer >= returnDelay || IsKeyPressed(KEY_R))
                 {
                     gameState = GAME_MENU;
                     gameEndTimer = 0.0f;
                 }
                 break;
-            }            
+            }
         }
 
         // === DRAWING ===
@@ -219,6 +242,11 @@ int main()
         DrawStopwatch(stopwatch);
         DrawMainMenuMini(gameState);
 
+        if (gameState == GAME_OVER || gameState == GAME_WIN) {
+            DrawRectangle(250, 100, 400, 250, WHITE); // Background kotak leaderboard
+            DrawLeaderboard(leaderboard, 270, 120);
+        }
+
         // === GAME STATE UI ===
         if (gameState == GAME_START)
         {
@@ -229,12 +257,14 @@ int main()
             DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, WHITE);
             DrawText("GAME OVER", 370, 300, 40, RED);
             DrawText("Returning to menu...", 400, 350, 20, DARKGRAY);
+            DrawLeaderboard(leaderboard, 50, 400);
         }
         else if (gameState == GAME_WIN)
         {
             DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, WHITE);
             DrawText("YOU WIN!", 370, 300, 40, GREEN);
             DrawText("Returning to menu...", 370, 350, 20, DARKGRAY);
+            DrawLeaderboard(leaderboard, 50, 400);
         }
 
         EndDrawing();
@@ -250,6 +280,7 @@ int main()
     SaveLeaderboard(leaderboard);
     UnloadNyawaTexture();
     UnloadSoundEffects();
+    UnloadImage(icon);
     CloseWindow();
     return 0;
 }
