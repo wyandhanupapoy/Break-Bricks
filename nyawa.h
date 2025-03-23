@@ -1,5 +1,5 @@
 // Nama Pembuat: Muhammad Brata Hadinata
-// Nama Fitur: nyawa
+// Nama Fitur: nyawa.h
 // Deskripsi: Kode ini adalah header file untuk modul sistem nyawa pemain di game.
 //            Di sini didefinisikan konstanta, struktur data, dan fungsi-fungsi yang digunakan untuk mengelola nyawa.
 
