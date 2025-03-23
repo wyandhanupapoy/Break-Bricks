@@ -1,3 +1,9 @@
+/*
+Nama Pembuat:   Wyandhanu Maulidan Nugraha
+Nama Fitur:     Leeaderboard
+Deskripsi:      Fitur leaderboard untuk menyimpan data pemain dan menampilkannya dalam bentuk tabel
+*/
+
 #ifndef LEADERBOARD_H
 #define LEADERBOARD_H
 
