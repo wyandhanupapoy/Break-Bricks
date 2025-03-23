@@ -34,13 +34,3 @@ void DrawStopwatch(Stopwatch sw[STOPWATCH_ROWS][STOPWATCH_COLS]) {
         }
     }
 }
-
-// Reset stopwatch ke 0
-void ResetStopwatch(Stopwatch sw[STOPWATCH_ROWS][STOPWATCH_COLS]) {
-    for (int i = 0; i < STOPWATCH_ROWS; i++) {
-        for (int j = 0; j < STOPWATCH_COLS; j++) {
-            sw[i][j].time = 0.0f;
-            sw[i][j].running = true;
-        }
-    }
-}

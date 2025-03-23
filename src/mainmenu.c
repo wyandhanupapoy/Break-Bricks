@@ -33,6 +33,7 @@ static Rectangle buttons[] = {
     {SCREEN_WIDTH / 2 - 110, 300, 40, 40},   // Sound Volume Down
     {SCREEN_WIDTH / 2 + 90, 300, 40, 40},  // Sound Volume Up
     {470, 390, 70, 40}, // Back to Main Menu
+    {900, 590, 70, 40}, // Info
 
 };
 
@@ -153,6 +154,11 @@ void UpdateMainMenu()
             PlayButtonClick();
             currentMenu = MENU_SETTINGS;
         }
+        if (CheckCollisionPointRec(mouse, buttons[8]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+        {
+            PlayButtonClick();
+            currentMenu = MENU_INFO;
+        }
         if (CheckCollisionPointRec(mouse, buttons[3]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
         {
             PlayButtonClick();
@@ -200,6 +206,20 @@ void UpdateMainMenu()
         {
             PlayButtonClick();
             currentMenu = MENU_MAIN;
+        }
+
+        // Penanganan tombol BACKSPACE
+        if (IsKeyPressed(KEY_BACKSPACE))
+        {
+            currentMenu = MENU_MAIN;
+        }
+    }
+    else if (currentMenu == MENU_INFO)
+    {
+        if (CheckCollisionPointRec(mouse, levelButtons[3]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+        {
+            PlayButtonClick();
+            currentMenu == MENU_MAIN;
         }
 
         // Penanganan tombol BACKSPACE
@@ -306,7 +326,7 @@ void DrawMainMenu()
                 buttonColor = CheckCollisionPointRec(mouse, buttons[i]) ? YELLOW : LIGHTGRAY;
             else 
                 buttonColor = CheckCollisionPointRec(mouse, buttons[i]) ? (Color){198, 60, 60, 255} : LIGHTGRAY;
-
+            
             DrawRectangleRec(buttons[i], buttonColor);
 
             // Center text in button
@@ -316,6 +336,9 @@ void DrawMainMenu()
 
             DrawText(buttonTexts[i], textX, textY, 30, BLACK);
         }
+        Color infoColor = CheckCollisionPointRec(mouse, buttons[8]) ? (Color){100, 220, 255, 255} : YELLOW;
+        DrawRectangleRec(buttons[8], infoColor);
+        DrawText("Info", buttons[8].x + 10, buttons[8].y + 10, 20, BLACK);
     }
     else if (currentMenu == MENU_SETTINGS)
     {
@@ -335,6 +358,22 @@ void DrawMainMenu()
         Color backColor = CheckCollisionPointRec(mouse, buttons[7]) ? RED : LIGHTGRAY;
         DrawRectangleRec(buttons[7], backColor);
         DrawText("Back", buttons[7].x + 10, buttons[7].y + 10, 20, BLACK);
+    }
+    else if (currentMenu == MENU_INFO)
+    {
+        DrawRainbowText("INFO", SCREEN_WIDTH / 2, 100, 45);
+        DrawRainbowText("Dibuat Oleh", SCREEN_WIDTH / 2, 180, 20);
+        DrawRainbowText("Kelompok C6 Proyek 2 POLBAN:", SCREEN_WIDTH / 2, 200, 20);
+        DrawText("Ahmad Habib Mutaqqin (241511065)", SCREEN_WIDTH / 2 - 160 , 250, 20, WHITE);
+        DrawText("Muhammad Brata Hadinata (241511082)", SCREEN_WIDTH / 2 - 160 , 300, 20, WHITE);
+        DrawText("Muhammad Raihan Abubakar (241511084)",SCREEN_WIDTH / 2 - 160  , 350, 20, WHITE);
+        DrawText("Nezya Zulfa Fauziah (241511085)",  SCREEN_WIDTH / 2 - 160, 400, 20, WHITE);
+        DrawText("Siti Soviyyah (241511090)", SCREEN_WIDTH / 2 - 160 , 450, 20, WHITE);
+        DrawText("Wyandhanu Maulidan Nugraha** (241511092)", SCREEN_WIDTH / 2 - 160 , 500 , 20, WHITE);
+
+        Color backInfoColor = CheckCollisionPointRec(mouse, levelButtons[3]) ? RED : LIGHTGRAY;
+        DrawRectangleRec(levelButtons[3], backInfoColor);
+        DrawText("Back", levelButtons[3].x + 10, levelButtons[3].y + 10, 20, BLACK);
     }
     else if (currentMenu == MENU_LEVEL_SELECT)
     {
