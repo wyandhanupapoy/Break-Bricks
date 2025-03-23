@@ -17,12 +17,9 @@
 #define STOPWATCH_X 870
 #define STOPWATCH_Y 80
 
-// Fungsi untuk menggambar layout permainan
-void DrawGameLayout(Block blocks[BLOCK_ROWS][BLOCK_COLS], 
-                    Paddle paddles[PADDLE_ROWS][PADDLE_COLS], 
-                    Bola bola[BOLA_ROWS][BOLA_COLS], 
-                    Stopwatch stopwatch[STOPWATCH_ROWS][STOPWATCH_COLS], 
-                    Nyawa nyawa[NYAWA_BARIS][NYAWA_KOLOM],  
-                    Skor skor[MAX_PLAYERS]);
+void DrawPauseScreen();
+void DrawGameOverScreen();
+void DrawWinScreen();
+void DrawControlInfo();
 
 #endif // LAYOUT_H

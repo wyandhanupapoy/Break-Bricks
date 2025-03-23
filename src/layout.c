@@ -1,25 +1,32 @@
 #include "layout.h"
 #include "raylib.h"
+#include <stdio.h>
 
-void DrawGameLayout(Block blocks[BLOCK_ROWS][BLOCK_COLS], 
-                    Paddle paddles[PADDLE_ROWS][PADDLE_COLS], 
-                    Bola bola[BOLA_ROWS][BOLA_COLS], 
-                    Stopwatch stopwatch[STOPWATCH_ROWS][STOPWATCH_COLS], 
-                    Nyawa nyawa[NYAWA_BARIS][NYAWA_KOLOM],  
-                    Skor skor[MAX_PLAYERS])
+void DrawPauseScreen()
 {
-    // 🔹 Latar belakang panel bawah
-    DrawRectangle(0, 600, 835, 50, WHITE);
-    DrawText("<- -> Move  |  P - Pause  |  F - Fullscreen  |  Esc - Exit", 60, 610, 20, BLACK);
+    DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, Fade(BLACK, 0.5f));
+    DrawText("PAUSED", 400, 300, 40, WHITE);
+    DrawText("Press P to resume", 390, 350, 20, WHITE);
+}
 
-    // 🔹 Garis batas kanan
-    DrawLine(835, 0, 835, SCREEN_HEIGHT, WHITE);
+void DrawGameOverScreen()
+{
+    ClearBackground(RAYWHITE);
+    DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, WHITE);
+    DrawText("GAME OVER", 370, 300, 40, RED);
+    DrawText("Returning to menu...", 400, 350, 20, DARKGRAY);
+}
 
-    // 🔹 Gambar elemen permainan
-    DrawPaddles(paddles);
-    DrawBlocks(blocks);
-    DrawBola(bola);
-    DrawNyawa(nyawa);
-    DrawSkor(skor, SCORE_X, SCORE_Y);
-    DrawStopwatch(stopwatch);
+void DrawWinScreen()
+{
+    ClearBackground(RAYWHITE);
+    DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, WHITE);
+    DrawText("YOU WIN!", 370, 300, 40, GREEN);
+    DrawText("Returning to menu...", 370, 350, 20, DARKGRAY);
+}
+
+void DrawControlInfo()
+{
+    DrawRectangle(0, 620, 835, 30, LIGHTGRAY);
+    DrawText("<- -> Move   |   P - Pause   |   F - Fullscreen   |   Esc - Exit   |   M - Mute", 15, 625, 20, BLACK);
 }

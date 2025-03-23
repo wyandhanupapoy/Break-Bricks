@@ -5,6 +5,8 @@
         "bola.h": "c",
         "stopwatch.h": "c",
         "game_state.h": "c",
-        "mainmenu.h": "c"
+        "mainmenu.h": "c",
+        "background.h": "c",
+        "leaderboard.h": "c"
     }
 }

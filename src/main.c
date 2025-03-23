@@ -278,9 +278,7 @@ int main()
                     leaderboardUpdated = true;
                 }
 
-                ClearBackground(RAYWHITE);
-                DrawText("GAME OVER", 370, 300, 40, RED);
-                DrawText("Returning to menu...", 400, 350, 20, DARKGRAY);
+                DrawGameOverScreen();
 
                 // ⬅️ **Tambahkan ini agar leaderboard langsung terlihat**
                 DrawLeaderboard(leaderboard, 50, 400);
@@ -306,9 +304,7 @@ int main()
                     leaderboardUpdated = true;
                 }
 
-                ClearBackground(RAYWHITE);
-                DrawText("YOU WIN!", 370, 300, 40, GREEN);
-                DrawText("Returning to menu...", 370, 350, 20, DARKGRAY);
+                DrawWinScreen();
 
                 // ⬅️ **Tambahkan ini agar leaderboard langsung terlihat**
                 DrawLeaderboard(leaderboard, 50, 400);
@@ -329,8 +325,7 @@ int main()
 
         // Layout garis & panel bawah
         DrawLine(835, 0, 835, SCREEN_HEIGHT, WHITE);
-        DrawRectangle(0, 600, 835, 50, WHITE);
-        DrawText("<- -> Move   |   P - Pause   |   F - Fullscreen   |   Esc - Exit  |  M - Mute Music", 15, 610, 20, BLACK);
+        DrawControlInfo();
 
         // Draw game layout
         DrawPaddles(paddles);
@@ -360,23 +355,17 @@ int main()
         }
         else if (gameState == GAME_OVER)
         {
-            DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, WHITE);
-            DrawText("GAME OVER", 370, 300, 40, RED);
-            DrawText("Returning to menu...", 400, 350, 20, DARKGRAY);
+            DrawGameOverScreen();
             DrawLeaderboard(leaderboard, 50, 400);
         }
         else if (gameState == GAME_WIN)
         {
-            DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, WHITE);
-            DrawText("YOU WIN!", 370, 300, 40, GREEN);
-            DrawText("Returning to menu...", 370, 350, 20, DARKGRAY);
+            DrawWinScreen();
             DrawLeaderboard(leaderboard, 50, 400);
         }
         else if (isPaused)
         {
-            DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, Fade(BLACK, 0.5f));
-            DrawText("PAUSED", 400, 300, 40, WHITE);
-            DrawText("Press P to resume", 390, 350, 20, WHITE);
+            DrawPauseScreen();
         }
 
         EndDrawing();
