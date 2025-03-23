@@ -1,3 +1,10 @@
+/*  Nama Pembuat: Muhammad Brata Hadinata
+    Nama Fitur: nyawa
+    Deskripsi: Kode ini berfungsi untuk mengelola sistem nyawa dalam game.
+               Nyawa ditampilkan sebagai ikon hati di layar, yang menunjukkan berapa sisa nyawa pemain.
+               Saat pemain kalah, nyawa berkurang satu. Jika semua nyawa habis, game akan tahu bahwa pemain kalah atau game over.
+               Kode ini juga memuat, menggambar, dan menghapus gambar nyawa dari memori. */
+
 #include "nyawa.h"
 #include "layout.h"
 #include "raylib.h"
