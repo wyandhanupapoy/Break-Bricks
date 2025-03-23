@@ -1,56 +1,51 @@
 #include "level.h"
-#include "raylib.h"
-#include <stdlib.h>  // Untuk fungsi rand()
-#include <time.h>    // Untuk seeding angka acak
+#include "block.h"
+#include <stdlib.h> // Untuk fungsi `rand()`
+#include <time.h>   // Untuk seeding angka acak
 
-// Fungsi untuk menginisialisasi blok berdasarkan level yang dipilih
 void InitLevelBlocks(Block blocks[BLOCK_ROWS][BLOCK_COLS], int level) {
-    srand(time(NULL));  // Seed angka acak agar variasi warna blok berbeda setiap permainan
+    srand(time(NULL));
 
-    Color colors[3] = { DARKGRAY, BROWN, BEIGE };  // Daftar warna blok yang digunakan
-
-    int maxColorIndex;
-    if (level == 1) {
-        maxColorIndex = 2;  // Hanya BEIGE (index 2)
-    } else if (level == 2) {
-        maxColorIndex = 1;  // Kombinasi BROWN (1) dan BEIGE (2)
-    } else {
-        maxColorIndex = 0;  // Kombinasi DARKGRAY (0), BROWN (1), dan BEIGE (2)
-    }
-
-    // Loop untuk menginisialisasi posisi dan warna setiap blok dalam grid
     for (int i = 0; i < BLOCK_ROWS; i++) {
         for (int j = 0; j < BLOCK_COLS; j++) {
-            blocks[i][j].rect.x = j * (BLOCK_WIDTH + BLOCK_SPACING) + 15;  // Posisi X dengan jarak antar blok
-            blocks[i][j].rect.y = i * (BLOCK_HEIGHT + BLOCK_SPACING) + 70; // Posisi Y dengan jarak antar blok
-            blocks[i][j].rect.width = BLOCK_WIDTH;   // Lebar blok
-            blocks[i][j].rect.height = BLOCK_HEIGHT; // Tinggi blok
-            blocks[i][j].active = true;  // Setiap blok aktif saat awal permainan
+            blocks[i][j].rect.x = j * (BLOCK_WIDTH + BLOCK_SPACING) + 15;
+            blocks[i][j].rect.y = i * (BLOCK_HEIGHT + BLOCK_SPACING) + 70;
+            blocks[i][j].rect.width = BLOCK_WIDTH;
+            blocks[i][j].rect.height = BLOCK_HEIGHT;
+            blocks[i][j].active = true;
 
-            // Pilih warna acak dari daftar warna yang sesuai dengan level
-            int randomIndex = rand() % (3 - maxColorIndex) + maxColorIndex;
-            blocks[i][j].color = colors[randomIndex];
-            blocks[i][j].colorIndex = randomIndex;
+            if (level == 1) {
+                blocks[i][j].hitPoints = 1;
+                blocks[i][j].color = (Color){255, 204, 77, 255}; // Kuning Retro
+            }
+            else if (level == 2) {
+                int randomType = rand() % 2; // 0 atau 1
+                if (randomType == 0) {
+                    blocks[i][j].hitPoints = 1;
+                    blocks[i][j].color = (Color){255, 204, 77, 255}; // Kuning Retro
+                } else {
+                    blocks[i][j].hitPoints = 2;
+                    blocks[i][j].color = (Color){255, 140, 26, 255}; // Orange Retro
+                }
+            }
+            else if (level == 3) {
+                int randomType = rand() % 3; // 🔥 0 - 2 (Kuning, Orange, Ungu)
+                if (randomType == 0) {
+                    blocks[i][j].hitPoints = 1;
+                    blocks[i][j].color = (Color){255, 204, 77, 255}; // Kuning Retro
+                } else if (randomType == 1) {
+                    blocks[i][j].hitPoints = 2;
+                    blocks[i][j].color = (Color){255, 140, 26, 255}; // Orange Retro
+                } else {
+                    blocks[i][j].hitPoints = 3;
+                    blocks[i][j].color = (Color){140, 90, 200, 255}; // Ungu Retro
+                }
+            }
         }
     }
 }
 
-// Fungsi untuk memperbarui status blok setelah terkena bola
-void UpdateBlockState(Block *block) {
-    if (!block->active) return;  // Jika blok sudah tidak aktif, tidak perlu diupdate
-
-    if (block->colorIndex == 0) { // Jika blok DARKGRAY, ubah menjadi BROWN
-        block->colorIndex = 1;
-        block->color = BROWN;
-    } else if (block->colorIndex == 1) { // Jika blok BROWN, ubah menjadi BEIGE
-        block->colorIndex = 2;
-        block->color = BEIGE;
-    } else if (block->colorIndex == 2) { // Jika blok BEIGE, blok hancur (non-aktif)
-        block->active = false;
-    }
-}
-
-// Fungsi untuk mengatur ulang level dan menginisialisasi ulang blok
+// 🔹 Atur Level (Memanggil `InitLevelBlocks`)
 void SetLevel(Block blocks[BLOCK_ROWS][BLOCK_COLS], int level) {
     InitLevelBlocks(blocks, level);
 }
