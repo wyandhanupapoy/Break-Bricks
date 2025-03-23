@@ -9,6 +9,16 @@ void DrawPauseScreen()
     DrawText("Press P to resume", 390, 350, 20, WHITE);
 }
 
+void DrawInfo()
+{
+    DrawText("Ahmad Habib Mutaqqin (241511065)", SCREEN_WIDTH / 2 - 160, 250, 20, WHITE);
+    DrawText("Muhammad Brata Hadinata (241511082)", SCREEN_WIDTH / 2 - 160, 300, 20, WHITE);
+    DrawText("Muhammad Raihan Abubakar (241511084)", SCREEN_WIDTH / 2 - 160, 350, 20, WHITE);
+    DrawText("Nezya Zulfa Fauziah (241511085)", SCREEN_WIDTH / 2 - 160, 400, 20, WHITE);
+    DrawText("Siti Soviyyah (241511090)", SCREEN_WIDTH / 2 - 160, 450, 20, WHITE);
+    DrawText("Wyandhanu Maulidan Nugraha** (241511092)", SCREEN_WIDTH / 2 - 160, 500, 20, WHITE);
+}
+
 void DrawGameOverScreen()
 {
     ClearBackground(RAYWHITE);

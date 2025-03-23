@@ -21,5 +21,6 @@ void DrawPauseScreen();
 void DrawGameOverScreen();
 void DrawWinScreen();
 void DrawControlInfo();
+void DrawInfo();
 
 #endif // LAYOUT_H

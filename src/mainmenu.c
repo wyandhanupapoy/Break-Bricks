@@ -363,12 +363,7 @@ void DrawMainMenu()
         DrawRainbowText("INFO", SCREEN_WIDTH / 2, 100, 45);
         DrawRainbowText("Dibuat Oleh", SCREEN_WIDTH / 2, 180, 20);
         DrawRainbowText("Kelompok C6 Proyek 2 POLBAN:", SCREEN_WIDTH / 2, 200, 20);
-        DrawText("Ahmad Habib Mutaqqin (241511065)", SCREEN_WIDTH / 2 - 160 , 250, 20, WHITE);
-        DrawText("Muhammad Brata Hadinata (241511082)", SCREEN_WIDTH / 2 - 160 , 300, 20, WHITE);
-        DrawText("Muhammad Raihan Abubakar (241511084)",SCREEN_WIDTH / 2 - 160  , 350, 20, WHITE);
-        DrawText("Nezya Zulfa Fauziah (241511085)",  SCREEN_WIDTH / 2 - 160, 400, 20, WHITE);
-        DrawText("Siti Soviyyah (241511090)", SCREEN_WIDTH / 2 - 160 , 450, 20, WHITE);
-        DrawText("Wyandhanu Maulidan Nugraha** (241511092)", SCREEN_WIDTH / 2 - 160 , 500 , 20, WHITE);
+        DrawInfo();
 
         Color backInfoColor = CheckCollisionPointRec(mouse, levelButtons[3]) ? RED : LIGHTGRAY;
         DrawRectangleRec(levelButtons[3], backInfoColor);
