@@ -1,3 +1,8 @@
+/*
+Nama Pembuat:   Wyandhanu Maulidan Nugraha
+Nama Fitur:     Leeaderboard
+Deskripsi:      Fitur leaderboard untuk menyimpan data pemain dan menampilkannya dalam bentuk tabel
+*/
 #include "leaderboard.h"
 #include <stdio.h>
 #include <string.h>
