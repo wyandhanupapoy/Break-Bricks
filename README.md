@@ -57,6 +57,8 @@ gcc main.c paddle.c block.c BOLA.c nyawa.c skor.c stopwatch.c leaderboard.c main
 ## 📷 Cuplikan Layar
 ![Gameplay Screenshot](assets/images/screenshot1.png)
 ![Gameplay Screenshot](assets/images/screenshot.png)
+![Gameplay Screenshot](assets/images/ss zoom.png)
+
 
 ## 📜 Lisensi
 Proyek ini dibuat untuk tujuan akademik dalam mata kuliah **Pengembangan Aplikasi Berbasis Library** di POLBAN.
