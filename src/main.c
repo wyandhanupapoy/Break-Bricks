@@ -1,3 +1,15 @@
+/*
+    BREAK BRICKS
+    Game Breakout sederhana dengan beberapa level dan leaderboard.
+
+    Oleh: Kelompok C6 Proyek 2 POLBAN
+    - **Wyandhanu Maulidan Nugraha** (241511092)
+    - **Siti Soviyyah** (241511090)
+    - **Nezya Zulfa Fauziah** (241511085)
+    - **Muhammad Raihan Abubakar** (241511084)
+    - **Muhammad Brata Hadinata** (241511082)
+    - **Ahmad Habib Mutaqqin** (241511065)
+*/
 #include <raylib.h>
 
 // Game Modules
