@@ -1,25 +1,40 @@
+//Nama Pembuat: Nezya Zulfa Fauziah  
+//Nama Fitur: Layout  
+//Deskripsi: Fitur layout mengatur tampilan elemen-elemen dalam game **Break Bricks** agar lebih rapi dan intuitif. Arena permainan menampilkan paddle, bola, dan blok, sementara panel di sisi kanan menampilkan skor, nyawa, dan stopwatch. Instruksi kontrol juga ditampilkan untuk memudahkan pemain. Dengan tata letak yang terorganisir, permainan menjadi lebih nyaman dan interaktif.
+
 #include "layout.h"
-#include "raylib.h"
+#include <stdio.h>
 
-void DrawGameLayout(Block blocks[BLOCK_ROWS][BLOCK_COLS], 
-                    Paddle paddles[PADDLE_ROWS][PADDLE_COLS], 
-                    Bola bola[BOLA_ROWS][BOLA_COLS], 
-                    Stopwatch stopwatch[STOPWATCH_ROWS][STOPWATCH_COLS], 
-                    Nyawa nyawa[NYAWA_BARIS][NYAWA_KOLOM],  
-                    Skor skor[MAX_PLAYERS])
-{
-    // 🔹 Latar belakang panel bawah
-    DrawRectangle(0, 600, 835, 50, WHITE);
-    DrawText("<- -> Move  |  P - Pause  |  F - Fullscreen  |  Esc - Exit", 60, 610, 20, BLACK);
+#define SCREEN_WIDTH 1000
+#define SCREEN_HEIGHT 650
 
-    // 🔹 Garis batas kanan
+void DrawGameLayout(Block blocks[BLOCK_ROWS][BLOCK_COLS], Paddle paddles[PADDLE_ROWS][PADDLE_COLS], Bola bola[BOLA_ROWS][BOLA_COLS], Stopwatch stopwatch[STOPWATCH_ROWS][STOPWATCH_COLS], Nyawa nyawa[NYAWA_BARIS][NYAWA_KOLOM], Skor skor[MAX_PLAYERS]) {
+    // Menggambar background
+    ClearBackground(BLACK); // Menggunakan warna latar belakang yang sesuai
+
+    // Menggambar garis pembatas
     DrawLine(835, 0, 835, SCREEN_HEIGHT, WHITE);
 
-    // 🔹 Gambar elemen permainan
-    DrawPaddles(paddles);
+    // Menggambar TataCaraPembatas
+    DrawRectangle(0, 600, 835, 50, WHITE);
+    DrawText("<- -> Bergerak       P - Pause       Esc - Exit", 150, 610, 20, BLACK);
+
+    // Menggambar blok
     DrawBlocks(blocks);
+
+    // Menggambar paddle
+    DrawPaddles(paddles);
+
+    // Menggambar bola
     DrawBola(bola);
+
+    // Menggambar nyawa
+    SetNyawaPosition(nyawa, NYAWA_X, NYAWA_Y);
     DrawNyawa(nyawa);
-    DrawSkor(skor, SCORE_X, SCORE_Y);
-    DrawStopwatch(stopwatch);
+
+    // Menggambar skor
+    DrawSkor(skor, SCORE_X, SCORE_Y); // Modifikasi DrawSkor untuk menerima posisi
+
+    // Menggambar stopwatch
+    DrawStopwatch(stopwatch, STOPWATCH_X, STOPWATCH_Y); // Modifikasi DrawStopwatch untuk menerima posisi
 }
