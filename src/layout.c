@@ -34,7 +34,7 @@ void DrawGameOverScreen()
     DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, WHITE); 
     DrawText("GAME OVER", 370, 300, 40, RED); 
     DrawText("Returning to menu...", 400, 350, 20, DARKGRAY); 
-
+}
 // Fungsi untuk menampilkan layar kemenangan
 void DrawWinScreen()
 {

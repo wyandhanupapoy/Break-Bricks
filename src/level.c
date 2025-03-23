@@ -1,10 +1,8 @@
 #include "level.h"
-#include "block.h"
-#include <stdlib.h> // Untuk fungsi `rand()`
-#include <time.h>   // Untuk seeding angka acak
+#include "raylib.h"
 
-void InitLevelBlocks(Block blocks[BLOCK_ROWS][BLOCK_COLS], int level) {
-    srand(time(NULL));
+void InitLevelBlocks(Block blocks[BLOCK_ROWS][BLOCK_COLS]) {
+    Color colors[3] = { DARKGRAY, BROWN, BEIGE };
 
     for (int i = 0; i < BLOCK_ROWS; i++) {
         for (int j = 0; j < BLOCK_COLS; j++) {
@@ -14,38 +12,29 @@ void InitLevelBlocks(Block blocks[BLOCK_ROWS][BLOCK_COLS], int level) {
             blocks[i][j].rect.height = BLOCK_HEIGHT;
             blocks[i][j].active = true;
 
-            if (level == 1) {
-                blocks[i][j].hitPoints = 1;
-                blocks[i][j].color = (Color){255, 204, 77, 255}; // Kuning Retro
-            }
-            else if (level == 2) {
-                int randomType = rand() % 2; // 0 atau 1
-                if (randomType == 0) {
-                    blocks[i][j].hitPoints = 1;
-                    blocks[i][j].color = (Color){255, 204, 77, 255}; // Kuning Retro
-                } else {
-                    blocks[i][j].hitPoints = 2;
-                    blocks[i][j].color = (Color){255, 140, 26, 255}; // Orange Retro
-                }
-            }
-            else if (level == 3) {
-                int randomType = rand() % 3; // 🔥 0 - 2 (Kuning, Orange, Ungu)
-                if (randomType == 0) {
-                    blocks[i][j].hitPoints = 1;
-                    blocks[i][j].color = (Color){255, 204, 77, 255}; // Kuning Retro
-                } else if (randomType == 1) {
-                    blocks[i][j].hitPoints = 2;
-                    blocks[i][j].color = (Color){255, 140, 26, 255}; // Orange Retro
-                } else {
-                    blocks[i][j].hitPoints = 3;
-                    blocks[i][j].color = (Color){140, 90, 200, 255}; // Ungu Retro
-                }
-            }
+            // Pilih warna acak dan simpan indeksnya
+            int colorIndex = GetRandomValue(0, 2);
+            blocks[i][j].color = colors[colorIndex];
+            blocks[i][j].colorIndex = colorIndex;
         }
     }
 }
 
-// 🔹 Atur Level (Memanggil `InitLevelBlocks`)
-void SetLevel(Block blocks[BLOCK_ROWS][BLOCK_COLS], int level) {
-    InitLevelBlocks(blocks, level);
+void UpdateBlockState(Block *block) {
+    if (!block->active) return;
+
+    // Jika warna sekarang DARKGRAY (0), ubah ke BROWN (1)
+    if (block->colorIndex == 0) {
+        block->colorIndex = 1;
+        block->color = BROWN;
+    } 
+    // Jika warna sekarang BROWN (1), ubah ke BEIGE (2)
+    else if (block->colorIndex == 1) {
+        block->colorIndex = 2;
+        block->color = BEIGE;
+    } 
+    // Jika warna sekarang BEIGE (2), blok hancur
+    else if (block->colorIndex == 2) {
+        block->active = false;
+    }
 }

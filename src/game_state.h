@@ -1,3 +1,9 @@
+/*
+Nama Pembuat:   Wyandhanu Maulidan Nugraha
+Nama Fitur:     define game state
+Deskripsi:      Fitur ini berisi definisi game state yang digunakan dalam game **Break Bricks**
+*/
+
 #ifndef GAME_STATE_H
 #define GAME_STATE_H
 
