@@ -1,3 +1,9 @@
+/*
+Nama Pembuat:   Wyandhanu Maulidan Nugraha
+Nama Fitur:     Block
+Deskripsi:      Fitur block untuk menampilkan blok-blok yang harus dihancurkan oleh pemain
+*/
+
 #include "block.h"
 
 // Inisialisasi blok dalam array 2D

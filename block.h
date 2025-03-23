@@ -1,3 +1,9 @@
+/*
+Nama Pembuat:   Wyandhanu Maulidan Nugraha
+Nama Fitur:     Block
+Deskripsi:      Fitur block untuk menampilkan blok-blok yang harus dihancurkan oleh pemain
+*/
+
 #ifndef BLOCK_H
 #define BLOCK_H
 
