@@ -1,3 +1,9 @@
+Nama Pembuat: Ahmad Habib Muttaqin
+Nama Fitur: Bola
+Deskripsi: Modul ini mengelola bola dalam permainan Block Bricker, termasuk inisialisasi, pergerakan, pantulan terhadap dinding, paddle,
+serta tabrakan dengan blok. Bola memiliki batas kecepatan minimum dan maksimum untuk menjaga dinamika permainan.
+Modul ini berisi implementasi bola dalam permainan Block Bricker menggunakan pustaka Raylib. File bola.c berisi fungsi-fungsi untuk menginisialisasi, memperbarui, menggambar, dan mereset bola dalam permainan.
+
 #include "BOLA.h"
 #include "block.h"
 #include "stopwatch.h"
