@@ -1,3 +1,9 @@
+/*
+Nama Pembuat:   Wyandhanu Maulidan Nugraha
+Nama Fitur:     Background
+Deskripsi:      Fitur background untuk menampilkan efek latar belakang
+*/
+
 #include "background.h"
 #include <math.h>
 

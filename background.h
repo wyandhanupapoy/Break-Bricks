@@ -1,3 +1,9 @@
+/*
+Nama Pembuat:   Wyandhanu Maulidan Nugraha
+Nama Fitur:     Background
+Deskripsi:      Fitur background untuk menampilkan efek latar belakang
+*/
+
 #ifndef BACKGROUND_H
 #define BACKGROUND_H
 
