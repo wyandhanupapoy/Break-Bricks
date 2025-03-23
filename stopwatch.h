@@ -1,3 +1,7 @@
+// Nama : Muhammad Raihan Abubakar
+// Nama fitur : stopwatch
+// deskripsi fitur : stopwatch berguna untuk menampilkan waktu yang terus bertambah dan akan terhenti saat permainan selesai
+
 #ifndef STOPWATCH_H
 #define STOPWATCH_H
 
@@ -14,6 +18,5 @@ typedef struct {
 void InitStopwatch(Stopwatch sw[][STOPWATCH_COLS]);
 void UpdateStopwatch(Stopwatch sw[][STOPWATCH_COLS]);
 void DrawStopwatch(Stopwatch sw[][STOPWATCH_COLS]);
-void ResetStopwatch(Stopwatch sw[][STOPWATCH_COLS]);
 
 #endif
