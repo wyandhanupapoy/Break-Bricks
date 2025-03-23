@@ -1,7 +1,3 @@
-Berikut adalah contoh **`README.md`** untuk repo GitHub proyek 2 Pengembangan Aplikasi Berbasis Library (Bahasa C) sesuai deskripsi dan kode yang kamu berikan:
-
----
-
 # 🌌 Proyek 2 - Pengembangan Aplikasi Berbasis Library (C) | D3 Teknik Informatika POLBAN
 
 ## 📚 Deskripsi Proyek
