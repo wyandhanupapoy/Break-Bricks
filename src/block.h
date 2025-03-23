@@ -17,7 +17,6 @@ typedef struct {
 } Block;
 
 // 🔹 Fungsi Blok
-void InitBlocks(Block blocks[BLOCK_ROWS][BLOCK_COLS], int level);
 void DrawBlocks(Block blocks[BLOCK_ROWS][BLOCK_COLS]);
 bool CheckBallBlockCollision(Vector2 ballPosition, float ballRadius, Rectangle blockRect);
 bool AllBlocksDestroyed(Block blocks[BLOCK_ROWS][BLOCK_COLS]);

@@ -3,6 +3,7 @@
 #include "sound.h"
 #include "game_state.h"
 #include "background.h"
+#include "layout.h"
 #include "raylib.h"
 #include "leaderboard.h"
 #include "game_state.h"
@@ -30,7 +31,6 @@ static Rectangle buttons[] = {
     {10, 600, 140, 40},  // Sound Toggle
 };
 
-// 🔹 Tombol level select
 // 🔹 Tombol level select
 static Rectangle levelButtons[] = {
     {350, 250, 300, 50}, // Level Easy

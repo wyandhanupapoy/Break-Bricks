@@ -122,16 +122,22 @@ void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PAD
             if (closestBlock != NULL)
             {
                 closestBlock->hitPoints--;
+                float elapsedTime = sw[0][0].time;
 
+                // 🔹 Jika block hancur
                 if (closestBlock->hitPoints <= 0)
                 {
                     PlayBlockHit();
                     closestBlock->active = false;
+                    TambahSkorDenganWaktu(skor, elapsedTime); // ✅ Skor hanya ditambah jika block benar-benar hancur
                 }
                 else
                 {
-                    if (closestBlock->hitPoints == 2) closestBlock->color = (Color){255, 140, 26, 255};;
-                    if (closestBlock->hitPoints == 1) closestBlock->color = (Color){255, 204, 77, 255};
+                    // Update warna sesuai hitPoints sisa
+                    if (closestBlock->hitPoints == 2)
+                        closestBlock->color = (Color){255, 140, 26, 255}; // Orange
+                    if (closestBlock->hitPoints == 1)
+                        closestBlock->color = (Color){255, 204, 77, 255}; // Kuning
                 }
 
                 // 🔹 Tentukan sisi tabrakan
@@ -142,27 +148,24 @@ void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PAD
 
                 if (overlapLeft < overlapRight && overlapLeft < overlapTop && overlapLeft < overlapBottom)
                 {
-                    bola[i][0].speed.x *= -1; // Tabrak sisi kiri blok
-                    bola[i][0].position.x = closestBlock->rect.x - bola[i][0].radius; 
+                    bola[i][0].speed.x *= -1;
+                    bola[i][0].position.x = closestBlock->rect.x - bola[i][0].radius;
                 }
                 else if (overlapRight < overlapLeft && overlapRight < overlapTop && overlapRight < overlapBottom)
                 {
-                    bola[i][0].speed.x *= -1; // Tabrak sisi kanan blok
+                    bola[i][0].speed.x *= -1;
                     bola[i][0].position.x = closestBlock->rect.x + closestBlock->rect.width + bola[i][0].radius;
                 }
                 else if (overlapTop < overlapBottom)
                 {
-                    bola[i][0].speed.y *= -1; // Tabrak sisi atas blok
+                    bola[i][0].speed.y *= -1;
                     bola[i][0].position.y = closestBlock->rect.y - bola[i][0].radius;
                 }
                 else
                 {
-                    bola[i][0].speed.y *= -1; // Tabrak sisi bawah blok
+                    bola[i][0].speed.y *= -1;
                     bola[i][0].position.y = closestBlock->rect.y + closestBlock->rect.height + bola[i][0].radius;
                 }
-
-                // 🔹 Tambah skor
-                TambahSkor(skor, 50);
             }
 
             // 🔹 Jika semua blok hancur
@@ -179,7 +182,6 @@ void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PAD
         }
     }
 }
-
 
 void DrawBola(Bola bola[BOLA_ROWS][BOLA_COLS])
 {

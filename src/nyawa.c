@@ -1,9 +1,9 @@
 #include "nyawa.h"
+#include "layout.h"
 #include "raylib.h"
 
-static Texture2D heartTexture;  // Gambar nyawa
-static float nyawaPosX = 850;   // Posisi default X
-static float nyawaPosY = 20;    // Posisi default Y
+static float nyawaPosX = 0;   // Posisi default X
+static float nyawaPosY = 0;    // Posisi default Y
 static float nyawaScale = (float)DEFAULT_NYAWA_SIZE / 100.0f;  // Skala nyawa
 static Texture2D nyawaTexture;
 
