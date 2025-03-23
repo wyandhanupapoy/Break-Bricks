@@ -8,7 +8,8 @@ typedef enum {
     MENU_MAIN,
     MENU_LEVEL_SELECT,
     MENU_NAME_INPUT,
-    MENU_LEADERBOARD
+    MENU_LEADERBOARD,
+    MENU_SETTINGS
 } MenuState;
 
 // 🔹 Fungsi utama menu

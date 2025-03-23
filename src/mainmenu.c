@@ -27,8 +27,13 @@ static Rectangle miniMenuBtn = {850, 580, 140, 40};
 static Rectangle buttons[] = {
     {350, 250, 320, 50}, // Start Game
     {350, 320, 320, 50}, // Leaderboard
-    {350, 390, 320, 50}, // Exit Game
-    {10, 600, 140, 40},  // Sound Toggle
+    {350, 390, 320, 50}, // Settings
+    {350, 460, 320, 50}, // Exit Game
+    {SCREEN_WIDTH / 2 - 60, 300, 140, 40},  // Sound Toggle
+    {SCREEN_WIDTH / 2 - 110, 300, 40, 40},   // Sound Volume Down
+    {SCREEN_WIDTH / 2 + 90, 300, 40, 40},  // Sound Volume Up
+    {470, 390, 70, 40}, // Back to Main Menu
+
 };
 
 // 🔹 Tombol level select
@@ -145,11 +150,13 @@ void UpdateMainMenu()
         }
         if (CheckCollisionPointRec(mouse, buttons[2]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
         {
-            exitGame = true;
+            PlayButtonClick();
+            currentMenu = MENU_SETTINGS;
         }
         if (CheckCollisionPointRec(mouse, buttons[3]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
         {
-            ToggleSound();
+            PlayButtonClick();
+            exitGame = true;
         }
     }
     else if (currentMenu == MENU_LEVEL_SELECT)
@@ -164,6 +171,35 @@ void UpdateMainMenu()
                 strcpy(playerName, "");
                 currentMenu = MENU_NAME_INPUT;
             }
+        }
+
+        // Penanganan tombol BACKSPACE
+        if (IsKeyPressed(KEY_BACKSPACE))
+        {
+            currentMenu = MENU_MAIN;
+        }
+    }
+    else if (currentMenu == MENU_SETTINGS)
+    {
+        if (CheckCollisionPointRec(mouse, buttons[4]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+        {
+            PlayButtonClick();
+            ToggleSound();
+        }
+        if (CheckCollisionPointRec(mouse, buttons[5]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+        {
+            PlayButtonClick();
+            DecreaseVolume();
+        }
+        if (CheckCollisionPointRec(mouse, buttons[6]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+        {
+            PlayButtonClick();
+            IncreaseVolume();
+        }
+        if (CheckCollisionPointRec(mouse, buttons[7]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+        {
+            PlayButtonClick();
+            currentMenu = MENU_MAIN;
         }
 
         // Penanganan tombol BACKSPACE
@@ -237,7 +273,6 @@ void UpdateMainMenu()
         currentMenu = MENU_MAIN; // Kembali ke menu level
     }
 
-
     else if (currentMenu == MENU_LEADERBOARD)
     {
         if (IsKeyPressed(KEY_BACKSPACE))
@@ -258,16 +293,18 @@ void DrawMainMenu()
     {
         DrawTitle();
 
-        const char *buttonTexts[] = {"START GAME", "LEADERBOARD", "EXIT GAME"};
+        const char *buttonTexts[] = {"START GAME", "LEADERBOARD", "SETTINGS", "EXIT GAME"};
 
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 4; i++)
         {
             Color buttonColor;
             if (i == 0)
                 buttonColor = CheckCollisionPointRec(mouse, buttons[i]) ? GREEN : LIGHTGRAY;
             else if (i == 1)
                 buttonColor = CheckCollisionPointRec(mouse, buttons[i]) ? BLUE : LIGHTGRAY;
-            else
+            else if (i == 2)
+                buttonColor = CheckCollisionPointRec(mouse, buttons[i]) ? YELLOW : LIGHTGRAY;
+            else 
                 buttonColor = CheckCollisionPointRec(mouse, buttons[i]) ? (Color){198, 60, 60, 255} : LIGHTGRAY;
 
             DrawRectangleRec(buttons[i], buttonColor);
@@ -279,10 +316,25 @@ void DrawMainMenu()
 
             DrawText(buttonTexts[i], textX, textY, 30, BLACK);
         }
+    }
+    else if (currentMenu == MENU_SETTINGS)
+    {
+        DrawRainbowText("SETTINGS", SCREEN_WIDTH / 2, 150, 45);
+        Color soundColor = CheckCollisionPointRec(mouse, buttons[4]) ? (Color){100, 220, 255, 255} : YELLOW;
+        DrawRectangleRec(buttons[4], soundColor);
+        DrawText(soundOn ? "SOUND ON" : "SOUND OFF", buttons[4].x + 10, buttons[4].y + 10, 20, BLACK);
 
-        Color soundColor = CheckCollisionPointRec(mouse, buttons[3]) ? (Color){100, 220, 255, 255} : YELLOW;
-        DrawRectangleRec(buttons[3], soundColor);
-        DrawText(soundOn ? "SOUND ON" : "SOUND OFF", buttons[3].x + 10, buttons[3].y + 10, 20, BLACK);
+        Color decreaseColor = CheckCollisionPointRec(mouse, buttons[5]) ? (Color){100, 220, 255, 255} : YELLOW;
+        DrawRectangleRec(buttons[5], decreaseColor);
+        DrawText("-", buttons[5].x + 10, buttons[5].y + 10, 20, BLACK);
+
+        Color increaseColor = CheckCollisionPointRec(mouse, buttons[6]) ? (Color){100, 220, 255, 255} : YELLOW;
+        DrawRectangleRec(buttons[6], increaseColor);
+        DrawText("+", buttons[6].x + 10, buttons[6].y + 10, 20, BLACK);
+
+        Color backColor = CheckCollisionPointRec(mouse, buttons[7]) ? RED : LIGHTGRAY;
+        DrawRectangleRec(buttons[7], backColor);
+        DrawText("Back", buttons[7].x + 10, buttons[7].y + 10, 20, BLACK);
     }
     else if (currentMenu == MENU_LEVEL_SELECT)
     {
