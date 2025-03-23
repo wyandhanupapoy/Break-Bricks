@@ -34,7 +34,6 @@ static Rectangle buttons[] = {
     {SCREEN_WIDTH / 2 + 90, 300, 40, 40},  // Sound Volume Up
     {470, 390, 70, 40}, // Back to Main Menu
     {900, 590, 70, 40}, // Info
-
 };
 
 // 🔹 Tombol level select
