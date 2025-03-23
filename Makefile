@@ -8,7 +8,7 @@ SRC=src/main.c src/paddle.c src/BOLA.c src/block.c src/stopwatch.c src/nyawa.c s
 OBJ=$(SRC:.c=.o)
 
 # Nama Output
-TARGET=BreakBricks
+TARGET=build/BreakBricks
 
 # Rule Utama
 all: $(TARGET)
