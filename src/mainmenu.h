@@ -1,10 +1,15 @@
-// mainmenu.h
+// Nama Pembuat: Muhammad Brata Hadinata
+// Nama Fitur: mainmenu.h
+// Deskripsi: Header file untuk mengatur Main Menu game "Break Bricks".
+//            Berisi deklarasi tipe MenuState, fungsi-fungsi navigasi menu,
+//            kontrol mulai/keluar game, input nama pemain, pemilihan level, serta pengaturan suara.
 #ifndef MAINMENU_H
 #define MAINMENU_H
 
 #include "raylib.h"
 
-typedef enum {
+typedef enum
+{
     MENU_MAIN,
     MENU_LEVEL_SELECT,
     MENU_NAME_INPUT,
@@ -25,7 +30,7 @@ bool IsExitGame();
 bool IsStartGame();
 int GetSelectedLevel();
 void SetStartGame(bool value);
-const char* GetPlayerName();
+const char *GetPlayerName();
 
 // 🔹 Kontrol suara
 void ToggleSound();

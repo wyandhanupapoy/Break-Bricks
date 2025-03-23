@@ -1,4 +1,9 @@
-// mainmenu.c
+// Nama Pembuat: Muhammad Brata Hadinata
+// Nama Fitur: mainmenu.c
+// Deskripsi: Kode ini mengatur tampilan dan logika Main Menu dalam game "Break Bricks", termasuk menu utama,
+//            pemilihan level, pengaturan, input nama pemain, leaderboard, dan info.
+//            Kode juga menangani interaksi tombol dengan mouse/keyboard serta efek suara.
+
 #include "mainmenu.h"
 #include "sound.h"
 #include "game_state.h"
@@ -25,15 +30,15 @@ static Rectangle miniMenuBtn = {850, 580, 140, 40};
 
 // 🔹 Tombol utama
 static Rectangle buttons[] = {
-    {350, 250, 320, 50}, // Start Game
-    {350, 320, 320, 50}, // Leaderboard
-    {350, 390, 320, 50}, // Settings
-    {350, 460, 320, 50}, // Exit Game
-    {SCREEN_WIDTH / 2 - 60, 300, 140, 40},  // Sound Toggle
-    {SCREEN_WIDTH / 2 - 110, 300, 40, 40},   // Sound Volume Down
+    {350, 250, 320, 50},                   // Start Game
+    {350, 320, 320, 50},                   // Leaderboard
+    {350, 390, 320, 50},                   // Settings
+    {350, 460, 320, 50},                   // Exit Game
+    {SCREEN_WIDTH / 2 - 60, 300, 140, 40}, // Sound Toggle
+    {SCREEN_WIDTH / 2 - 110, 300, 40, 40}, // Sound Volume Down
     {SCREEN_WIDTH / 2 + 90, 300, 40, 40},  // Sound Volume Up
-    {470, 390, 70, 40}, // Back to Main Menu
-    {900, 590, 70, 40}, // Info
+    {470, 390, 70, 40},                    // Back to Main Menu
+    {900, 590, 70, 40},                    // Info
 };
 
 // 🔹 Tombol level select
@@ -323,9 +328,9 @@ void DrawMainMenu()
                 buttonColor = CheckCollisionPointRec(mouse, buttons[i]) ? BLUE : LIGHTGRAY;
             else if (i == 2)
                 buttonColor = CheckCollisionPointRec(mouse, buttons[i]) ? YELLOW : LIGHTGRAY;
-            else 
+            else
                 buttonColor = CheckCollisionPointRec(mouse, buttons[i]) ? (Color){198, 60, 60, 255} : LIGHTGRAY;
-            
+
             DrawRectangleRec(buttons[i], buttonColor);
 
             // Center text in button
@@ -363,7 +368,12 @@ void DrawMainMenu()
         DrawRainbowText("INFO", SCREEN_WIDTH / 2, 100, 45);
         DrawRainbowText("Dibuat Oleh", SCREEN_WIDTH / 2, 180, 20);
         DrawRainbowText("Kelompok C6 Proyek 2 POLBAN:", SCREEN_WIDTH / 2, 200, 20);
-        DrawInfo();
+        DrawText("Ahmad Habib Mutaqqin (241511065)", SCREEN_WIDTH / 2 - 160, 250, 20, WHITE);
+        DrawText("Muhammad Brata Hadinata (241511082)", SCREEN_WIDTH / 2 - 160, 300, 20, WHITE);
+        DrawText("Muhammad Raihan Abubakar (241511084)", SCREEN_WIDTH / 2 - 160, 350, 20, WHITE);
+        DrawText("Nezya Zulfa Fauziah (241511085)", SCREEN_WIDTH / 2 - 160, 400, 20, WHITE);
+        DrawText("Siti Soviyyah (241511090)", SCREEN_WIDTH / 2 - 160, 450, 20, WHITE);
+        DrawText("Wyandhanu Maulidan Nugraha** (241511092)", SCREEN_WIDTH / 2 - 160, 500, 20, WHITE);
 
         Color backInfoColor = CheckCollisionPointRec(mouse, levelButtons[3]) ? RED : LIGHTGRAY;
         DrawRectangleRec(levelButtons[3], backInfoColor);
