@@ -1,13 +1,18 @@
+// Nama Pembuat: Muhammad Brata Hadinata
+// Nama Fitur: nyawa.h
+// Deskripsi: Kode ini adalah header file untuk modul sistem nyawa pemain di game.
+//            Di sini didefinisikan konstanta, struktur data, dan fungsi-fungsi yang digunakan untuk mengelola nyawa.
+
 #ifndef NYAWA_H
 #define NYAWA_H
 
 #include <raylib.h>
 
 #define NYAWA_BARIS 1
-#define NYAWA_KOLOM 5  // Maksimum 5 nyawa yang bisa ditampilkan
+#define NYAWA_KOLOM 5 // Maksimum 5 nyawa yang bisa ditampilkan
 
-#define DEFAULT_NYAWA_SIZE 20  // Ukuran default
-#define NYAWA_SPACING 5  // Jarak antar nyawa
+#define DEFAULT_NYAWA_SIZE 20 // Ukuran default
+#define NYAWA_SPACING 5       // Jarak antar nyawa
 
 typedef struct
 {

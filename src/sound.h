@@ -1,3 +1,8 @@
+//Nama Pembuat: Siti Soviyyah
+//Nama Fitur: Header sound.h
+//Deskripsi: File ini berguna untuk memanggil fungsi dari file sound.c
+
+
 #ifndef SOUND_H
 #define SOUND_H
 

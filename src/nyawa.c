@@ -1,10 +1,17 @@
+/*  Nama Pembuat: Muhammad Brata Hadinata
+    Nama Fitur: nyawa.c
+    Deskripsi: Kode ini berfungsi untuk mengelola sistem nyawa dalam game.
+               Nyawa ditampilkan sebagai ikon hati di layar, yang menunjukkan berapa sisa nyawa pemain.
+               Saat pemain kalah, nyawa berkurang satu. Jika semua nyawa habis, game akan tahu bahwa pemain kalah atau game over.
+               Kode ini juga memuat, menggambar, dan menghapus gambar nyawa dari memori. */
+
 #include "nyawa.h"
 #include "layout.h"
 #include "raylib.h"
 
-static float nyawaPosX = 0;   // Posisi default X
-static float nyawaPosY = 0;    // Posisi default Y
-static float nyawaScale = (float)DEFAULT_NYAWA_SIZE / 100.0f;  // Skala nyawa
+static float nyawaPosX = 0;                                   // Posisi default X
+static float nyawaPosY = 0;                                   // Posisi default Y
+static float nyawaScale = (float)DEFAULT_NYAWA_SIZE / 100.0f; // Skala nyawa
 static Texture2D nyawaTexture;
 
 // 🔹 Memuat gambar nyawa

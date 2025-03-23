@@ -1,3 +1,7 @@
+//Nama Pembuat: Siti Soviyyah
+//Nama Fitur: Sound Effect
+//Deskripsi: Fitur ini berguna untuk menambahkan efek suara dan musik latar untuk meningkatkan pengalaman bermain game.
+
 #include "sound.h"
 #include "raylib.h"
 #include <stdio.h>

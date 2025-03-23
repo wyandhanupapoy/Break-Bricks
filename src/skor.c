@@ -1,3 +1,8 @@
+//Nama Pembuat: Siti Soviyyah
+//Nama Fitur: Skor
+//Deskripsi: Fitur ini berguna untuk menampilkan skor yang diperoleh bermain yang bergantung pada stopwatch. Semakin lama bermain, semakin sedikit skor yang diperoleh.
+
+
 #include "skor.h"
 #include "game_state.h"
 #include <stdio.h>

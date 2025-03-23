@@ -1,3 +1,8 @@
+//Nama Pembuat: Siti Soviyyah
+//Nama Fitur: Header skor.h
+//Deskripsi: File ini berguna untuk memanggil fungsi-fungsi yang ada pada file skor.c
+
+
 #ifndef SKOR_H
 #define SKOR_H
 
