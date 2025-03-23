@@ -3,6 +3,7 @@
         "raylib.h": "c",
         "stdio.h": "c",
         "bola.h": "c",
-        "stopwatch.h": "c"
+        "stopwatch.h": "c",
+        "layout.h": "c"
     }
 }
