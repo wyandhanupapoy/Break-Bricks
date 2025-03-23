@@ -8,9 +8,9 @@
 
 // Inisialisasi stopwatch
 void InitStopwatch(Stopwatch sw[STOPWATCH_ROWS][STOPWATCH_COLS]) {
-    for (int i = 0; i < STOPWATCH_ROWS; i++) {
-        for (int j = 0; j < STOPWATCH_COLS; j++) {
-            sw[i][j].time = 0.0f;
+    for (int i = 0; i < STOPWATCH_ROWS; i++) { // looping untuk setiap baris
+        for (int j = 0; j < STOPWATCH_COLS; j++) { // looping untuk setiap kolom 
+            sw[i][j].time = 0.0f; // set waktu awal ke 0
             sw[i][j].running = true; // Stopwatch mulai berjalan
         }
     }
@@ -18,9 +18,9 @@ void InitStopwatch(Stopwatch sw[STOPWATCH_ROWS][STOPWATCH_COLS]) {
 
 // Update waktu stopwatch jika berjalan
 void UpdateStopwatch(Stopwatch sw[STOPWATCH_ROWS][STOPWATCH_COLS]) {
-    for (int i = 0; i < STOPWATCH_ROWS; i++) {
-        for (int j = 0; j < STOPWATCH_COLS; j++) {
-            if (sw[i][j].running) {
+    for (int i = 0; i < STOPWATCH_ROWS; i++) { 
+        for (int j = 0; j < STOPWATCH_COLS; j++) { // untuk mengecek apakah stopwatch sedang berjalan atau tidak 
+            if (sw[i][j].running) { // jika stopwatch berjalan 
                 sw[i][j].time += GetFrameTime(); // Tambahkan waktu setiap frame
             }
         }
@@ -28,13 +28,13 @@ void UpdateStopwatch(Stopwatch sw[STOPWATCH_ROWS][STOPWATCH_COLS]) {
 }
 
 // Menampilkan stopwatch di layar
-void DrawStopwatch(Stopwatch sw[STOPWATCH_ROWS][STOPWATCH_COLS]) {
-    char timeText[20];
+void DrawStopwatch(Stopwatch sw[STOPWATCH_ROWS][STOPWATCH_COLS]) { 
+    char timeText[20]; // variabel untuk menyimpan teks waktu 
 
-    for (int i = 0; i < STOPWATCH_ROWS; i++) {
-        for (int j = 0; j < STOPWATCH_COLS; j++) {
-            sprintf(timeText, "Time: %.2f", sw[i][j].time);
-            DrawText(timeText, 870, 80, 20, WHITE); // Posisi Y diatur agar sejajar dengan nyawa
+    for (int i = 0; i < STOPWATCH_ROWS; i++) { 
+        for (int j = 0; j < STOPWATCH_COLS; j++) { 
+            sprintf(timeText, "Time: %.2f", sw[i][j].time); //untuk menyimpan waktu ke dalam format teks
+            DrawText(timeText, 870, 80, 20, WHITE); // koordinat x,y, ukuran font, dan warna teks yang ditampilkan 
         }
     }
 }
