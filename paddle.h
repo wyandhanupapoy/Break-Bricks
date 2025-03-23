@@ -1,3 +1,7 @@
+// Nama : Muhammad Raihan Abubakar
+// Nama fitur : paddle 
+// Deskripsi : paddle berfungsi untuk memantulkan dan mengarahkan bola agar bisa menghancurkan block
+
 #ifndef PADDLE_H
 #define PADDLE_H
 
