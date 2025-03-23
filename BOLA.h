@@ -1,6 +1,7 @@
-Nama Pembuat: Ahmad Habib Muttaqin
+/*Nama Pembuat: Ahmad Habib Muttaqin
 Nama Fitur: Bola
 Deskripsi:bola.h adalah header file yang mendeklarasikan struktur dan fungsi yang digunakan dalam modul ini.
+*/
 
 #ifndef BOLA_H
 #define BOLA_H
