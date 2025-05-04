@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Sound Effect Feature
 
 ## Nama Pembuat
