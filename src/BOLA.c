@@ -32,7 +32,7 @@ void InitBola(Bola bola[BOLA_ROWS][BOLA_COLS])
     }
 }
 
-void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PADDLE_COLS], Block blocks[BLOCK_ROWS][BLOCK_COLS], GameState *state, Skor *skor, Stopwatch sw[STOPWATCH_ROWS][STOPWATCH_COLS])
+void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PADDLE_COLS], Block blocks[BLOCK_ROWS][BLOCK_COLS], GameState *state, Skor *skor, Stopwatch* next)
 {
     for (int i = 0; i < BOLA_ROWS; i++)
     {
@@ -128,8 +128,9 @@ void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PAD
             // 🔹 Jika ada blok yang kena, proses tabrakan
             if (closestBlock != NULL)
             {
-                closestBlock->hitPoints--;
-                float elapsedTime = sw[0][0].time;
+                closestBlock->hitPoints--; //ini ganti harus dipelajari lagi 
+                Stopwatch* swList = next; // Assign the passed stopwatch pointer to swList
+                float elapsedTime = swList->time; // Ambil waktu dari stopwatch yang sudah diupdate
 
                 // 🔹 Jika block hancur
                 if (closestBlock->hitPoints <= 0)
