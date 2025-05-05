@@ -150,7 +150,7 @@ int main()
     Block blocks[BLOCK_ROWS][BLOCK_COLS];
     Bola bola[BOLA_ROWS][BOLA_COLS];
     Nyawa nyawa[NYAWA_BARIS][NYAWA_KOLOM];
-    Stopwatch stopwatch[STOPWATCH_ROWS][STOPWATCH_COLS];
+    Stopwatch stopwatch;
     Skor skor[MAX_PLAYERS];
 
     // Initialize
