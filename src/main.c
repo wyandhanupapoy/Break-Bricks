@@ -13,7 +13,7 @@
 #include <raylib.h>
 
 // Game Modules
-#include "paddle.h"
+#include "linkedlistpaddle.h"
 #include "block.h"
 #include "BOLA.h"
 #include "nyawa.h"
@@ -146,7 +146,7 @@ int main()
     int currentLevel = 0;
 
     // Game Data
-    Paddle paddles[PADDLE_ROWS][PADDLE_COLS];
+    Paddle* paddleList = NULL;
     Block blocks[BLOCK_ROWS][BLOCK_COLS];
     Bola bola[BOLA_ROWS][BOLA_COLS];
     Nyawa nyawa[NYAWA_BARIS][NYAWA_KOLOM];
@@ -206,7 +206,8 @@ int main()
 
                 if (level > 0)
                 {
-                    InitPaddles(paddles);
+                    // Tambah satu paddle di tengah layar (misalnya)
+                    AddPaddle(&paddleList, 350, 550);
                     InitBola(bola);
                     SetNyawaPosition(NYAWA_X, NYAWA_Y);
                     InitNyawa(nyawa, 3);
@@ -239,10 +240,13 @@ int main()
                 ChangeMusic("assets/sounds/gameplay_music.mp3");
                 UpdateMusic();
                 // Bola nempel paddle sebelum diluncurkan
-                bola[0][0].position.x = paddles[0][0].rect.x + PADDLE_WIDTH / 2;
-                bola[0][0].position.y = paddles[0][0].rect.y - bola[0][0].radius - 1;
+                if (paddleList != NULL) {
+                    bola[0][0].position.x = paddleList->rect.x + PADDLE_WIDTH / 2;
+                    bola[0][0].position.y = paddleList->rect.y - bola[0][0].radius - 1;
+                }
+                
 
-                UpdatePaddles(paddles);
+                UpdatePaddles(paddleList);
 
                 if (IsKeyPressed(KEY_SPACE))
                 {
@@ -252,8 +256,8 @@ int main()
                 break;
 
             case GAME_PLAY:
-                UpdatePaddles(paddles);
-                UpdateBola(bola, paddles, blocks, &gameState, &skor[0], stopwatch);
+                UpdatePaddles(paddleList);
+                UpdateBola(bola, paddleList, blocks, &gameState, &skor[0], stopwatch);
                 UpdateStopwatch(stopwatch);
 
                 if (!bola[0][0].active)
@@ -340,13 +344,13 @@ int main()
         DrawControlInfo();
 
         // Draw game layout
-        DrawPaddles(paddles);
-        DrawBlocks(blocks);
-        DrawBola(bola);
-        DrawNyawa(nyawa);
-        DrawSkor(skor, SCORE_X, SCORE_Y);
-        DrawStopwatch(stopwatch);
-        DrawMainMenuMini(gameState);
+            DrawPaddles(paddleList);
+            DrawBlocks(blocks);
+            DrawBola(bola);
+            DrawNyawa(nyawa);
+            DrawSkor(skor, SCORE_X, SCORE_Y);
+            DrawStopwatch(stopwatch);
+            DrawMainMenuMini(gameState);
 
         // Tampilkan teks "LIFE LOST!" jika nyawa berkurang
         if (lifeLost)
@@ -395,6 +399,7 @@ int main()
     UnloadSoundEffects();
     UnloadMedalTextures();
     UnloadImage(icon);
+    FreePaddles(paddleList);
     CloseWindow();
     return 0;
 }

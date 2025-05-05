@@ -32,7 +32,7 @@ void InitBola(Bola bola[BOLA_ROWS][BOLA_COLS])
     }
 }
 
-void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PADDLE_COLS], Block blocks[BLOCK_ROWS][BLOCK_COLS], GameState *state, Skor *skor, Stopwatch sw[STOPWATCH_ROWS][STOPWATCH_COLS])
+void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle* paddleList,Block blocks[BLOCK_ROWS][BLOCK_COLS], GameState *state, Skor *skor, Stopwatch sw[STOPWATCH_ROWS][STOPWATCH_COLS])
 {
     for (int i = 0; i < BOLA_ROWS; i++)
     {
@@ -76,29 +76,28 @@ void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PAD
             }
 
             // 🔹 Pantulan dengan paddle
-            for (int j = 0; j < PADDLE_ROWS; j++)
-            {
-                for (int k = 0; k < PADDLE_COLS; k++)
-                {
-                    if (CheckCollisionCircleRec(bola[i][0].position, bola[i][0].radius, paddles[j][k].rect))
-                    {
-                        float paddleCenter = paddles[j][k].rect.x + PADDLE_WIDTH / 2;
-                        float hitPos = bola[i][0].position.x - paddleCenter;
-                        float normalizedHit = hitPos / (PADDLE_WIDTH / 2);
+            Paddle* current = paddleList;
+while (current != NULL)
+{
+    if (CheckCollisionCircleRec(bola[i][0].position, bola[i][0].radius, current->rect))
+    {
+        float paddleCenter = current->rect.x + PADDLE_WIDTH / 2;
+        float hitPos = bola[i][0].position.x - paddleCenter;
+        float normalizedHit = hitPos / (PADDLE_WIDTH / 2);
 
-                        bola[i][0].speed.x = normalizedHit * 7.0f; // Pantulan ke kiri-kanan
-                        bola[i][0].speed.y *= -1;                  // Pantulan vertikal
-                        PlayPaddleHit();
+        bola[i][0].speed.x = normalizedHit * 7.0f;
+        bola[i][0].speed.y *= -1;
+        PlayPaddleHit();
 
-                        // Boost sedikit setelah kena paddle
-                        bola[i][0].speed.x *= 1.05f;
-                        bola[i][0].speed.y *= 1.05f;
+        bola[i][0].speed.x *= 1.05f;
+        bola[i][0].speed.y *= 1.05f;
 
-                        // Reset posisi supaya nggak stuck
-                        bola[i][0].position.y = paddles[j][k].rect.y - bola[i][0].radius - 1;
-                    }
-                }
-            }
+        bola[i][0].position.y = current->rect.y - bola[i][0].radius - 1;
+    }
+
+    current = current->next;
+}
+
 
             // 🔹 Cek tabrakan dengan blok (hanya satu blok terdekat)
             Block *closestBlock = NULL;
