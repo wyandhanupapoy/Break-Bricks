@@ -146,7 +146,7 @@ int main()
     int currentLevel = 0;
 
     // Game Data
-    Paddle* paddleList = NULL;
+    Paddle* paddleList = NULL; // Pointer ke linked list paddle
     Block blocks[BLOCK_ROWS][BLOCK_COLS];
     Bola bola[BOLA_ROWS][BOLA_COLS];
     Nyawa nyawa[NYAWA_BARIS][NYAWA_KOLOM];
@@ -206,7 +206,7 @@ int main()
 
                 if (level > 0)
                 {
-                    // Tambah satu paddle di tengah layar (misalnya)
+                    
                     AddPaddle(&paddleList, 350, 550);
                     InitBola(bola);
                     SetNyawaPosition(NYAWA_X, NYAWA_Y);
@@ -257,7 +257,7 @@ int main()
 
             case GAME_PLAY:
                 UpdatePaddles(paddleList);
-                UpdateBola(bola, paddleList, blocks, &gameState, &skor[0], stopwatch);
+                UpdateBola(bola, paddleList, blocks, &gameState, skor, stopwatch);
                 UpdateStopwatch(stopwatch);
 
                 if (!bola[0][0].active)
@@ -344,13 +344,13 @@ int main()
         DrawControlInfo();
 
         // Draw game layout
-            DrawPaddles(paddleList);
-            DrawBlocks(blocks);
-            DrawBola(bola);
-            DrawNyawa(nyawa);
-            DrawSkor(skor, SCORE_X, SCORE_Y);
-            DrawStopwatch(stopwatch);
-            DrawMainMenuMini(gameState);
+        DrawPaddles(paddleList);
+        DrawBlocks(blocks);
+        DrawBola(bola);
+        DrawNyawa(nyawa);
+        DrawSkor(skor, SCORE_X, SCORE_Y);
+        DrawStopwatch(stopwatch);
+        DrawMainMenuMini(gameState);
 
         // Tampilkan teks "LIFE LOST!" jika nyawa berkurang
         if (lifeLost)
@@ -399,7 +399,6 @@ int main()
     UnloadSoundEffects();
     UnloadMedalTextures();
     UnloadImage(icon);
-    FreePaddles(paddleList);
     CloseWindow();
     return 0;
 }
