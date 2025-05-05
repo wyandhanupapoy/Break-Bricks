@@ -4,11 +4,11 @@
 **Break Bricks** adalah game retro yang terinspirasi dari permainan klasik **Breakout**. Pemain mengendalikan **paddle** untuk memantulkan bola dan menghancurkan semua **blok** di layar. Game ini dikembangkan menggunakan **Raylib** dengan bahasa pemrograman **C** sebagai bagian dari **Tugas Proyek 2 - Pengembangan Aplikasi Berbasis Library** di **Jurusan Teknik Komputer dan Informatika, POLBAN**.
 
 ## 👥 Anggota Kelompok (C6)
-- **Wyandhanu Maulidan Nugraha** (241511092)
-- **Siti Soviyyah** (241511090)
-- **Nezya Zulfa Fauziah** (241511085)
-- **Muhammad Raihan Abubakar** (241511084)
-- **Muhammad Brata Hadinata** (241511082)
+- **Wyandhanu Maulidan Nugraha** (241511092) wyandhanupapoy
+- **Siti Soviyyah** (241511090) nsitizen
+- **Nezya Zulfa Fauziah** (241511085) nezyazulfa
+- **Muhammad Raihan Abubakar** (241511084) hanzz78
+- **Muhammad Brata Hadinata** (241511082) MuhammadBrataH
 - **Ahmad Habib Mutaqqin** (241511065)
 
 ### 📌 Dosen Pembimbing/Manager: **Djoko Cahyo Utomo**
