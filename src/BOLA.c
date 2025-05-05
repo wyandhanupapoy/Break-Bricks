@@ -9,7 +9,7 @@ Modul ini berisi implementasi bola dalam permainan Block Bricker menggunakan pus
 #include "block.h"
 #include "stopwatch.h"
 #include "game_state.h"
-#include "sound.h"
+#include "LinkedList_Sound.h"
 #include <math.h>
 #include <float.h>
 #include <stddef.h>
@@ -88,7 +88,7 @@ void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PAD
 
                         bola[i][0].speed.x = normalizedHit * 7.0f; // Pantulan ke kiri-kanan
                         bola[i][0].speed.y *= -1;                  // Pantulan vertikal
-                        PlayPaddleHit();
+                        PlaySoundEffect("paddleHit");
 
                         // Boost sedikit setelah kena paddle
                         bola[i][0].speed.x *= 1.05f;
@@ -134,7 +134,7 @@ void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PAD
                 // 🔹 Jika block hancur
                 if (closestBlock->hitPoints <= 0)
                 {
-                    PlayBlockHit();
+                    PlaySoundEffect("blockHit");
                     closestBlock->active = false;
                     TambahSkorDenganWaktu(skor, elapsedTime); // ✅ Skor hanya ditambah jika block benar-benar hancur
                 }

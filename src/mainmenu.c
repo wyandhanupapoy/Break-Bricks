@@ -5,7 +5,7 @@
 //            Kode juga menangani interaksi tombol dengan mouse/keyboard serta efek suara.
 
 #include "mainmenu.h"
-#include "sound.h"
+#include "LinkedList_Sound.h"
 #include "game_state.h"
 #include "background.h"
 #include "layout.h"
@@ -93,9 +93,11 @@ void UpdateMainMenuMini(GameState *state)
 
     if ((*state == GAME_START || *state == GAME_PLAY) && CheckCollisionPointRec(mouse, miniMenuBtn) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
     {
-        PlayButtonClick();
+        PlaySoundEffect("assets/sounds/click_button.wav");
         *state = GAME_MENU; // Kembali ke Main Menu
-        ChangeMusic("assets/sounds/background_music.mp3");
+        InitBackgroundMusic();
+        SetCurrentMusicToHead();
+        PlayBackgroundMusic();
         UpdateMusic();
     }
 }
@@ -145,27 +147,27 @@ void UpdateMainMenu()
     {
         if (CheckCollisionPointRec(mouse, buttons[0]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
         {
-            PlayButtonClick();
+            PlaySoundEffect("buttonClick");
             currentMenu = MENU_LEVEL_SELECT;
         }
         if (CheckCollisionPointRec(mouse, buttons[1]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
         {
-            PlayButtonClick();
+            PlaySoundEffect("buttonClick");
             currentMenu = MENU_LEADERBOARD;
         }
         if (CheckCollisionPointRec(mouse, buttons[2]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
         {
-            PlayButtonClick();
+            PlaySoundEffect("buttonClick");
             currentMenu = MENU_SETTINGS;
         }
         if (CheckCollisionPointRec(mouse, buttons[8]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
         {
-            PlayButtonClick();
+            PlaySoundEffect("buttonClick");
             currentMenu = MENU_INFO;
         }
         if (CheckCollisionPointRec(mouse, buttons[3]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
         {
-            PlayButtonClick();
+            PlaySoundEffect("buttonClick");
             exitGame = true;
         }
     }
@@ -175,7 +177,7 @@ void UpdateMainMenu()
         {
             if (CheckCollisionPointRec(mouse, levelButtons[i]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
             {
-                PlayButtonClick();
+                PlaySoundEffect("buttonClick");
                 selectedLevel = i + 1;
                 letterCount = 0;
                 strcpy(playerName, "");
@@ -193,22 +195,22 @@ void UpdateMainMenu()
     {
         if (CheckCollisionPointRec(mouse, buttons[4]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
         {
-            PlayButtonClick();
+            PlaySoundEffect("buttonClick");
             ToggleSound();
         }
         if (CheckCollisionPointRec(mouse, buttons[5]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
         {
-            PlayButtonClick();
+            PlaySoundEffect("buttonClick");
             DecreaseVolume();
         }
         if (CheckCollisionPointRec(mouse, buttons[6]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
         {
-            PlayButtonClick();
+            PlaySoundEffect("buttonClick");
             IncreaseVolume();
         }
         if (CheckCollisionPointRec(mouse, buttons[7]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
         {
-            PlayButtonClick();
+            PlaySoundEffect("buttonClick");
             currentMenu = MENU_MAIN;
         }
 
@@ -222,7 +224,7 @@ void UpdateMainMenu()
     {
         if (CheckCollisionPointRec(mouse, levelButtons[3]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
         {
-            PlayButtonClick();
+            PlaySoundEffect("buttonClick");
             currentMenu == MENU_MAIN;
         }
 
@@ -268,7 +270,7 @@ void UpdateMainMenu()
             // Submit button (enter)
             if (IsKeyPressed(KEY_ENTER) && letterCount > 0)
             {
-                PlayButtonClick();
+                PlaySoundEffect("buttonClick");
                 startGame = true;
                 currentMenu = MENU_MAIN;
             }
@@ -280,20 +282,20 @@ void UpdateMainMenu()
 
         if (mouseOnText && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
         {
-            PlayButtonClick();
+            PlaySoundEffect("buttonClick");
         }
     }
 
     if (CheckCollisionPointRec(mouse, inputName[0]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
     {
         printf("Tombol BACK TO MENU diklik!\n"); // Debugging
-        PlayButtonClick();
+        PlaySoundEffect("buttonClick");
         currentMenu = MENU_LEVEL_SELECT; // Kembali ke menu level
     }
     if (CheckCollisionPointRec(mouse, levelButtons[3]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
     {
         printf("Tombol BACK TO MENU diklik!\n"); // Debugging
-        PlayButtonClick();
+        PlaySoundEffect("buttonClick");
         currentMenu = MENU_MAIN; // Kembali ke menu level
     }
 
@@ -464,7 +466,7 @@ void DrawMainMenu()
         if (CheckCollisionPointRec(mousePos, refreshButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
         {
             LoadLeaderboard(leaderboard); // Reload leaderboard data
-            PlayButtonClick();            // Add sound feedback
+            PlaySoundEffect("buttonClick");            // Add sound feedback
         }
 
         DrawLeaderboardMenu(leaderboard, MAX_LEADERBOARD_ENTRIES, leaderboardScrollOffset);

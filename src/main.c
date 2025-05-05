@@ -25,7 +25,7 @@
 #include "level.h"
 #include "layout.h"
 #include "background.h"
-#include "sound.h"
+#include "LinkedList_Sound.h"
 
 #include <stdio.h>
 #include <math.h>
@@ -128,6 +128,8 @@ int main()
     LoadNyawaTexture();
     InitBackground();
     InitSoundEffects();
+    InitBackgroundMusic();
+    SetCurrentMusicToHead();
     PlayBackgroundMusic();
 
     // 🔹 Load leaderboard dari file
@@ -226,7 +228,7 @@ int main()
         // === PAUSE CONTROL ===
         if (IsKeyPressed(KEY_P) && gameState == GAME_PLAY)
         {
-            PauseMusic();
+            ToggleMusic();
             isPaused = !isPaused;
         }
 
@@ -236,7 +238,7 @@ int main()
             switch (gameState)
             {
             case GAME_START:
-                ChangeMusic("assets/sounds/gameplay_music.mp3");
+                NextMusic();
                 UpdateMusic();
                 // Bola nempel paddle sebelum diluncurkan
                 bola[0][0].position.x = paddles[0][0].rect.x + PADDLE_WIDTH / 2;
@@ -265,7 +267,7 @@ int main()
                     }
                     else
                     {
-                        PlayLoseLife();
+                        PlaySoundEffect("loseLife");
                         ResetBola(bola);
                         gameState = GAME_START;
 
@@ -277,8 +279,8 @@ int main()
                 break;
 
             case GAME_OVER:
-                PlayGameOver();
-                ChangeMusic("assets/sounds/background_music.mp3");
+                PlaySoundEffect("gameOver");
+                PlayBackgroundMusic();
                 UpdateMusic();
                 gameEndTimer += GetFrameTime();
 
@@ -303,8 +305,8 @@ int main()
                 break;
 
             case GAME_WIN:
-                PlayGameWin();
-                ChangeMusic("assets/sounds/background_music.mp3");
+                PlaySoundEffect("gameWin");
+                PlayBackgroundMusic();
                 UpdateMusic();
                 gameEndTimer += GetFrameTime();
 
@@ -393,6 +395,7 @@ int main()
     SaveLeaderboard(leaderboard);
     UnloadNyawaTexture();
     UnloadSoundEffects();
+    UnloadBackgroundMusic();
     UnloadMedalTextures();
     UnloadImage(icon);
     CloseWindow();
