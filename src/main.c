@@ -20,7 +20,7 @@
 #include "skor.h"
 #include "stopwatch.h"
 #include "leaderboard.h"
-#include "mainmenu.h"
+#include "linkedlist_mainmenu.h"
 #include "game_state.h"
 #include "level.h"
 #include "layout.h"
