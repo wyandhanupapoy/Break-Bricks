@@ -1,89 +1,73 @@
-/*  Nama Pembuat: Muhammad Brata Hadinata
-    Nama Fitur: nyawa.c
-    Deskripsi: Kode ini berfungsi untuk mengelola sistem nyawa dalam game.
-               Nyawa ditampilkan sebagai ikon hati di layar, yang menunjukkan berapa sisa nyawa pemain.
-               Saat pemain kalah, nyawa berkurang satu. Jika semua nyawa habis, game akan tahu bahwa pemain kalah atau game over.
-               Kode ini juga memuat, menggambar, dan menghapus gambar nyawa dari memori. */
+#include "linkedlist_nyawa.h"
 
-#include "nyawa.h"
-#include "layout.h"
-#include "raylib.h"
-
-static float nyawaPosX = 0;                                   // Posisi default X
-static float nyawaPosY = 0;                                   // Posisi default Y
-static float nyawaScale = (float)DEFAULT_NYAWA_SIZE / 100.0f; // Skala nyawa
 static Texture2D nyawaTexture;
+static float nyawaSize = 8.0f;
+static Vector2 basePosition = {10, 10};
 
-// 🔹 Memuat gambar nyawa
 void LoadNyawaTexture()
 {
-    nyawaTexture = LoadTexture("assets/images/heart.png");
+    nyawaTexture = LoadTexture("assets/heart.png");
 }
 
-// 🔹 Membersihkan gambar nyawa dari memori
 void UnloadNyawaTexture()
 {
     UnloadTexture(nyawaTexture);
 }
 
-// 🔹 Mengatur posisi nyawa
-void SetNyawaPosition(float x, float y)
-{
-    nyawaPosX = x;
-    nyawaPosY = y;
-}
-
-// 🔹 Mengatur ukuran nyawa
 void SetNyawaSize(float size)
 {
-    nyawaScale = size / 100.0f;
+    nyawaSize = size;
 }
 
-// 🔹 Inisialisasi jumlah nyawa
-void InitNyawa(Nyawa nyawa[NYAWA_BARIS][NYAWA_KOLOM], int totalNyawa)
+void SetNyawaPosition(float x, float y)
 {
-    for (int i = 0; i < NYAWA_KOLOM; i++)
+    basePosition = (Vector2){x, y};
+}
+
+void InitNyawaLinkedList(NodeNyawa **head, int jumlah)
+{
+    for (int i = 0; i < jumlah; i++)
     {
-        nyawa[0][i].aktif = (i < totalNyawa);
+        NodeNyawa *newNode = (NodeNyawa *)malloc(sizeof(NodeNyawa));
+        newNode->posisi = (Vector2){basePosition.x + i * (nyawaSize + 4), basePosition.y};
+        newNode->size = nyawaSize;
+        newNode->next = *head;
+        *head = newNode;
     }
 }
 
-// 🔹 Kurangi nyawa jika kehilangan bola
-void KurangiNyawa(Nyawa nyawa[NYAWA_BARIS][NYAWA_KOLOM])
+void KurangiNyawaLinkedList(NodeNyawa **head)
 {
-    for (int i = NYAWA_KOLOM - 1; i >= 0; i--)
+    if (*head == NULL)
+        return;
+    NodeNyawa *temp = *head;
+    *head = (*head)->next;
+    free(temp);
+}
+
+int AnyLivesLeftLinkedList(NodeNyawa *head)
+{
+    return head != NULL;
+}
+
+void DrawNyawaLinkedList(NodeNyawa *head)
+{
+    NodeNyawa *current = head;
+    while (current)
     {
-        if (nyawa[0][i].aktif)
-        {
-            nyawa[0][i].aktif = false;
-            break;
-        }
+        DrawTextureEx(nyawaTexture, current->posisi, 0.0f, current->size / nyawaTexture.width, WHITE);
+        current = current->next;
     }
 }
 
-// 🔹 Cek apakah masih ada nyawa tersisa
-bool AnyLivesLeft(Nyawa nyawa[NYAWA_BARIS][NYAWA_KOLOM])
+void FreeNyawaLinkedList(NodeNyawa **head)
 {
-    for (int i = 0; i < NYAWA_KOLOM; i++)
+    NodeNyawa *current = *head;
+    while (current)
     {
-        if (nyawa[0][i].aktif)
-        {
-            return true;
-        }
+        NodeNyawa *temp = current;
+        current = current->next;
+        free(temp);
     }
-    return false;
-}
-
-// 🔹 Gambar nyawa dengan ukuran dinamis & berjejer dari kanan ke kiri
-void DrawNyawa(Nyawa nyawa[NYAWA_BARIS][NYAWA_KOLOM])
-{
-    for (int i = 0; i < NYAWA_KOLOM; i++)
-    {
-        if (nyawa[0][i].aktif)
-        {
-            float posX = nyawaPosX - (i * ((nyawaTexture.width * nyawaScale) + NYAWA_SPACING));
-            float posY = nyawaPosY;
-            DrawTextureEx(nyawaTexture, (Vector2){posX, posY}, 0.0f, nyawaScale, WHITE);
-        }
-    }
+    *head = NULL;
 }
