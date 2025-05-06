@@ -30,10 +30,14 @@
 #include <stdio.h>
 #include <math.h>
 
+
+
 // Timer untuk auto return ke menu
 float gameEndTimer = 0.0f;
 const float returnDelay = 3.0f; // 3 detik kembali ke menu
 LeaderboardEntry leaderboard[MAX_LEADERBOARD_ENTRIES];
+
+Stopwatch* swList; // Pointer ke stopwatch yang akan digunakan
 
 // Fungsi untuk menggambar background unik setiap level
 void DrawLevelBackground(int level)
@@ -150,7 +154,7 @@ int main()
     Block blocks[BLOCK_ROWS][BLOCK_COLS];
     Bola bola[BOLA_ROWS][BOLA_COLS];
     Nyawa nyawa[NYAWA_BARIS][NYAWA_KOLOM];
-    Stopwatch stopwatch;
+    Stopwatch* stopwatch;
     Skor skor[MAX_PLAYERS];
 
     // Initialize
@@ -210,7 +214,7 @@ int main()
                     InitBola(bola);
                     SetNyawaPosition(NYAWA_X, NYAWA_Y);
                     InitNyawa(nyawa, 3);
-                    InitStopwatch(stopwatch);
+                    InitStopwatch(&stopwatch, MAX_PLAYERS);
                     InitSkor(skor);
                     SetLevel(blocks, level);
                     currentLevel = level;
@@ -253,8 +257,8 @@ int main()
 
             case GAME_PLAY:
                 UpdatePaddles(paddles);
-                UpdateBola(bola, paddles, blocks, &gameState, &skor[0], stopwatch);
-                UpdateStopwatch(stopwatch);
+                UpdateBola(bola, paddles, blocks, &gameState, &skor[0], swList);
+                UpdateStopwatch(swList);
 
                 if (!bola[0][0].active)
                 {
@@ -284,7 +288,7 @@ int main()
 
                 if (!leaderboardUpdated)
                 {
-                    AddToLeaderboard(leaderboard, GetPlayerName(), skor[0].score, stopwatch[0][0].time, currentLevel, "GAME OVER");
+                    AddToLeaderboard(leaderboard, GetPlayerName(), skor[0].score, swList->time, currentLevel, "GAME OVER");
                     SaveLeaderboard(leaderboard);
                     LoadLeaderboard(leaderboard); // ⬅️ **Langsung reload leaderboard**
                     leaderboardUpdated = true;
@@ -310,7 +314,7 @@ int main()
 
                 if (!leaderboardUpdated)
                 {
-                    AddToLeaderboard(leaderboard, GetPlayerName(), skor[0].score, stopwatch[0][0].time, currentLevel, "WIN");
+                    AddToLeaderboard(leaderboard, GetPlayerName(), skor[0].score, swList->time, currentLevel, "WIN");
                     SaveLeaderboard(leaderboard);
                     LoadLeaderboard(leaderboard); // ⬅️ **Langsung reload leaderboard**
                     leaderboardUpdated = true;
@@ -345,7 +349,7 @@ int main()
         DrawBola(bola);
         DrawNyawa(nyawa);
         DrawSkor(skor, SCORE_X, SCORE_Y);
-        DrawStopwatch(stopwatch);
+        DrawStopwatch(swList);
         DrawMainMenuMini(gameState);
 
         // Tampilkan teks "LIFE LOST!" jika nyawa berkurang

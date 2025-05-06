@@ -6,22 +6,15 @@
 // Inisialisasi linked list stopwatch sebanyak 'count' node
 void InitStopwatch(Stopwatch** head, int count) {
     *head = NULL;
-    Stopwatch* current = NULL;
-
     for (int i = 0; i < count; i++) {
-        Stopwatch* newNode = (Stopwatch*)malloc(sizeof(Stopwatch));
+        Stopwatch* newNode = malloc(sizeof(Stopwatch));
         newNode->time = 0.0f;
         newNode->running = true;
-        newNode->next = NULL;
-
-        if (*head == NULL) {
-            *head = newNode;
-        } else {
-            current->next = newNode;
-        }
-        current = newNode;
+        newNode->next = *head;
+        *head = newNode;
     }
 }
+
 
 // Update waktu semua stopwatch jika berjalan
 void UpdateStopwatch(Stopwatch* head) {
