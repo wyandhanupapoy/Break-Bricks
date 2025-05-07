@@ -1,13 +1,42 @@
-/*
-Nama Pembuat:   Wyandhanu Maulidan Nugraha
-Nama Fitur:     Block
-Deskripsi:      Fitur block untuk menampilkan blok-blok yang harus dihancurkan oleh pemain
-*/
-
 #include "block.h"
+#include <stdlib.h>
+
+// 🔹 Fungsi untuk menginisialisasi linked list
+void InitList(LinkedList *list) {
+    list->head = NULL;
+    list->tail = NULL;
+}
+
+// 🔹 Fungsi untuk menambahkan blok ke dalam linked list
+void AddBlock(LinkedList *list, Block block) {
+    NodeBlock *newNode = (NodeBlock *)malloc(sizeof(NodeBlock));
+    newNode->data = block;
+    newNode->next = NULL;
+
+    if (list->tail != NULL) {
+        list->tail->next = newNode; // Menambahkan di akhir list
+    } else {
+        list->head = newNode; // Jika list kosong, blok menjadi node pertama
+    }
+
+    list->tail = newNode; // Memperbarui tail
+}
+
+// 🔹 Fungsi untuk membersihkan linked list
+void ClearList(LinkedList *list) {
+    NodeBlock *current = list->head;
+    while (current != NULL) {
+        NodeBlock *next = current->next;
+        free(current);  // Menghapus node
+        current = next;
+    }
+    list->head = NULL;
+    list->tail = NULL;
+}
 
 // 🔹 Update kondisi blok saat terkena bola
-void UpdateBlockState(Block *block) {
+void UpdateBlockState(NodeBlock *node) {
+    Block *block = &node->data;
     if (!block->active) return;
 
     block->hitPoints--; // Kurangi HP blok
@@ -24,14 +53,15 @@ void UpdateBlockState(Block *block) {
 }
 
 // 🔹 Gambar semua blok
-void DrawBlocks(Block blocks[BLOCK_ROWS][BLOCK_COLS]) {
-    for (int i = 0; i < BLOCK_ROWS; i++) {
-        for (int j = 0; j < BLOCK_COLS; j++) {
-            if (blocks[i][j].active) {
-                DrawRectangleRec(blocks[i][j].rect, blocks[i][j].color);
-                DrawRectangleLinesEx(blocks[i][j].rect, 2, BLACK);
-            }
+void DrawBlocks(LinkedList *blockList) {
+    NodeBlock *current = blockList->head;
+    while (current != NULL) {
+        Block *block = &current->data;
+        if (block->active) {
+            DrawRectangleRec(block->rect, block->color);
+            DrawRectangleLinesEx(block->rect, 2, BLACK);
         }
+        current = current->next;
     }
 }
 
@@ -41,11 +71,11 @@ bool CheckBallBlockCollision(Vector2 ballPosition, float ballRadius, Rectangle b
 }
 
 // 🔹 Cek apakah semua blok sudah hancur
-bool AllBlocksDestroyed(Block blocks[BLOCK_ROWS][BLOCK_COLS]) {
-    for (int i = 0; i < BLOCK_ROWS; i++) {
-        for (int j = 0; j < BLOCK_COLS; j++) {
-            if (blocks[i][j].active) return false;
-        }
+bool AllBlocksDestroyed(LinkedList *blockList) {
+    NodeBlock *current = blockList->head;
+    while (current != NULL) {
+        if (current->data.active) return false;
+        current = current->next;
     }
     return true;
 }

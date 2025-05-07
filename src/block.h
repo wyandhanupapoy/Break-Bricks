@@ -1,33 +1,42 @@
-/*
-Nama Pembuat:   Wyandhanu Maulidan Nugraha
-Nama Fitur:     Block
-Deskripsi:      Fitur block untuk menampilkan blok-blok yang harus dihancurkan oleh pemain
-*/
+#ifndef LINKEDLIST_BLOCK_H
+#define LINKEDLIST_BLOCK_H
 
-#ifndef BLOCK_H
-#define BLOCK_H
+#include "raylib.h"
+#include <stdbool.h>
 
-#include <raylib.h>
-
-#define BLOCK_ROWS 5
+#define BLOCK_ROWS 5  // or any number that suits your design
 #define BLOCK_COLS 10
 #define BLOCK_WIDTH 75
 #define BLOCK_HEIGHT 25
 #define BLOCK_SPACING 5
 
-typedef struct {
+// 🔹 Struktur Block
+typedef struct Block {
     Rectangle rect;
-    bool active;
     Color color;
     int hitPoints;
+    bool active;
 } Block;
 
-// 🔹 Fungsi Blok
-void DrawBlocks(Block blocks[BLOCK_ROWS][BLOCK_COLS]);
+// 🔹 Node dalam Linked List
+typedef struct NodeBlock {
+    Block data;
+    struct NodeBlock *next;
+} NodeBlock;
+
+// 🔹 Struktur Linked List
+typedef struct {
+    NodeBlock *head;
+    NodeBlock *tail;
+} LinkedList;
+
+// 🔹 Fungsi-fungsi Linked List Block
+void InitList(LinkedList *list);
+void AddBlock(LinkedList *list, Block block);
+void ClearList(LinkedList *list);
+void UpdateBlockState(NodeBlock *node);
+void DrawBlocks(LinkedList *blockList);
 bool CheckBallBlockCollision(Vector2 ballPosition, float ballRadius, Rectangle blockRect);
-bool AllBlocksDestroyed(Block blocks[BLOCK_ROWS][BLOCK_COLS]);
+bool AllBlocksDestroyed(LinkedList *blockList);
 
-// 🔹 Tambahkan `extern` agar hanya sebagai referensi
-extern void UpdateBlockState(Block *block); 
-
-#endif // BLOCK_H
+#endif // LINKEDLIST_BLOCK_H
