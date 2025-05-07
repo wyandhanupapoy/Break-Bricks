@@ -7,6 +7,7 @@
 #define MAINMENU_H
 
 #include "raylib.h"
+#include "game_state.h" // Tambahkan include untuk GameState
 
 typedef enum
 {
