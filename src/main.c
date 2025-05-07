@@ -37,7 +37,6 @@ float gameEndTimer = 0.0f;
 const float returnDelay = 3.0f; // 3 detik kembali ke menu
 LeaderboardEntry leaderboard[MAX_LEADERBOARD_ENTRIES];
 
-Stopwatch* swList; // Pointer ke stopwatch yang akan digunakan
 
 // Fungsi untuk menggambar background unik setiap level
 void DrawLevelBackground(int level)
@@ -154,7 +153,8 @@ int main()
     Block blocks[BLOCK_ROWS][BLOCK_COLS];
     Bola bola[BOLA_ROWS][BOLA_COLS];
     Nyawa nyawa[NYAWA_BARIS][NYAWA_KOLOM];
-    Stopwatch* stopwatch;
+    Stopwatch *stopwatch = NULL;
+    Stopwatch *swList = NULL; // Pointer untuk stopwatch global
     Skor skor[MAX_PLAYERS];
 
     // Initialize
@@ -215,6 +215,7 @@ int main()
                     SetNyawaPosition(NYAWA_X, NYAWA_Y);
                     InitNyawa(nyawa, 3);
                     InitStopwatch(&stopwatch, MAX_PLAYERS);
+                    swList = stopwatch; // Pointer untuk stopwatch global
                     InitSkor(skor);
                     SetLevel(blocks, level);
                     currentLevel = level;

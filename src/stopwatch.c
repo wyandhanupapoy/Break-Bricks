@@ -33,7 +33,7 @@ void DrawStopwatch(Stopwatch* head) {
     int y = 80;
     char timeText[20];
 
-    while (current != NULL) {
+    if (current != NULL) {
         sprintf(timeText, "Time: %.2f", current->time);
         DrawText(timeText, 870, y, 20, WHITE);
         y += 30; // Geser ke bawah untuk tiap stopwatch
