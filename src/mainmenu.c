@@ -438,37 +438,37 @@ void DrawMainMenu()
         DrawText("BACK TO MENU", inputName[0].x + 5, inputName[0].y + 10, 20, BLACK);
     }
     else if (currentMenu == MENU_LEADERBOARD)
+{
+    static Leaderboard leaderboardData;
+    static bool leaderboardLoaded = false;
+
+    if (!leaderboardLoaded)
     {
-        static LeaderboardEntry leaderboard[MAX_PLAYERS];
-        static bool leaderboardLoaded = false;
-
-        if (!leaderboardLoaded)
-        {
-            LoadLeaderboard(leaderboard);
-            leaderboardLoaded = true;
-        }
-
-        // Handle scrolling with mouse wheel
-        leaderboardScrollOffset -= (GetMouseWheelMove() * SCROLL_SPEED);
-
-        // Limit scrolling
-        int maxScroll = (MAX_LEADERBOARD_ENTRIES * 30) - 380; // Calculate based on entries and visible area
-        if (leaderboardScrollOffset < 0)
-            leaderboardScrollOffset = 0;
-        if (maxScroll > 0 && leaderboardScrollOffset > maxScroll)
-            leaderboardScrollOffset = maxScroll;
-
-        // Check for refresh button click
-        Vector2 mousePos = GetMousePosition();
-        Rectangle refreshButton = {750, 60, 120, 30};
-        if (CheckCollisionPointRec(mousePos, refreshButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-        {
-            LoadLeaderboard(leaderboard); // Reload leaderboard data
-            PlayButtonClick();            // Add sound feedback
-        }
-
-        DrawLeaderboardMenu(leaderboard, MAX_LEADERBOARD_ENTRIES, leaderboardScrollOffset);
+        InitLeaderboard(&leaderboardData);
+        LoadLeaderboard(&leaderboardData);
+        leaderboardLoaded = true;
     }
+
+    // Handle scrolling
+    leaderboardScrollOffset -= (GetMouseWheelMove() * SCROLL_SPEED);
+    int maxScroll = (leaderboardData.count * 30) - 380;
+    if (leaderboardScrollOffset < 0)
+        leaderboardScrollOffset = 0;
+    if (maxScroll > 0 && leaderboardScrollOffset > maxScroll)
+        leaderboardScrollOffset = maxScroll;
+
+    // Refresh button
+    Vector2 mousePos = GetMousePosition();
+    Rectangle refreshButton = {750, 60, 120, 30};
+    if (CheckCollisionPointRec(mousePos, refreshButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+    {
+        LoadLeaderboard(&leaderboardData);
+        PlayButtonClick();
+    }
+
+    DrawLeaderboardMenu(&leaderboardData, leaderboardScrollOffset); // ✅ perbaikan tipe
+}
+
 }
 
 // 🔹 Getter dan Setter
