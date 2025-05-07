@@ -1,10 +1,3 @@
-/*Nama Pembuat: Ahmad Habib Muttaqin
-Nama Fitur: Bola
-Deskripsi: Modul ini mengelola bola dalam permainan Block Bricker, termasuk inisialisasi, pergerakan, pantulan terhadap dinding, paddle,
-serta tabrakan dengan blok. Bola memiliki batas kecepatan minimum dan maksimum untuk menjaga dinamika permainan.
-Modul ini berisi implementasi bola dalam permainan Block Bricker menggunakan pustaka Raylib. File bola.c berisi fungsi-fungsi untuk menginisialisasi, memperbarui, menggambar, dan mereset bola dalam permainan.
-*/
-
 #include "BOLA.h"
 #include "block.h"
 #include "stopwatch.h"
@@ -20,194 +13,158 @@ Modul ini berisi implementasi bola dalam permainan Block Bricker menggunakan pus
 #define MIN_BALL_SPEED 6.0f
 #define MAX_BALL_SPEED 9.0f
 
-void InitBola(Bola bola[BOLA_ROWS][BOLA_COLS])
-{
-    for (int i = 0; i < BOLA_ROWS; i++)
-    {
+// 🔹 Inisialisasi bola di tengah layar
+void InitBola(Bola bola[BOLA_ROWS][BOLA_COLS]) {
+    for (int i = 0; i < BOLA_ROWS; i++) {
         bola[i][0].position = (Vector2){SCREEN_W / 2, SCREEN_H / 2};
-        bola[i][0].speed = (Vector2){6, -6}; // Speed awal
+        bola[i][0].speed = (Vector2){6, -6};
         bola[i][0].radius = 10;
         bola[i][0].color = RED;
         bola[i][0].active = true;
     }
 }
 
-void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PADDLE_COLS], Block blocks[BLOCK_ROWS][BLOCK_COLS], GameState *state, Skor *skor, Stopwatch sw[STOPWATCH_ROWS][STOPWATCH_COLS])
-{
-    for (int i = 0; i < BOLA_ROWS; i++)
-    {
-        if (!bola[i][0].active)
-            continue;
+// 🔹 Memperbarui posisi, tabrakan, dan status bola
+void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PADDLE_COLS], 
+                LinkedList *blocks, GameState *state, Skor *skor, 
+                Stopwatch sw[STOPWATCH_ROWS][STOPWATCH_COLS]) {
 
-        if (*state == GAME_PLAY || *state == GAME_START)
-        {
-            // 🔹 Pergerakan bola
-            bola[i][0].position.x += bola[i][0].speed.x;
-            bola[i][0].position.y += bola[i][0].speed.y;
+    for (int i = 0; i < BOLA_ROWS; i++) {
+        Bola *b = &bola[i][0];
+        if (!b->active) continue;
 
-            // 🔹 Batasi kecepatan bola
-            float speedMagnitude = sqrtf(bola[i][0].speed.x * bola[i][0].speed.x + bola[i][0].speed.y * bola[i][0].speed.y);
-            if (speedMagnitude < MIN_BALL_SPEED)
-            {
-                bola[i][0].speed.x *= (MIN_BALL_SPEED / speedMagnitude);
-                bola[i][0].speed.y *= (MIN_BALL_SPEED / speedMagnitude);
-            }
-            if (speedMagnitude > MAX_BALL_SPEED)
-            {
-                bola[i][0].speed.x *= (MAX_BALL_SPEED / speedMagnitude);
-                bola[i][0].speed.y *= (MAX_BALL_SPEED / speedMagnitude);
+        if (*state == GAME_PLAY || *state == GAME_START) {
+            // 🔹 Pergerakan
+            b->position.x += b->speed.x;
+            b->position.y += b->speed.y;
+
+            // 🔹 Batasi kecepatan
+            float speedMag = sqrtf(b->speed.x * b->speed.x + b->speed.y * b->speed.y);
+            if (speedMag < MIN_BALL_SPEED || speedMag > MAX_BALL_SPEED) {
+                float clamped = fminf(fmaxf(speedMag, MIN_BALL_SPEED), MAX_BALL_SPEED);
+                b->speed.x *= (clamped / speedMag);
+                b->speed.y *= (clamped / speedMag);
             }
 
             // 🔹 Pantulan dinding
-            if (bola[i][0].position.x < bola[i][0].radius)
-            {
-                bola[i][0].speed.x *= -1;
-                bola[i][0].position.x = bola[i][0].radius;
+            if (b->position.x < b->radius) {
+                b->speed.x *= -1;
+                b->position.x = b->radius;
             }
-            if (bola[i][0].position.x > SCREEN_W - bola[i][0].radius)
-            {
-                bola[i][0].speed.x *= -1;
-                bola[i][0].position.x = SCREEN_W - bola[i][0].radius;
+            if (b->position.x > SCREEN_W - b->radius) {
+                b->speed.x *= -1;
+                b->position.x = SCREEN_W - b->radius;
             }
-            if (bola[i][0].position.y < bola[i][0].radius)
-            {
-                bola[i][0].speed.y *= -1;
-                bola[i][0].position.y = bola[i][0].radius;
+            if (b->position.y < b->radius) {
+                b->speed.y *= -1;
+                b->position.y = b->radius;
             }
 
-            // 🔹 Pantulan dengan paddle
-            for (int j = 0; j < PADDLE_ROWS; j++)
-            {
-                for (int k = 0; k < PADDLE_COLS; k++)
-                {
-                    if (CheckCollisionCircleRec(bola[i][0].position, bola[i][0].radius, paddles[j][k].rect))
-                    {
-                        float paddleCenter = paddles[j][k].rect.x + PADDLE_WIDTH / 2;
-                        float hitPos = bola[i][0].position.x - paddleCenter;
-                        float normalizedHit = hitPos / (PADDLE_WIDTH / 2);
-
-                        bola[i][0].speed.x = normalizedHit * 7.0f; // Pantulan ke kiri-kanan
-                        bola[i][0].speed.y *= -1;                  // Pantulan vertikal
+            // 🔹 Pantulan paddle
+            for (int j = 0; j < PADDLE_ROWS; j++) {
+                for (int k = 0; k < PADDLE_COLS; k++) {
+                    Paddle *p = &paddles[j][k];
+                    if (CheckCollisionCircleRec(b->position, b->radius, p->rect)) {
+                        float paddleCenter = p->rect.x + PADDLE_WIDTH / 2;
+                        float hitOffset = (b->position.x - paddleCenter) / (PADDLE_WIDTH / 2);
+                        b->speed.x = hitOffset * 7.0f;
+                        b->speed.y *= -1;
+                        b->speed.x *= 1.05f;
+                        b->speed.y *= 1.05f;
+                        b->position.y = p->rect.y - b->radius - 1;
                         PlayPaddleHit();
-
-                        // Boost sedikit setelah kena paddle
-                        bola[i][0].speed.x *= 1.05f;
-                        bola[i][0].speed.y *= 1.05f;
-
-                        // Reset posisi supaya nggak stuck
-                        bola[i][0].position.y = paddles[j][k].rect.y - bola[i][0].radius - 1;
                     }
                 }
             }
 
-            // 🔹 Cek tabrakan dengan blok (hanya satu blok terdekat)
-            Block *closestBlock = NULL;
-            float closestDistance = FLT_MAX;
-            for (int blockRow = 0; blockRow < BLOCK_ROWS; blockRow++)
-            {
-                for (int blockCol = 0; blockCol < BLOCK_COLS; blockCol++)
-                {
-                    Block *block = &blocks[blockRow][blockCol];
+            // 🔹 Tabrakan dengan blok
+            Block *closest = NULL;
+            float closestDist = FLT_MAX;
 
-                    if (block->active && CheckCollisionCircleRec(bola[i][0].position, bola[i][0].radius, block->rect))
-                    {
-                        // 🔹 Hitung jarak bola ke pusat blok
-                        float distance = sqrtf(pow(bola[i][0].position.x - (block->rect.x + block->rect.width / 2), 2) +
-                                               pow(bola[i][0].position.y - (block->rect.y + block->rect.height / 2), 2));
+            NodeBlock *current = blocks->head;  // Mengakses linked list blocks
+            while (current != NULL) {
+                Block *blk = &current->data;
+                if (!blk->active) {
+                    current = current->next;
+                    continue;
+                }
 
-                        // 🔹 Simpan blok yang paling dekat
-                        if (distance < closestDistance)
-                        {
-                            closestDistance = distance;
-                            closestBlock = block;
-                        }
+                if (CheckCollisionCircleRec(b->position, b->radius, blk->rect)) {
+                    float dx = b->position.x - (blk->rect.x + blk->rect.width / 2);
+                    float dy = b->position.y - (blk->rect.y + blk->rect.height / 2);
+                    float dist = sqrtf(dx * dx + dy * dy);
+
+                    if (dist < closestDist) {
+                        closestDist = dist;
+                        closest = blk;
                     }
                 }
+
+                current = current->next;
             }
 
-            // 🔹 Jika ada blok yang kena, proses tabrakan
-            if (closestBlock != NULL)
-            {
-                closestBlock->hitPoints--;
-                float elapsedTime = sw[0][0].time;
-
-                // 🔹 Jika block hancur
-                if (closestBlock->hitPoints <= 0)
-                {
+            if (closest) {
+                closest->hitPoints--;
+                if (closest->hitPoints <= 0) {
+                    closest->active = false;
                     PlayBlockHit();
-                    closestBlock->active = false;
-                    TambahSkorDenganWaktu(skor, elapsedTime); // ✅ Skor hanya ditambah jika block benar-benar hancur
-                }
-                else
-                {
-                    // Update warna sesuai hitPoints sisa
-                    if (closestBlock->hitPoints == 2)
-                        closestBlock->color = (Color){255, 140, 26, 255}; // Orange
-                    if (closestBlock->hitPoints == 1)
-                        closestBlock->color = (Color){255, 204, 77, 255}; // Kuning
+                    TambahSkorDenganWaktu(skor, sw[0][0].time);
+                } else {
+                    switch (closest->hitPoints) {
+                        case 2:
+                            closest->color = (Color){255, 140, 26, 255}; break;
+                        case 1:
+                            closest->color = (Color){255, 204, 77, 255}; break;
+                    }
                 }
 
-                // 🔹 Tentukan sisi tabrakan
-                float overlapLeft = fabs((bola[i][0].position.x + bola[i][0].radius) - closestBlock->rect.x);
-                float overlapRight = fabs((closestBlock->rect.x + closestBlock->rect.width) - (bola[i][0].position.x - bola[i][0].radius));
-                float overlapTop = fabs((bola[i][0].position.y + bola[i][0].radius) - closestBlock->rect.y);
-                float overlapBottom = fabs((closestBlock->rect.y + closestBlock->rect.height) - (bola[i][0].position.y - bola[i][0].radius));
+                // 🔹 Deteksi sisi tabrakan
+                float left = fabs((b->position.x + b->radius) - closest->rect.x);
+                float right = fabs((closest->rect.x + closest->rect.width) - (b->position.x - b->radius));
+                float top = fabs((b->position.y + b->radius) - closest->rect.y);
+                float bottom = fabs((closest->rect.y + closest->rect.height) - (b->position.y - b->radius));
 
-                if (overlapLeft < overlapRight && overlapLeft < overlapTop && overlapLeft < overlapBottom)
-                {
-                    bola[i][0].speed.x *= -1;
-                    bola[i][0].position.x = closestBlock->rect.x - bola[i][0].radius;
-                }
-                else if (overlapRight < overlapLeft && overlapRight < overlapTop && overlapRight < overlapBottom)
-                {
-                    bola[i][0].speed.x *= -1;
-                    bola[i][0].position.x = closestBlock->rect.x + closestBlock->rect.width + bola[i][0].radius;
-                }
-                else if (overlapTop < overlapBottom)
-                {
-                    bola[i][0].speed.y *= -1;
-                    bola[i][0].position.y = closestBlock->rect.y - bola[i][0].radius;
-                }
-                else
-                {
-                    bola[i][0].speed.y *= -1;
-                    bola[i][0].position.y = closestBlock->rect.y + closestBlock->rect.height + bola[i][0].radius;
+                if (left < right && left < top && left < bottom) {
+                    b->speed.x *= -1;
+                    b->position.x = closest->rect.x - b->radius;
+                } else if (right < left && right < top && right < bottom) {
+                    b->speed.x *= -1;
+                    b->position.x = closest->rect.x + closest->rect.width + b->radius;
+                } else if (top < bottom) {
+                    b->speed.y *= -1;
+                    b->position.y = closest->rect.y - b->radius;
+                } else {
+                    b->speed.y *= -1;
+                    b->position.y = closest->rect.y + closest->rect.height + b->radius;
                 }
             }
 
-            // 🔹 Jika semua blok hancur
-            if (AllBlocksDestroyed(blocks))
-            {
+            // 🔹 Menang jika semua blok hancur
+            if (AllBlocksDestroyed(blocks)) {
                 *state = GAME_WIN;
             }
 
-            // 🔹 Cek jika bola jatuh ke bawah
-            if (bola[i][0].position.y > SCREEN_H)
-            {
-                bola[i][0].active = false;
+            // 🔹 Bola jatuh ke bawah
+            if (b->position.y > SCREEN_H) {
+                b->active = false;
             }
         }
     }
 }
 
-void DrawBola(Bola bola[BOLA_ROWS][BOLA_COLS])
-{
-    for (int i = 0; i < BOLA_ROWS; i++)
-    {
-        if (bola[i][0].active)
-        {
+// 🔹 Menggambar bola ke layar
+void DrawBola(Bola bola[BOLA_ROWS][BOLA_COLS]) {
+    for (int i = 0; i < BOLA_ROWS; i++) {
+        if (bola[i][0].active) {
             DrawCircleV(bola[i][0].position, bola[i][0].radius, bola[i][0].color);
         }
     }
 }
 
-void ResetBola(Bola bola[BOLA_ROWS][BOLA_COLS])
-{
-    for (int i = 0; i < BOLA_ROWS; i++)
-    {
+// 🔹 Reset posisi bola ke tengah
+void ResetBola(Bola bola[BOLA_ROWS][BOLA_COLS]) {
+    for (int i = 0; i < BOLA_ROWS; i++) {
         bola[i][0].position = (Vector2){SCREEN_W / 2, SCREEN_H / 2};
-
-        // Diam dulu, nanti diatur lagi saat mulai game
         bola[i][0].speed = (Vector2){6, -6};
         bola[i][0].active = true;
     }
