@@ -126,7 +126,7 @@ int main()
     SetWindowIcon(icon);
 
     LoadNyawaTexture();
-    InitBackground();
+    InitBackground();  // Inisialisasi background dengan linked list
     InitSoundEffects();
     PlayBackgroundMusic();
 
@@ -158,7 +158,7 @@ int main()
 
     while (!WindowShouldClose())
     {
-        UpdateBackground();
+        UpdateBackground();  // Update animasi background dengan linked list
         SetNyawaSize(8);
         SetNyawaPosition(NYAWA_X, NYAWA_Y);
         UpdateMusic();
@@ -194,6 +194,8 @@ int main()
             UpdateMainMenu();
 
             BeginDrawing();
+            ClearBackground((Color){30, 0, 60, 255});
+            DrawBackground();  // Gambar background menu dengan linked list
             DrawMainMenu();
             EndDrawing();
 
@@ -333,7 +335,14 @@ int main()
         // === DRAWING ===
         BeginDrawing();
         ClearBackground((Color){30, 0, 60, 255});
-        DrawLevelBackground(currentLevel);
+        
+        // Gunakan background LevelBackground untuk level 1-3
+        // Atau background linked list untuk level lainnya
+        if (currentLevel >= 1 && currentLevel <= 3) {
+            DrawLevelBackground(currentLevel);
+        } else {
+            DrawBackground();  // Gunakan background linked list
+        }
 
         // Layout garis & panel bawah
         DrawLine(835, 0, 835, SCREEN_HEIGHT, WHITE);
@@ -390,6 +399,8 @@ int main()
         }
     }
 
+    // Cleanup di akhir program
+    CleanupBackground();  // Membersihkan memori linked list background
     SaveLeaderboard(leaderboard);
     UnloadNyawaTexture();
     UnloadSoundEffects();
