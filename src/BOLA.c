@@ -25,9 +25,7 @@ void InitBola(Bola bola[BOLA_ROWS][BOLA_COLS]) {
 }
 
 // 🔹 Memperbarui posisi, tabrakan, dan status bola
-void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PADDLE_COLS], 
-                LinkedList *blocks, GameState *state, Skor *skor, 
-                Stopwatch sw[STOPWATCH_ROWS][STOPWATCH_COLS]) {
+void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PADDLE_COLS], LinkedList *blocks, GameState *state, Skor *skor, Stopwatch* next) {
 
     for (int i = 0; i < BOLA_ROWS; i++) {
         Bola *b = &bola[i][0];
@@ -77,65 +75,67 @@ void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PAD
                 }
             }
 
-            // 🔹 Tabrakan dengan blok
-            Block *closest = NULL;
-            float closestDist = FLT_MAX;
-
-            NodeBlock *current = blocks->head;  // Mengakses linked list blocks
+            // 🔹 Cek tabrakan dengan blok (hanya satu blok terdekat)
+            Block *closestBlock = NULL;
+            float closestDistance = FLT_MAX;
+            
+            // Iterasi melalui linked list blok
+            NodeBlock *current = blocks->head;
             while (current != NULL) {
-                Block *blk = &current->data;
-                if (!blk->active) {
-                    current = current->next;
-                    continue;
-                }
+                Block *block = &current->data;
+                
+                if (block->active && CheckCollisionCircleRec(bola[i][0].position, bola[i][0].radius, block->rect)) {
+                    // 🔹 Hitung jarak bola ke pusat blok
+                    float distance = sqrtf(pow(bola[i][0].position.x - (block->rect.x + block->rect.width / 2), 2) +
+                                          pow(bola[i][0].position.y - (block->rect.y + block->rect.height / 2), 2));
 
-                if (CheckCollisionCircleRec(b->position, b->radius, blk->rect)) {
-                    float dx = b->position.x - (blk->rect.x + blk->rect.width / 2);
-                    float dy = b->position.y - (blk->rect.y + blk->rect.height / 2);
-                    float dist = sqrtf(dx * dx + dy * dy);
-
-                    if (dist < closestDist) {
-                        closestDist = dist;
-                        closest = blk;
+                    // 🔹 Simpan blok yang paling dekat
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestBlock = block;
                     }
                 }
-
                 current = current->next;
             }
 
-            if (closest) {
-                closest->hitPoints--;
-                if (closest->hitPoints <= 0) {
-                    closest->active = false;
+            // 🔹 Jika ada blok yang kena, proses tabrakan
+            if (closestBlock != NULL) {
+                closestBlock->hitPoints--; // Kurangi hit points blok
+                Stopwatch* swList = next; // Assign the passed stopwatch pointer to swList
+                float elapsedTime = swList->time; // Ambil waktu dari stopwatch yang sudah diupdate
+
+                // 🔹 Jika block hancur
+                if (closestBlock->hitPoints <= 0) {
+                    closestBlock->active = false; // Set block menjadi tidak aktif
                     PlayBlockHit();
-                    TambahSkorDenganWaktu(skor, sw[0][0].time);
+                    TambahSkorDenganWaktu(skor, elapsedTime);
                 } else {
-                    switch (closest->hitPoints) {
+                    switch (closestBlock->hitPoints) {
                         case 2:
-                            closest->color = (Color){255, 140, 26, 255}; break;
+                            closestBlock->color = (Color){255, 140, 26, 255}; break;
                         case 1:
-                            closest->color = (Color){255, 204, 77, 255}; break;
+                            closestBlock->color = (Color){255, 204, 77, 255}; break;
                     }
                 }
 
                 // 🔹 Deteksi sisi tabrakan
-                float left = fabs((b->position.x + b->radius) - closest->rect.x);
-                float right = fabs((closest->rect.x + closest->rect.width) - (b->position.x - b->radius));
-                float top = fabs((b->position.y + b->radius) - closest->rect.y);
-                float bottom = fabs((closest->rect.y + closest->rect.height) - (b->position.y - b->radius));
+                float left = fabs((b->position.x + b->radius) - closestBlock->rect.x);
+                float right = fabs((closestBlock->rect.x + closestBlock->rect.width) - (b->position.x - b->radius));
+                float top = fabs((b->position.y + b->radius) - closestBlock->rect.y);
+                float bottom = fabs((closestBlock->rect.y + closestBlock->rect.height) - (b->position.y - b->radius));
 
                 if (left < right && left < top && left < bottom) {
                     b->speed.x *= -1;
-                    b->position.x = closest->rect.x - b->radius;
+                    b->position.x = closestBlock->rect.x - b->radius;
                 } else if (right < left && right < top && right < bottom) {
                     b->speed.x *= -1;
-                    b->position.x = closest->rect.x + closest->rect.width + b->radius;
+                    b->position.x = closestBlock->rect.x + closestBlock->rect.width + b->radius;
                 } else if (top < bottom) {
                     b->speed.y *= -1;
-                    b->position.y = closest->rect.y - b->radius;
+                    b->position.y = closestBlock->rect.y - b->radius;
                 } else {
                     b->speed.y *= -1;
-                    b->position.y = closest->rect.y + closest->rect.height + b->radius;
+                    b->position.y = closestBlock->rect.y + closestBlock->rect.height + b->radius;
                 }
             }
 

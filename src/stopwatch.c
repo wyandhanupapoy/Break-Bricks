@@ -1,40 +1,42 @@
-// Nama : Muhammad Raihan Abubakar
-// Nama fitur : stopwatch
-// deskripsi fitur : stopwatch berguna untuk menampilkan waktu yang terus bertambah dan akan terhenti saat permainan selesai
-
 #include "stopwatch.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <raylib.h>
 
-// Inisialisasi stopwatch
-void InitStopwatch(Stopwatch sw[STOPWATCH_ROWS][STOPWATCH_COLS]) {
-    for (int i = 0; i < STOPWATCH_ROWS; i++) { // looping untuk setiap baris
-        for (int j = 0; j < STOPWATCH_COLS; j++) { // looping untuk setiap kolom 
-            sw[i][j].time = 0.0f; // set waktu awal ke 0
-            sw[i][j].running = true; // Stopwatch mulai berjalan
-        }
+// Inisialisasi linked list stopwatch sebanyak 'count' node
+void InitStopwatch(Stopwatch** head, int count) {
+    *head = NULL;
+    for (int i = 0; i < count; i++) {
+        Stopwatch* newNode = malloc(sizeof(Stopwatch));
+        newNode->time = 0.0f;
+        newNode->running = true;
+        newNode->next = *head;
+        *head = newNode;
     }
 }
 
-// Update waktu stopwatch jika berjalan
-void UpdateStopwatch(Stopwatch sw[STOPWATCH_ROWS][STOPWATCH_COLS]) {
-    for (int i = 0; i < STOPWATCH_ROWS; i++) { 
-        for (int j = 0; j < STOPWATCH_COLS; j++) { // untuk mengecek apakah stopwatch sedang berjalan atau tidak 
-            if (sw[i][j].running) { // jika stopwatch berjalan 
-                sw[i][j].time += GetFrameTime(); // Tambahkan waktu setiap frame
-            }
+
+// Update waktu semua stopwatch jika berjalan
+void UpdateStopwatch(Stopwatch* head) {
+    Stopwatch* current = head;
+    while (current != NULL) {
+        if (current->running) {
+            current->time += GetFrameTime();
         }
+        current = current->next;
     }
 }
 
 // Menampilkan stopwatch di layar
-void DrawStopwatch(Stopwatch sw[STOPWATCH_ROWS][STOPWATCH_COLS]) { 
-    char timeText[20]; // variabel untuk menyimpan teks waktu 
+void DrawStopwatch(Stopwatch* head) {
+    Stopwatch* current = head;
+    int y = 80;
+    char timeText[20];
 
-    for (int i = 0; i < STOPWATCH_ROWS; i++) { 
-        for (int j = 0; j < STOPWATCH_COLS; j++) { 
-            sprintf(timeText, "Time: %.2f", sw[i][j].time); //untuk menyimpan waktu ke dalam format teks
-            DrawText(timeText, 870, 80, 20, WHITE); // koordinat x,y, ukuran font, dan warna teks yang ditampilkan 
-        }
+    if (current != NULL) {
+        sprintf(timeText, "Time: %.2f", current->time);
+        DrawText(timeText, 870, y, 20, WHITE);
+        y += 30; // Geser ke bawah untuk tiap stopwatch
+        current = current->next;
     }
 }

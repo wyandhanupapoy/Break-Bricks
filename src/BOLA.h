@@ -21,7 +21,7 @@ typedef struct
 } Bola;
 
 void InitBola(Bola bola[BOLA_ROWS][BOLA_COLS]);
-void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PADDLE_COLS], LinkedList *blocks, GameState *state, Skor *skor, Stopwatch sw[STOPWATCH_ROWS][STOPWATCH_COLS]);
+void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PADDLE_COLS], LinkedList *blocks, GameState *state, Skor *skor, Stopwatch* next);
 void DrawBola(Bola bola[BOLA_ROWS][BOLA_COLS]);
 void ResetBola(Bola bola[BOLA_ROWS][BOLA_COLS]);
 
