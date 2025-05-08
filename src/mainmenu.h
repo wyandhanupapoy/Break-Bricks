@@ -7,6 +7,7 @@
 #define MAINMENU_H
 
 #include "raylib.h"
+#include "game_state.h" // Tambahkan include untuk GameState
 
 typedef enum
 {
@@ -22,8 +23,8 @@ typedef enum
 void InitMainMenu();
 void UpdateMainMenu();
 void DrawMainMenu();
-void DrawMainMenuMini();
-void UpdateMainMenuMini();
+void DrawMainMenuMini(GameState state);
+void UpdateMainMenuMini(GameState *state);
 
 // 🔹 Kontrol game
 bool IsExitGame();
