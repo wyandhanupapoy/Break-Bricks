@@ -38,8 +38,81 @@ LeaderboardEntry leaderboard[MAX_LEADERBOARD_ENTRIES];
 // Fungsi untuk menggambar background unik setiap level
 void DrawLevelBackground(int level)
 {
-    // [Isi fungsi DrawLevelBackground tetap sama...]
-    // Tidak perlu diubah
+    switch (level)
+    {
+    case 1:
+        // Gradient statis dari biru sangat gelap (atas) ke hitam pekat (bawah)
+        for (int y = 0; y < SCREEN_HEIGHT; y++)
+        {
+            float gradient = (float)y / SCREEN_HEIGHT; // Nilai gradient berdasarkan posisi Y
+            Color color = (Color){
+                (int)(10 + 5 * gradient),  // R (hampir tidak ada merah)
+                (int)(20 + 10 * gradient), // G (sedikit biru kehijauan)
+                (int)(30 + 15 * gradient), // B (biru sangat gelap)
+                255                        // Alpha
+            };
+            DrawLine(0, y, SCREEN_WIDTH, y, color); // Garis horizontal untuk gradient
+        }
+        break;
+    case 2:
+        // Animasi gradient yang bergerak sangat lambat
+        static float offsetlv2 = 0.0f; // Variabel untuk animasi
+        offsetlv2 += 0.05f;            // Kecepatan animasi yang sangat lambat
+
+        // Gradient dari hijau gelap ke hitam
+        for (int y = 0; y < SCREEN_HEIGHT; y++)
+        {
+            float gradient = (float)y / SCREEN_HEIGHT + sinf(offsetlv2 * 0.01f) * 0.02f; // Perubahan sangat halus
+            Color color = (Color){
+                (int)(20 + 10 * gradient), // R (hampir tidak ada merah)
+                (int)(50 + 20 * gradient), // G (hijau gelap)
+                (int)(30 + 10 * gradient), // B (sedikit biru untuk variasi)
+                255                        // Alpha
+            };
+            DrawLine(0, y, SCREEN_WIDTH, y, color); // Garis horizontal untuk gradient
+        }
+
+        // Garis-garis vertikal tipis yang bergerak perlahan
+        static float lineOffset = 0.0f; // Variabel untuk animasi garis
+        lineOffset += 0.03f;            // Kecepatan animasi garis yang sangat lambat
+
+        for (int i = 0; i < SCREEN_WIDTH; i += 40) // Jarak antar garis
+        {
+            int x = (int)(i + sinf(lineOffset + i * 0.1f) * 5);         // Garis bergerak kiri kanan perlahan
+            DrawLine(x, 0, x, SCREEN_HEIGHT, (Color){50, 100, 50, 60}); // Garis hijau transparan
+        }
+        break;
+    case 3:
+        // Animasi gradient yang bergerak sangat lambat
+        static float offset = 0.0f; // Variabel untuk animasi
+        offset += 0.1f;             // Kecepatan animasi yang sangat lambat
+
+        for (int y = 0; y < SCREEN_HEIGHT; y++)
+        {
+            // Gradient dari merah tua ke hitam, dengan sedikit oranye gelap
+            float gradient = (float)y / SCREEN_HEIGHT + sinf(offset * 0.005f + y * 0.005f) * 0.03f; // Perubahan lebih halus
+            Color color = (Color){
+                (int)(100 + 50 * gradient), // R (merah tua)
+                (int)(30 * gradient),       // G (sedikit oranye/hijau)
+                0,                          // B (tidak ada biru)
+                255                         // Alpha
+            };
+            DrawLine(0, y, SCREEN_WIDTH, y, color); // Garis horizontal untuk gradient
+        }
+
+        // Efek "api" dengan partikel kecil, sedikit, dan bergerak lambat
+        static float particleOffset = 0.0f; // Variabel untuk animasi partikel
+        particleOffset += 0.05f;            // Kecepatan partikel yang sangat lambat
+
+        for (int i = 0; i < 15; i++) // Jumlah partikel dikurangi lagi
+        {
+            int x = GetRandomValue(0, SCREEN_WIDTH);
+            int y = GetRandomValue(SCREEN_HEIGHT / 2, SCREEN_HEIGHT);                                             // Partikel hanya di bagian bawah
+            int size = GetRandomValue(1, 3);                                                                      // Ukuran partikel lebih kecil
+            DrawCircle(x, y + sinf(particleOffset + i) * 2, size, (Color){255, GetRandomValue(50, 100), 0, 255}); // Partikel bergerak naik turun perlahan
+        }
+        break;
+    }
 }
 
 int main()
@@ -51,6 +124,7 @@ int main()
     SetWindowIcon(icon);
 
     LoadNyawaTexture();
+    SetNyawaSize(32.0f);
     InitBackground();
     InitSoundEffects();
     PlayBackgroundMusic();
@@ -80,7 +154,6 @@ int main()
     while (!WindowShouldClose())
     {
         UpdateBackground();
-        SetNyawaSize(8);
         SetNyawaPosition(NYAWA_X, NYAWA_Y);
         UpdateMusic();
         UpdateMainMenuMini(&gameState);

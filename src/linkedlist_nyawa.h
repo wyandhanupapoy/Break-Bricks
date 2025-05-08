@@ -3,21 +3,22 @@
 
 #include "raylib.h"
 
+// Struktur node untuk nyawa
 typedef struct NodeNyawa
 {
     struct NodeNyawa *next;
-    Vector2 posisi;
-    float size;
+    Vector2 posisi; // Disiapkan jika ingin menggunakan posisi individual di masa depan
+    float size;     // Disiapkan untuk ukuran nyawa
 } NodeNyawa;
 
-// Fungsi utama
+// Fungsi utama untuk sistem nyawa
 void InitNyawaLinkedList(NodeNyawa **head, int jumlah);
 void KurangiNyawaLinkedList(NodeNyawa **head);
-int AnyLivesLeftLinkedList(NodeNyawa *head);
+bool AnyLivesLeftLinkedList(NodeNyawa *head);
 void DrawNyawaLinkedList(NodeNyawa *head);
 void FreeNyawaLinkedList(NodeNyawa **head);
 
-// Tekstur dan ukuran
+// (Optional) Fungsi tambahan jika Anda menggunakan tekstur atau nyawa yang lebih kompleks
 void LoadNyawaTexture();
 void UnloadNyawaTexture();
 void SetNyawaSize(float size);
