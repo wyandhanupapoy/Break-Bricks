@@ -25,7 +25,8 @@
 #include "level.h"
 #include "layout.h"
 #include "background.h"
-#include "LinkedList_Sound.h"
+#include "sound.h"
+#include "powerup.h"
 
 #include <stdio.h>
 #include <math.h>
@@ -34,6 +35,8 @@
 float gameEndTimer = 0.0f;
 const float returnDelay = 3.0f; // 3 detik kembali ke menu
 LeaderboardEntry leaderboard[MAX_LEADERBOARD_ENTRIES];
+PowerUpList powerUpList;
+Texture2D powerUpTextures[3];  // Untuk 3 jenis power-up
 
 // Fungsi untuk menggambar background unik setiap level
 void DrawLevelBackground(int level)
@@ -128,8 +131,9 @@ int main()
     LoadNyawaTexture();
     InitBackground();
     InitSoundEffects();
-    InitBackgroundMusic();
-    SetCurrentMusicToHead();
+    InitPowerUp(&powerUpList);
+    powerUpTextures[POWERUP_TRIPLE_BALL] = LoadTexture("assets/images/bronze_medal.png");
+    powerUpTextures[POWERUP_LONG_PADDLE] = LoadTexture("assets/images/gold_medal.png");
     PlayBackgroundMusic();
 
     // 🔹 Load leaderboard dari file
@@ -150,7 +154,7 @@ int main()
     // Game Data
     Paddle paddles[PADDLE_ROWS][PADDLE_COLS];
     Block blocks[BLOCK_ROWS][BLOCK_COLS];
-    Bola bola[BOLA_ROWS][BOLA_COLS];
+    BolaList bolaList;
     Nyawa nyawa[NYAWA_BARIS][NYAWA_KOLOM];
     Stopwatch stopwatch[STOPWATCH_ROWS][STOPWATCH_COLS];
     Skor skor[MAX_PLAYERS];
@@ -191,6 +195,10 @@ int main()
             currentLevel = 0;           // Reset level
             isPaused = false;           // Reset pause
 
+            // 🔥 Reset power-up
+            FreePowerUp(&powerUpList);  // Hapus semua power-up aktif
+            InitPowerUp(&powerUpList);  // Inisialisasi ulang
+
             LoadLeaderboard(leaderboard); // ⬅️ **Memuat ulang leaderboard setiap masuk ke menu utama!**
 
             UpdateMainMenu();
@@ -209,7 +217,7 @@ int main()
                 if (level > 0)
                 {
                     InitPaddles(paddles);
-                    InitBola(bola);
+                    InitBola(&bolaList);
                     SetNyawaPosition(NYAWA_X, NYAWA_Y);
                     InitNyawa(nyawa, 3);
                     InitStopwatch(stopwatch);
@@ -228,7 +236,7 @@ int main()
         // === PAUSE CONTROL ===
         if (IsKeyPressed(KEY_P) && gameState == GAME_PLAY)
         {
-            ToggleMusic();
+            PauseMusic();
             isPaused = !isPaused;
         }
 
@@ -238,13 +246,15 @@ int main()
             switch (gameState)
             {
             case GAME_START:
-                NextMusic();
+                ChangeMusic("assets/sounds/gameplay_music.mp3");
                 UpdateMusic();
                 // Bola nempel paddle sebelum diluncurkan
-                bola[0][0].position.x = paddles[0][0].rect.x + PADDLE_WIDTH / 2;
-                bola[0][0].position.y = paddles[0][0].rect.y - bola[0][0].radius - 1;
+                if (bolaList.head != NULL) {
+                    bolaList.head->position.x = paddles[0][0].rect.x + PADDLE_WIDTH / 2;
+                    bolaList.head->position.y = paddles[0][0].rect.y - bolaList.head->radius - 1;
+                }
 
-                UpdatePaddles(paddles);
+                UpdatePaddles(paddles, GetFrameTime());
 
                 if (IsKeyPressed(KEY_SPACE))
                 {
@@ -254,33 +264,28 @@ int main()
                 break;
 
             case GAME_PLAY:
-                UpdatePaddles(paddles);
-                UpdateBola(bola, paddles, blocks, &gameState, &skor[0], stopwatch);
+                UpdatePaddles(paddles, GetFrameTime());
+                UpdateBola(&bolaList, paddles, blocks, &gameState, &skor[0], stopwatch, &powerUpList);
+                UpdatePowerUp(&powerUpList, &paddles[0][0], &bolaList, GetFrameTime());
                 UpdateStopwatch(stopwatch);
 
-                if (!bola[0][0].active)
-                {
+                if (SemuaBolaMati(&bolaList)) {  // Cek semua bola, bukan hanya head
                     KurangiNyawa(nyawa);
-                    if (!AnyLivesLeft(nyawa))
-                    {
+                    if (!AnyLivesLeft(nyawa)) {
                         gameState = GAME_OVER;
-                    }
-                    else
-                    {
-                        PlaySoundEffect("loseLife");
-                        ResetBola(bola);
+                    } else {
+                        PlayLoseLife();
+                        ResetBola(&bolaList);  // Reset semua bola
                         gameState = GAME_START;
-
-                        // Tampilkan teks "LIFE LOST!"
                         lifeLost = true;
                         lifeLostTimer = 0.0f;
                     }
-                }
+                }           
                 break;
 
             case GAME_OVER:
-                PlaySoundEffect("gameOver");
-                PlayBackgroundMusic();
+                PlayGameOver();
+                ChangeMusic("assets/sounds/background_music.mp3");
                 UpdateMusic();
                 gameEndTimer += GetFrameTime();
 
@@ -299,14 +304,16 @@ int main()
 
                 if (gameEndTimer >= returnDelay || IsKeyPressed(KEY_R))
                 {
+                    FreePowerUp(&powerUpList);  // 🔥 Bersihkan power-up
+                    InitPowerUp(&powerUpList);  // 🔥 Siapkan untuk game baru
                     gameState = GAME_MENU;
                     gameEndTimer = 0.0f;
                 }
                 break;
 
             case GAME_WIN:
-                PlaySoundEffect("gameWin");
-                PlayBackgroundMusic();
+                PlayGameWin();
+                ChangeMusic("assets/sounds/background_music.mp3");
                 UpdateMusic();
                 gameEndTimer += GetFrameTime();
 
@@ -325,6 +332,8 @@ int main()
 
                 if (gameEndTimer >= returnDelay || IsKeyPressed(KEY_R))
                 {
+                    FreePowerUp(&powerUpList);  // 🔥 Bersihkan power-up
+                    InitPowerUp(&powerUpList);  // 🔥 Siapkan untuk game baru
                     gameState = GAME_MENU;
                     gameEndTimer = 0.0f;
                 }
@@ -344,7 +353,8 @@ int main()
         // Draw game layout
         DrawPaddles(paddles);
         DrawBlocks(blocks);
-        DrawBola(bola);
+        DrawPowerUp(&powerUpList);
+        DrawBola(&bolaList);
         DrawNyawa(nyawa);
         DrawSkor(skor, SCORE_X, SCORE_Y);
         DrawStopwatch(stopwatch);
@@ -395,7 +405,8 @@ int main()
     SaveLeaderboard(leaderboard);
     UnloadNyawaTexture();
     UnloadSoundEffects();
-    UnloadBackgroundMusic();
+    FreePowerUp(&powerUpList); for (int i = 0; i < 3; i++) 
+    UnloadTexture(powerUpTextures[i]);
     UnloadMedalTextures();
     UnloadImage(icon);
     CloseWindow();
