@@ -235,8 +235,10 @@ int main()
 
             case GAME_PLAY:
                 UpdatePaddles(paddles);
+
                 UpdateBola(bola, paddles, &blockList, &gameState, &skor[0], swList);
                 UpdateStopwatch(swList);
+
                 UpdateBola(bola, paddles, &blockList, &gameState, &skor[0], stopwatch);
                 UpdateStopwatch(stopwatch);
 
@@ -324,6 +326,7 @@ int main()
         DrawControlInfo();
 
         // Draw game layout
+
         ClearBackground(BLACK);
         DrawLevelBackground(currentLevel);
         DrawBlocks(&blockList);
@@ -332,8 +335,10 @@ int main()
         DrawNyawa(nyawa);
         DrawStopwatch(stopwatch);
         DrawSkor(skor, SCORE_X, SCORE_Y);
+
         DrawStopwatch(swList);
         DrawMainMenuMini(gameState);
+
 
         if (lifeLost)
         {
@@ -346,13 +351,6 @@ int main()
         }
 
         EndDrawing();
-
-        // === FULLSCREEN TOGGLE ===
-        if (IsKeyPressed(KEY_F))
-        {
-            isFullscreen = !isFullscreen;
-            ToggleFullscreen();
-        }
     }
 
     // Cleanup di akhir program
@@ -362,7 +360,6 @@ int main()
     UnloadSoundEffects();
     UnloadMedalTextures();
     UnloadImage(icon);
-    
 
     CloseWindow();
     return 0;
