@@ -119,7 +119,7 @@ int main()
     SetWindowIcon(icon);
 
     LoadNyawaTexture();
-    InitBackground();
+    InitBackground();  // Inisialisasi background dengan linked list
     InitSoundEffects();
     PlayBackgroundMusic();
 
@@ -146,7 +146,7 @@ int main()
 
     while (!WindowShouldClose())
     {
-        UpdateBackground();
+        UpdateBackground();  // Update animasi background dengan linked list
         SetNyawaSize(8);
         SetNyawaPosition(NYAWA_X, NYAWA_Y);
         UpdateMusic();
@@ -177,6 +177,8 @@ int main()
             UpdateMainMenu();
 
             BeginDrawing();
+            ClearBackground((Color){30, 0, 60, 255});
+            DrawBackground();  // Gambar background menu dengan linked list
             DrawMainMenu();
             EndDrawing();
 
@@ -302,6 +304,21 @@ int main()
         }
 
         BeginDrawing();
+        ClearBackground((Color){30, 0, 60, 255});
+        
+        // Gunakan background LevelBackground untuk level 1-3
+        // Atau background linked list untuk level lainnya
+        if (currentLevel >= 1 && currentLevel <= 3) {
+            DrawLevelBackground(currentLevel);
+        } else {
+            DrawBackground();  // Gunakan background linked list
+        }
+
+        // Layout garis & panel bawah
+        DrawLine(835, 0, 835, SCREEN_HEIGHT, WHITE);
+        DrawControlInfo();
+
+        // Draw game layout
         ClearBackground(BLACK);
         DrawLevelBackground(currentLevel);
         DrawBlocks(&blockList);
@@ -322,7 +339,23 @@ int main()
         }
 
         EndDrawing();
+
+        // === FULLSCREEN TOGGLE ===
+        if (IsKeyPressed(KEY_F))
+        {
+            isFullscreen = !isFullscreen;
+            ToggleFullscreen();
+        }
     }
+
+    // Cleanup di akhir program
+    CleanupBackground();  // Membersihkan memori linked list background
+    SaveLeaderboard(leaderboard);
+    UnloadNyawaTexture();
+    UnloadSoundEffects();
+    UnloadMedalTextures();
+    UnloadImage(icon);
+    
 
     CloseWindow();
     return 0;
