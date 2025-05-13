@@ -31,13 +31,12 @@ void InitBola(Bola bola[BOLA_ROWS][BOLA_COLS]) {
 
 // 🔹 Memperbarui posisi, tabrakan, dan status bola
 void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PADDLE_COLS], LinkedList *blocks, GameState *state, Skor *skor, Stopwatch* next) {
-    bool allBolasInactive = true;
+    bool anyActiveBolaLeft = false;
     
     for (int i = 0; i < BOLA_ROWS; i++) {
         for (int j = 0; j < BOLA_COLS; j++) {
             Bola *b = &bola[i][j];
             if (!b->active) continue;
-            allBolasInactive = false;
 
             if (*state == GAME_PLAY || *state == GAME_START) {
                 // 🔹 Pergerakan
@@ -158,13 +157,16 @@ void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PAD
                 // 🔹 Bola jatuh ke bawah
                 if (b->position.y > SCREEN_H) {
                     b->active = false;
+                } else {
+                    // Jika bola masih aktif setelah semua pemrosesan
+                    anyActiveBolaLeft = true;
                 }
             }
         }
     }
     
-    // Cek jika semua bola tidak aktif, dan update game state
-    if (allBolasInactive && (*state == GAME_PLAY || *state == GAME_START)) {
+    // Cek jika tidak ada bola aktif yang tersisa, dan update game state
+    if (!anyActiveBolaLeft && (*state == GAME_PLAY || *state == GAME_START)) {
         // Semua bola hilang, perlu reset atau kurangi nyawa
         *state = GAME_OVER;
     }
@@ -184,19 +186,25 @@ void AddNewBall(Bola bola[BOLA_ROWS][BOLA_COLS]) {
     for (int i = 0; i < BOLA_ROWS; i++) {
         for (int j = 1; j < BOLA_COLS; j++) {  // Mulai dari indeks 1 (bola kedua)
             if (!bola[i][j].active) {
-                // Ambil referensi dari bola utama
-                Bola *mainBall = &bola[i][0];
+                // Cari bola aktif untuk referensi posisi
+                Bola *refBall = NULL;
+                for (int k = 0; k < BOLA_COLS; k++) {
+                    if (bola[i][k].active) {
+                        refBall = &bola[i][k];
+                        break;
+                    }
+                }
                 
-                // Hanya tambahkan bola baru jika bola utama aktif
-                if (!mainBall->active) return;
+                // Hanya tambahkan bola baru jika ada bola aktif lain sebagai referensi
+                if (refBall == NULL) return;
                 
-                // Aktifkan bola baru dengan posisi sama dengan bola utama
-                bola[i][j].position = mainBall->position;
+                // Aktifkan bola baru dengan posisi sama dengan bola referensi
+                bola[i][j].position = refBall->position;
                 
-                // Berikan kecepatan sedikit berbeda dari bola utama
+                // Berikan kecepatan sedikit berbeda dari bola referensi
                 float angle = GetRandomValue(0, 360) * (PI / 180.0f);
-                float speed = sqrtf(mainBall->speed.x * mainBall->speed.x + 
-                                   mainBall->speed.y * mainBall->speed.y);
+                float speed = sqrtf(refBall->speed.x * refBall->speed.x + 
+                                   refBall->speed.y * refBall->speed.y);
                 
                 bola[i][j].speed.x = cosf(angle) * speed;
                 bola[i][j].speed.y = sinf(angle) * speed;
@@ -204,7 +212,7 @@ void AddNewBall(Bola bola[BOLA_ROWS][BOLA_COLS]) {
                 // Pastikan bola bergerak ke arah yang masuk akal
                 if (bola[i][j].speed.y > 0) bola[i][j].speed.y *= -1;
                 
-                bola[i][j].radius = mainBall->radius;
+                bola[i][j].radius = refBall->radius;
                 bola[i][j].color = PURPLE;  // Warna berbeda untuk membedakan
                 bola[i][j].active = true;
                 
@@ -221,5 +229,21 @@ void ResetBola(Bola bola[BOLA_ROWS][BOLA_COLS]) {
         bola[i][0].position = (Vector2){SCREEN_W / 2, SCREEN_H / 2};
         bola[i][0].speed = (Vector2){6, -6};
         bola[i][0].active = true;
+        
+        // Non-aktifkan bola tambahan saat reset
+        for (int j = 1; j < BOLA_COLS; j++) {
+            bola[i][j].active = false;
+        }
     }
+}
+
+// 🔹 Function untuk menghitung jumlah bola aktif
+int CountActiveBalls(Bola bola[BOLA_ROWS][BOLA_COLS]) {
+    int count = 0;
+    for (int i = 0; i < BOLA_ROWS; i++) {
+        for (int j = 0; j < BOLA_COLS; j++) {
+            if (bola[i][j].active) count++;
+        }
+    }
+    return count;
 }

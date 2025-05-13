@@ -1,3 +1,5 @@
+
+
 #ifndef BOLA_H
 #define BOLA_H
 
@@ -25,5 +27,6 @@ void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PAD
 void DrawBola(Bola bola[BOLA_ROWS][BOLA_COLS]);
 void ResetBola(Bola bola[BOLA_ROWS][BOLA_COLS]);
 void AddNewBall(Bola bola[BOLA_ROWS][BOLA_COLS]);
+int CountActiveBalls(Bola bola[BOLA_ROWS][BOLA_COLS]);
 
 #endif // BOLA_H

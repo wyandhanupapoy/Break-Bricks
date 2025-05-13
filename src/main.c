@@ -253,22 +253,26 @@ UpdatePowerUpEffects(powerUpList, paddles, bola);
                 UpdateBola(bola, paddles, &blockList, &gameState, &skor[0], stopwatch);
                 UpdateStopwatch(stopwatch);
 
-                if (!bola[0][0].active)
-                {
-                    KurangiNyawa(nyawa);
-                    if (!AnyLivesLeft(nyawa))
-                    {
-                        gameState = GAME_OVER;
-                    }
-                    else
-                    {
-                        PlayLoseLife();
-                        ResetBola(bola);
-                        gameState = GAME_START;
-                        lifeLost = true;
-                        lifeLostTimer = 0.0f;
+                static int prevActiveBalls = 1;
+                int currentActiveBalls = CountActiveBalls(bola);
+
+                 // Jika terjadi pengurangan bola dan tidak ada bola aktif yang tersisa
+                if (prevActiveBalls > currentActiveBalls) {
+                    if (currentActiveBalls == 0) {
+                        // Hanya kurangi nyawa jika semua bola telah jatuh
+                        KurangiNyawa(nyawa);
+                        if (!AnyLivesLeft(nyawa)) {
+                            gameState = GAME_OVER;
+                        } else {
+                            PlayLoseLife();
+                            ResetBola(bola);
+                            gameState = GAME_START;
+                            lifeLost = true;
+                            lifeLostTimer = 0.0f;
+                        }
                     }
                 }
+                prevActiveBalls = currentActiveBalls;
                 break;
 
             case GAME_OVER:
