@@ -3,6 +3,7 @@
 #include "stopwatch.h"
 #include "game_state.h"
 #include "sound.h"
+#include "powerup.h"
 #include <math.h>
 #include <float.h>
 #include <stddef.h>
@@ -10,8 +11,10 @@
 #define SCREEN_W 830
 #define SCREEN_H 600
 
-#define MIN_BALL_SPEED 6.0f
-#define MAX_BALL_SPEED 9.0f
+#define MIN_BALL_SPEED 3.0f
+#define MAX_BALL_SPEED 4.0f
+
+extern bool IsBallStrong(void);
 
 // 🔹 Inisialisasi bola di tengah layar
 void InitBola(Bola bola[BOLA_ROWS][BOLA_COLS]) {
@@ -109,6 +112,9 @@ void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PAD
                     closestBlock->active = false; // Set block menjadi tidak aktif
                     PlayBlockHit();
                     TambahSkorDenganWaktu(skor, elapsedTime);
+
+                     SpawnPowerUp(closestBlock->rect.x + closestBlock->rect.width/2, 
+                closestBlock->rect.y + closestBlock->rect.height/2);
                 } else {
                     switch (closestBlock->hitPoints) {
                         case 2:

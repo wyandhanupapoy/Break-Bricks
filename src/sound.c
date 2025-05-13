@@ -58,6 +58,7 @@ void PlayBlockHit()     { PlaySound(blockHit); }
 void PlayLoseLife()     { PlaySound(loseLife); }
 void PlayGameOver()     { PlaySound(gameOverSound); }
 void PlayGameWin()      { PlaySound(gameWinSound); }
+void PlayPowerUpSound() { PlaySound(blockHit); }  // Gunakan efek suara block hit untuk power-up
 
 // 🔹 Memainkan Musik Latar
 void PlayBackgroundMusic()

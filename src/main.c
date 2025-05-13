@@ -26,6 +26,7 @@
 #include "layout.h"
 #include "background.h"
 #include "sound.h"
+#include "powerup.h"
 
 #include <stdio.h>
 #include <math.h>
@@ -111,6 +112,8 @@ void DrawLevelBackground(int level)
     }
 }
 
+ PowerUp* powerUpList = NULL; // Head dari linked list power-up
+
 int main()
 {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "BREAK BRICKS");
@@ -125,6 +128,7 @@ int main()
     PlayBackgroundMusic();
 
     LoadLeaderboard(leaderboard);
+    
 
     GameState gameState = GAME_MENU;
     bool isPaused = false;
@@ -144,7 +148,10 @@ int main()
     Stopwatch *swList = NULL; // Pointer untuk stopwatch global
     Skor skor[MAX_PLAYERS];
 
+   
+
     InitMainMenu();
+InitPowerUpSystem();
 
     while (!WindowShouldClose())
     {
@@ -153,6 +160,9 @@ int main()
         SetNyawaPosition(NYAWA_X, NYAWA_Y);
         UpdateMusic();
         UpdateMainMenuMini(&gameState);
+
+        UpdatePowerUps(&powerUpList, paddles, bola, nyawa);
+UpdatePowerUpEffects(powerUpList, paddles, bola);
 
         if (lifeLost)
         {
@@ -191,6 +201,7 @@ int main()
                 int level = GetSelectedLevel();
                 if (level > 0)
                 {
+                    InitPowerUpSystem();
                     InitPaddles(paddles);
                     InitBola(bola);
                     SetNyawaPosition(NYAWA_X, NYAWA_Y);
@@ -327,10 +338,12 @@ int main()
 
         // Draw game layout
 
+        
         ClearBackground(BLACK);
         DrawLevelBackground(currentLevel);
         DrawBlocks(&blockList);
         DrawPaddles(paddles);
+        DrawPowerUps(powerUpList);
         DrawBola(bola);
         DrawNyawa(nyawa);
         DrawStopwatch(stopwatch);
@@ -355,6 +368,7 @@ int main()
 
     // Cleanup di akhir program
     CleanupBackground();  // Membersihkan memori linked list background
+    CleanupPowerUps(&powerUpList);
     SaveLeaderboard(leaderboard);
     UnloadNyawaTexture();
     UnloadSoundEffects();

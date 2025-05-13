@@ -19,6 +19,7 @@ void PlayBlockHit();
 void PlayLoseLife();
 void PlayGameOver();
 void PlayGameWin();
+void PlayPowerUpSound();
 
 // 🔹 Musik Latar
 void PlayBackgroundMusic();
