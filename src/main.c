@@ -29,6 +29,7 @@
 
 #include <stdio.h>
 #include <math.h>
+#include <stdlib.h> // untuk free linked list jika perlu
 
 // Timer untuk auto return ke menu
 float gameEndTimer = 0.0f;
@@ -148,10 +149,11 @@ int main()
     // Game Data
     Paddle paddles[PADDLE_ROWS][PADDLE_COLS];
     Block blocks[BLOCK_ROWS][BLOCK_COLS];
-    Bola bola[BOLA_ROWS][BOLA_COLS];
     Nyawa nyawa[NYAWA_BARIS][NYAWA_KOLOM];
     Stopwatch stopwatch[STOPWATCH_ROWS][STOPWATCH_COLS];
     Skor skor[MAX_PLAYERS];
+    
+    BolaNode* bola = NULL; // Deklarasi linked list head untuk bola
 
     // Initialize
     InitMainMenu();
@@ -207,7 +209,7 @@ int main()
                 if (level > 0)
                 {
                     InitPaddles(paddles);
-                    InitBola(bola);
+                    InitBola(&bola);  // Linked List Init Bola
                     SetNyawaPosition(NYAWA_X, NYAWA_Y);
                     InitNyawa(nyawa, 3);
                     InitStopwatch(stopwatch);
@@ -239,8 +241,11 @@ int main()
                 ChangeMusic("assets/sounds/gameplay_music.mp3");
                 UpdateMusic();
                 // Bola nempel paddle sebelum diluncurkan
-                bola[0][0].position.x = paddles[0][0].rect.x + PADDLE_WIDTH / 2;
-                bola[0][0].position.y = paddles[0][0].rect.y - bola[0][0].radius - 1;
+                if (bola != NULL)
+                {
+                    bola->position.x = paddles[0][0].rect.x + PADDLE_WIDTH / 2;
+                    bola->position.y = paddles[0][0].rect.y - bola->radius - 1;
+                }
 
                 UpdatePaddles(paddles);
 
@@ -256,22 +261,37 @@ int main()
                 UpdateBola(bola, paddles, blocks, &gameState, &skor[0], stopwatch);
                 UpdateStopwatch(stopwatch);
 
-                if (!bola[0][0].active)
+                // Jika tidak ada bola aktif, artinya bola jatuh semua
                 {
-                    KurangiNyawa(nyawa);
-                    if (!AnyLivesLeft(nyawa))
+                    // Cek aktifnya bola linked list
+                    bool anyActive = false;
+                    BolaNode* current = bola;
+                    while (current != NULL)
                     {
-                        gameState = GAME_OVER;
+                        if (current->active)
+                        {
+                            anyActive = true;
+                            break;
+                        }
+                        current = current->next;
                     }
-                    else
-                    {
-                        PlayLoseLife();
-                        ResetBola(bola);
-                        gameState = GAME_START;
 
-                        // Tampilkan teks "LIFE LOST!"
-                        lifeLost = true;
-                        lifeLostTimer = 0.0f;
+                    if (!anyActive)
+                    {
+                        KurangiNyawa(nyawa);
+                        if (!AnyLivesLeft(nyawa))
+                        {
+                            gameState = GAME_OVER;
+                        }
+                        else
+                        {
+                            PlayLoseLife();
+                            ResetBola(&bola);
+                            gameState = GAME_START;
+
+                            lifeLost = true;
+                            lifeLostTimer = 0.0f;
+                        }
                     }
                 }
                 break;
@@ -395,6 +415,15 @@ int main()
     UnloadSoundEffects();
     UnloadMedalTextures();
     UnloadImage(icon);
+
+    // Jika ingin, bisa free linked list bola di sini sebelum exit (optional)
+    BolaNode* current = bola;
+    while(current != NULL) {
+        BolaNode* next = current->next;
+        free(current);
+        current = next;
+    }
+
     CloseWindow();
     return 0;
 }

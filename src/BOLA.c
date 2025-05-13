@@ -1,10 +1,3 @@
-/*Nama Pembuat: Ahmad Habib Muttaqin
-Nama Fitur: Bola
-Deskripsi: Modul ini mengelola bola dalam permainan Block Bricker, termasuk inisialisasi, pergerakan, pantulan terhadap dinding, paddle,
-serta tabrakan dengan blok. Bola memiliki batas kecepatan minimum dan maksimum untuk menjaga dinamika permainan.
-Modul ini berisi implementasi bola dalam permainan Block Bricker menggunakan pustaka Raylib. File bola.c berisi fungsi-fungsi untuk menginisialisasi, memperbarui, menggambar, dan mereset bola dalam permainan.
-*/
-
 #include "BOLA.h"
 #include "block.h"
 #include "stopwatch.h"
@@ -13,6 +6,7 @@ Modul ini berisi implementasi bola dalam permainan Block Bricker menggunakan pus
 #include <math.h>
 #include <float.h>
 #include <stddef.h>
+#include <stdlib.h>
 
 #define SCREEN_W 830
 #define SCREEN_H 600
@@ -20,59 +14,63 @@ Modul ini berisi implementasi bola dalam permainan Block Bricker menggunakan pus
 #define MIN_BALL_SPEED 6.0f
 #define MAX_BALL_SPEED 9.0f
 
-void InitBola(Bola bola[BOLA_ROWS][BOLA_COLS])
+void InitBola(BolaNode** head)
 {
-    for (int i = 0; i < BOLA_ROWS; i++)
-    {
-        bola[i][0].position = (Vector2){SCREEN_W / 2, SCREEN_H / 2};
-        bola[i][0].speed = (Vector2){6, -6}; // Speed awal
-        bola[i][0].radius = 10;
-        bola[i][0].color = RED;
-        bola[i][0].active = true;
-    }
+    *head = (BolaNode*)malloc(sizeof(BolaNode)); // Alokasikan memori untuk bola pertama
+    BolaNode* bola = *head;
+    bola->position = (Vector2){SCREEN_W / 2, SCREEN_H / 2};
+    bola->speed = (Vector2){6, -6}; // Speed awal
+    bola->radius = 10;
+    bola->color = RED;
+    bola->active = true;
+    bola->next = NULL; // Tidak ada bola berikutnya
 }
 
-void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PADDLE_COLS], Block blocks[BLOCK_ROWS][BLOCK_COLS], GameState *state, Skor *skor, Stopwatch sw[STOPWATCH_ROWS][STOPWATCH_COLS])
+void UpdateBola(BolaNode* head, Paddle paddles[PADDLE_ROWS][PADDLE_COLS], Block blocks[BLOCK_ROWS][BLOCK_COLS], GameState *state, Skor *skor, Stopwatch sw[STOPWATCH_ROWS][STOPWATCH_COLS])
 {
-    for (int i = 0; i < BOLA_ROWS; i++)
+    BolaNode* bola = head;
+    while (bola != NULL) // Loop melalui semua bola
     {
-        if (!bola[i][0].active)
+        if (!bola->active)
+        {
+            bola = bola->next;
             continue;
+        }
 
         if (*state == GAME_PLAY || *state == GAME_START)
         {
             // 🔹 Pergerakan bola
-            bola[i][0].position.x += bola[i][0].speed.x;
-            bola[i][0].position.y += bola[i][0].speed.y;
+            bola->position.x += bola->speed.x;
+            bola->position.y += bola->speed.y;
 
             // 🔹 Batasi kecepatan bola
-            float speedMagnitude = sqrtf(bola[i][0].speed.x * bola[i][0].speed.x + bola[i][0].speed.y * bola[i][0].speed.y);
+            float speedMagnitude = sqrtf(bola->speed.x * bola->speed.x + bola->speed.y * bola->speed.y);
             if (speedMagnitude < MIN_BALL_SPEED)
             {
-                bola[i][0].speed.x *= (MIN_BALL_SPEED / speedMagnitude);
-                bola[i][0].speed.y *= (MIN_BALL_SPEED / speedMagnitude);
+                bola->speed.x *= (MIN_BALL_SPEED / speedMagnitude);
+                bola->speed.y *= (MIN_BALL_SPEED / speedMagnitude);
             }
             if (speedMagnitude > MAX_BALL_SPEED)
             {
-                bola[i][0].speed.x *= (MAX_BALL_SPEED / speedMagnitude);
-                bola[i][0].speed.y *= (MAX_BALL_SPEED / speedMagnitude);
+                bola->speed.x *= (MAX_BALL_SPEED / speedMagnitude);
+                bola->speed.y *= (MAX_BALL_SPEED / speedMagnitude);
             }
 
             // 🔹 Pantulan dinding
-            if (bola[i][0].position.x < bola[i][0].radius)
+            if (bola->position.x < bola->radius)
             {
-                bola[i][0].speed.x *= -1;
-                bola[i][0].position.x = bola[i][0].radius;
+                bola->speed.x *= -1;
+                bola->position.x = bola->radius;
             }
-            if (bola[i][0].position.x > SCREEN_W - bola[i][0].radius)
+            if (bola->position.x > SCREEN_W - bola->radius)
             {
-                bola[i][0].speed.x *= -1;
-                bola[i][0].position.x = SCREEN_W - bola[i][0].radius;
+                bola->speed.x *= -1;
+                bola->position.x = SCREEN_W - bola->radius;
             }
-            if (bola[i][0].position.y < bola[i][0].radius)
+            if (bola->position.y < bola->radius)
             {
-                bola[i][0].speed.y *= -1;
-                bola[i][0].position.y = bola[i][0].radius;
+                bola->speed.y *= -1;
+                bola->position.y = bola->radius;
             }
 
             // 🔹 Pantulan dengan paddle
@@ -80,22 +78,22 @@ void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PAD
             {
                 for (int k = 0; k < PADDLE_COLS; k++)
                 {
-                    if (CheckCollisionCircleRec(bola[i][0].position, bola[i][0].radius, paddles[j][k].rect))
+                    if (CheckCollisionCircleRec(bola->position, bola->radius, paddles[j][k].rect))
                     {
                         float paddleCenter = paddles[j][k].rect.x + PADDLE_WIDTH / 2;
-                        float hitPos = bola[i][0].position.x - paddleCenter;
+                        float hitPos = bola->position.x - paddleCenter;
                         float normalizedHit = hitPos / (PADDLE_WIDTH / 2);
 
-                        bola[i][0].speed.x = normalizedHit * 7.0f; // Pantulan ke kiri-kanan
-                        bola[i][0].speed.y *= -1;                  // Pantulan vertikal
+                        bola->speed.x = normalizedHit * 7.0f; // Pantulan ke kiri-kanan
+                        bola->speed.y *= -1;                  // Pantulan vertikal
                         PlayPaddleHit();
 
                         // Boost sedikit setelah kena paddle
-                        bola[i][0].speed.x *= 1.05f;
-                        bola[i][0].speed.y *= 1.05f;
+                        bola->speed.x *= 1.05f;
+                        bola->speed.y *= 1.05f;
 
                         // Reset posisi supaya nggak stuck
-                        bola[i][0].position.y = paddles[j][k].rect.y - bola[i][0].radius - 1;
+                        bola->position.y = paddles[j][k].rect.y - bola->radius - 1;
                     }
                 }
             }
@@ -109,11 +107,11 @@ void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PAD
                 {
                     Block *block = &blocks[blockRow][blockCol];
 
-                    if (block->active && CheckCollisionCircleRec(bola[i][0].position, bola[i][0].radius, block->rect))
+                    if (block->active && CheckCollisionCircleRec(bola->position, bola->radius, block->rect))
                     {
                         // 🔹 Hitung jarak bola ke pusat blok
-                        float distance = sqrtf(pow(bola[i][0].position.x - (block->rect.x + block->rect.width / 2), 2) +
-                                               pow(bola[i][0].position.y - (block->rect.y + block->rect.height / 2), 2));
+                        float distance = sqrtf(pow(bola->position.x - (block->rect.x + block->rect.width / 2), 2) +
+                                               pow(bola->position.y - (block->rect.y + block->rect.height / 2), 2));
 
                         // 🔹 Simpan blok yang paling dekat
                         if (distance < closestDistance)
@@ -148,30 +146,30 @@ void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PAD
                 }
 
                 // 🔹 Tentukan sisi tabrakan
-                float overlapLeft = fabs((bola[i][0].position.x + bola[i][0].radius) - closestBlock->rect.x);
-                float overlapRight = fabs((closestBlock->rect.x + closestBlock->rect.width) - (bola[i][0].position.x - bola[i][0].radius));
-                float overlapTop = fabs((bola[i][0].position.y + bola[i][0].radius) - closestBlock->rect.y);
-                float overlapBottom = fabs((closestBlock->rect.y + closestBlock->rect.height) - (bola[i][0].position.y - bola[i][0].radius));
+                float overlapLeft = fabs((bola->position.x + bola->radius) - closestBlock->rect.x);
+                float overlapRight = fabs((closestBlock->rect.x + closestBlock->rect.width) - (bola->position.x - bola->radius));
+                float overlapTop = fabs((bola->position.y + bola->radius) - closestBlock->rect.y);
+                float overlapBottom = fabs((closestBlock->rect.y + closestBlock->rect.height) - (bola->position.y - bola->radius));
 
                 if (overlapLeft < overlapRight && overlapLeft < overlapTop && overlapLeft < overlapBottom)
                 {
-                    bola[i][0].speed.x *= -1;
-                    bola[i][0].position.x = closestBlock->rect.x - bola[i][0].radius;
+                    bola->speed.x *= -1;
+                    bola->position.x = closestBlock->rect.x - bola->radius;
                 }
                 else if (overlapRight < overlapLeft && overlapRight < overlapTop && overlapRight < overlapBottom)
                 {
-                    bola[i][0].speed.x *= -1;
-                    bola[i][0].position.x = closestBlock->rect.x + closestBlock->rect.width + bola[i][0].radius;
+                    bola->speed.x *= -1;
+                    bola->position.x = closestBlock->rect.x + closestBlock->rect.width + bola->radius;
                 }
                 else if (overlapTop < overlapBottom)
                 {
-                    bola[i][0].speed.y *= -1;
-                    bola[i][0].position.y = closestBlock->rect.y - bola[i][0].radius;
+                    bola->speed.y *= -1;
+                    bola->position.y = closestBlock->rect.y - bola->radius;
                 }
                 else
                 {
-                    bola[i][0].speed.y *= -1;
-                    bola[i][0].position.y = closestBlock->rect.y + closestBlock->rect.height + bola[i][0].radius;
+                    bola->speed.y *= -1;
+                    bola->position.y = closestBlock->rect.y + closestBlock->rect.height + bola->radius;
                 }
             }
 
@@ -182,33 +180,37 @@ void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PAD
             }
 
             // 🔹 Cek jika bola jatuh ke bawah
-            if (bola[i][0].position.y > SCREEN_H)
+            if (bola->position.y > SCREEN_H)
             {
-                bola[i][0].active = false;
+                bola->active = false;
             }
         }
+
+        bola = bola->next;
     }
 }
 
-void DrawBola(Bola bola[BOLA_ROWS][BOLA_COLS])
+void DrawBola(BolaNode* head)
 {
-    for (int i = 0; i < BOLA_ROWS; i++)
+    BolaNode* bola = head;
+    while (bola != NULL)
     {
-        if (bola[i][0].active)
+        if (bola->active)
         {
-            DrawCircleV(bola[i][0].position, bola[i][0].radius, bola[i][0].color);
+            DrawCircleV(bola->position, bola->radius, bola->color);
         }
+        bola = bola->next;
     }
 }
 
-void ResetBola(Bola bola[BOLA_ROWS][BOLA_COLS])
+void ResetBola(BolaNode** head)
 {
-    for (int i = 0; i < BOLA_ROWS; i++)
+    BolaNode* bola = *head;
+    while (bola != NULL)
     {
-        bola[i][0].position = (Vector2){SCREEN_W / 2, SCREEN_H / 2};
-
-        // Diam dulu, nanti diatur lagi saat mulai game
-        bola[i][0].speed = (Vector2){6, -6};
-        bola[i][0].active = true;
+        bola->position = (Vector2){SCREEN_W / 2, SCREEN_H / 2};
+        bola->speed = (Vector2){6, -6};
+        bola->active = true;
+        bola = bola->next;
     }
 }
