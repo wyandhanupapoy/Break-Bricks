@@ -9,7 +9,7 @@
 #include "game_state.h"
 
 #define BOLA_ROWS 1
-#define BOLA_COLS 1
+#define BOLA_COLS 3
 
 typedef struct
 {
@@ -24,5 +24,6 @@ void InitBola(Bola bola[BOLA_ROWS][BOLA_COLS]);
 void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PADDLE_COLS], LinkedList *blocks, GameState *state, Skor *skor, Stopwatch* next);
 void DrawBola(Bola bola[BOLA_ROWS][BOLA_COLS]);
 void ResetBola(Bola bola[BOLA_ROWS][BOLA_COLS]);
+void AddNewBall(Bola bola[BOLA_ROWS][BOLA_COLS]);
 
 #endif // BOLA_H

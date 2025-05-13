@@ -242,20 +242,22 @@ void ApplyPowerUpEffect(PowerUpType type, Paddle paddles[PADDLE_ROWS][PADDLE_COL
             break;
             
         case POWERUP_MULTI_BALL:
-            // Add more balls (not fully implemented as it would require changes to BOLA structure)
-            // This would need more complex handling in your game logic
-            // For now, just change ball color to indicate effect
-            for (int i = 0; i < BOLA_ROWS; i++) {
-                if (bola[i][0].active) {
-                    originalBallColor = bola[i][0].color;
-                    bola[i][0].color = PURPLE;
-                }
-            }
-            break;
+            // Tambahkan bola baru
+    AddNewBall(bola);
+    // Tidak perlu mengubah warna bola utama karena bola baru sudah diberi warna berbeda
+    powerUp->isEffectActive = true;  // Set efek aktif
+    break;
+            
             
         case POWERUP_EXTRA_LIFE:
             // Add extra life
-            
+            for (int i = 0; i < NYAWA_KOLOM; i++) {
+        if (!nyawa[0][i].aktif) {
+            nyawa[0][i].aktif = true;
+            break;  // Hanya tambah satu nyawa per power-up
+        }
+    }
+     powerUp->isEffectActive = false;
             break;
             
         case POWERUP_STRONGER_BALL:
