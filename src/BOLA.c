@@ -133,6 +133,7 @@ void UpdateBola(BolaList* list, Paddle paddles[PADDLE_ROWS][PADDLE_COLS],
                             closestBlock->rect.x + closestBlock->rect.width/2,
                             closestBlock->rect.y
                         });
+                    }    
                 } else {
                     closestBlock->color = (closestBlock->hitPoints == 2) ?
                         (Color){255, 140, 26, 255} :
@@ -173,7 +174,6 @@ void UpdateBola(BolaList* list, Paddle paddles[PADDLE_ROWS][PADDLE_COLS],
 
         prev = curr;
         curr = curr->next;
-        }
     }
 }
 
