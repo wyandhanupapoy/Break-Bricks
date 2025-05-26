@@ -128,20 +128,11 @@ void UpdateBola(BolaList* list, Paddle paddles[PADDLE_ROWS][PADDLE_COLS],
 
                     // Spawn power-up (30% chance)
                     if (GetRandomValue(0, 100) < 30) {
-                        PowerUpType type = GetRandomValue(0, 2);
-                        const char* textures[] = {
-                            "assets/images/bronze_medal.png",
-                            "assets/images/gold_medal.png"
-                        };
-                        
-                        Texture2D texture = LoadTexture(textures[type]);
-                        if (texture.id > 0) {
-                            AddPowerUp(powerUpList, type, (Vector2){
-                                    closestBlock->rect.x + closestBlock->rect.width/2,
-                                    closestBlock->rect.y
-                                }, texture);
-                        }
-                    }
+                        PowerUpType type = GetRandomValue(0, 1);  // POWERUP_TRIPLE_BALL = 0, POWERUP_LONG_PADDLE = 1
+                        AddPowerUp(powerUpList, type, (Vector2){
+                            closestBlock->rect.x + closestBlock->rect.width/2,
+                            closestBlock->rect.y
+                        });
                 } else {
                     closestBlock->color = (closestBlock->hitPoints == 2) ?
                         (Color){255, 140, 26, 255} :
