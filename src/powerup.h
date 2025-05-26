@@ -28,7 +28,7 @@ typedef struct PowerUpList {
 
 // Fungsi
 void InitPowerUp(PowerUpList *list);
-void AddPowerUp(PowerUpList *list, PowerUpType type, Vector2 position, Texture2D texture);
+void AddPowerUp(PowerUpList *list, PowerUpType type, Vector2 position);
 void UpdatePowerUp(PowerUpList *list, Paddle *paddle, BolaList *bolaList, float deltaTime);
 void DrawPowerUp(PowerUpList *list);
 void FreePowerUp(PowerUpList *list);

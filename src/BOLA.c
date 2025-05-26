@@ -173,6 +173,7 @@ void UpdateBola(BolaList* list, Paddle paddles[PADDLE_ROWS][PADDLE_COLS],
 
         prev = curr;
         curr = curr->next;
+        }
     }
 }
 
