@@ -34,11 +34,11 @@ void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PAD
         if (!b->active) continue;
 
         if (*state == GAME_PLAY || *state == GAME_START) {
-            // 🔹 Pergerakan
+            // Pergerakan bola
             b->position.x += b->speed.x;
             b->position.y += b->speed.y;
 
-            // 🔹 Batasi kecepatan
+            // Batasi kecepatan bola
             float speedMag = sqrtf(b->speed.x * b->speed.x + b->speed.y * b->speed.y);
             if (speedMag < MIN_BALL_SPEED || speedMag > MAX_BALL_SPEED) {
                 float clamped = fminf(fmaxf(speedMag, MIN_BALL_SPEED), MAX_BALL_SPEED);
@@ -46,7 +46,7 @@ void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PAD
                 b->speed.y *= (clamped / speedMag);
             }
 
-            // 🔹 Pantulan dinding
+            // Pantulan dinding
             if (b->position.x < b->radius) {
                 b->speed.x *= -1;
                 b->position.x = b->radius;
@@ -60,7 +60,7 @@ void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PAD
                 b->position.y = b->radius;
             }
 
-            // 🔹 Pantulan paddle
+            // Pantulan paddle
             for (int j = 0; j < PADDLE_ROWS; j++) {
                 for (int k = 0; k < PADDLE_COLS; k++) {
                     Paddle *p = &paddles[j][k];
@@ -77,11 +77,11 @@ void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PAD
                 }
             }
 
-            // 🔹 Tabrakan dengan blok
+            // Tabrakan dengan blok
             Block *closest = NULL;
             float closestDist = FLT_MAX;
 
-            NodeBlock *current = blocks->head;  // Mengakses linked list blocks
+            NodeBlock *current = blocks->head;
             while (current != NULL) {
                 Block *blk = &current->data;
                 if (!blk->active) {
@@ -118,7 +118,7 @@ void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PAD
                     }
                 }
 
-                // 🔹 Deteksi sisi tabrakan
+                // Deteksi sisi tabrakan
                 float left = fabs((b->position.x + b->radius) - closest->rect.x);
                 float right = fabs((closest->rect.x + closest->rect.width) - (b->position.x - b->radius));
                 float top = fabs((b->position.y + b->radius) - closest->rect.y);
@@ -139,15 +139,31 @@ void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PAD
                 }
             }
 
-            // 🔹 Menang jika semua blok hancur
+            // Cek menang
             if (AllBlocksDestroyed(blocks)) {
                 *state = GAME_WIN;
             }
 
-            // 🔹 Bola jatuh ke bawah
+            // Bola jatuh ke bawah
             if (b->position.y > SCREEN_H) {
                 b->active = false;
             }
+        }
+    }
+
+    // **Hapus node blok yang sudah tidak aktif dari linked list**
+    NodeBlock *current = blocks->head;
+    NodeBlock *prev = NULL;
+
+    while (current != NULL) {
+        if (!current->data.active) {
+            NodeBlock *toRemove = current;
+            current = current->next;
+            RemoveBlock(blocks, toRemove, prev);
+            // prev tetap sama karena node yang dihapus current-nya
+        } else {
+            prev = current;
+            current = current->next;
         }
     }
 }
