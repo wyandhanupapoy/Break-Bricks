@@ -12,13 +12,13 @@ void InitPowerUp(PowerUpList *list) {
     list->head = NULL;
 }
 
-void AddPowerUp(PowerUpList *list, PowerUpType type, Vector2 position, Texture2D texture) {
+void AddPowerUp(PowerUpList *list, PowerUpType type, Vector2 position) {
     PowerUpNode *newNode = (PowerUpNode*)malloc(sizeof(PowerUpNode));
     if (!newNode) return;
 
     newNode->rect = (Rectangle){position.x, position.y, POWERUP_WIDTH, POWERUP_HEIGHT};
     newNode->type = type;
-    newNode->texture = texture;
+    // newNode->texture = texture;
     newNode->active = true;
     newNode->duration = 10.0f; // Durasi 10 detik
     newNode->next = list->head;
@@ -64,15 +64,37 @@ void DrawPowerUp(PowerUpList *list) {
     PowerUpNode *curr = list->head;
     while (curr != NULL) {
         if (curr->active) {
-            DrawTexturePro(
-                curr->texture,
-                (Rectangle){0, 0, curr->texture.width, curr->texture.height},
-                curr->rect,
-                (Vector2){0, 0},
-                0.0f,
-                WHITE
-            );
+            Color color;
+            const char *symbol;
+
+            switch (curr->type) {
+                case POWERUP_TRIPLE_BALL:
+                    color = RED;
+                    symbol = "B";  // B untuk "Ball" (3 bola)
+                    break;
+                case POWERUP_LONG_PADDLE:
+                    color = BLUE;
+                    symbol = "P";  // P untuk "Paddle"
+                    break;
+                default:
+                    color = GRAY;
+                    symbol = "?";
+                    break;
+            }
+
+            // Gambar persegi
+            DrawRectangleRec(curr->rect, color);
+
+            // Hitung posisi teks agar huruf di tengah persegi
+            int fontSize = 20;
+            int textWidth = MeasureText(symbol, fontSize);
+            int textX = curr->rect.x + (curr->rect.width - textWidth) / 2;
+            int textY = curr->rect.y + (curr->rect.height - fontSize) / 2;
+
+            // Gambar huruf di tengah
+            DrawText(symbol, textX, textY, fontSize, WHITE);
         }
+
         curr = curr->next;
     }
 }
@@ -101,7 +123,7 @@ void FreePowerUp(PowerUpList *list) {
     PowerUpNode *curr = list->head;
     while (curr != NULL) {
         PowerUpNode *next = curr->next;
-        UnloadTexture(curr->texture);
+        // UnloadTexture(curr->texture);
         free(curr);
         curr = next;
     }

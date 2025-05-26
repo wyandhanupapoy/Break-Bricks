@@ -16,7 +16,7 @@ typedef enum {
 typedef struct PowerUpNode {
     Rectangle rect;
     PowerUpType type;
-    Texture2D texture;
+    // Texture2D texture;
     bool active;
     float duration;
     struct PowerUpNode *next;
