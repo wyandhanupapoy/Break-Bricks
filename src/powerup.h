@@ -1,48 +1,38 @@
 #ifndef POWERUP_H
 #define POWERUP_H
 
-#include <raylib.h>
-#include <stdbool.h>
-#include "paddle.h"
-#include "BOLA.h"
-#include "nyawa.h"
+#include <raylib.h>  // Untuk Rectangle, Texture2D, dll
 
-// Define power-up types
+// Forward declarations
+typedef struct Paddle Paddle;
+typedef struct BolaList BolaList;
+typedef struct PowerUpList PowerUpList;
+
 typedef enum {
-    POWERUP_WIDER_PADDLE,   // Memperlebar paddle
-    POWERUP_SLOW_BALL,      // Memperlambat bola
-    POWERUP_MULTI_BALL,     // Menambah bola baru
-    POWERUP_EXTRA_LIFE,     // Menambah nyawa
-    POWERUP_STRONGER_BALL,  // Bola jadi lebih kuat (menghancurkan block dengan sekali pukul)
-    POWERUP_COUNT           // Jumlah total jenis power-up
+    POWERUP_TRIPLE_BALL,
+    POWERUP_LONG_PADDLE
 } PowerUpType;
 
-// Define power-up structure
-typedef struct PowerUp {
-    Rectangle rect;         // Bentuk dan posisi power-up
-    Color color;            // Warna power-up
-    bool active;            // Status aktif power-up
-    float speed;            // Kecepatan jatuh
-    PowerUpType type;       // Jenis power-up
-    float duration;         // Durasi efek power-up (dalam detik)
-    float timer;            // Timer untuk efek power-up
-    bool isEffectActive;    // Status efek power-up aktif
-    struct PowerUp* next;   // Pointer ke power-up berikutnya untuk linked list
-} PowerUp;
+typedef struct PowerUpNode {
+    Rectangle rect;
+    PowerUpType type;
+    // Texture2D texture;
+    bool active;
+    float duration;
+    struct PowerUpNode *next;
+} PowerUpNode;
 
-// Function prototypes
-void InitPowerUpSystem(void);
-void SpawnPowerUp(float x, float y);
-void UpdatePowerUps(PowerUp** powerUpList, Paddle paddles[PADDLE_ROWS][PADDLE_COLS], 
-                   Bola bola[BOLA_ROWS][BOLA_COLS], Nyawa nyawa[NYAWA_BARIS][NYAWA_KOLOM]);
-void DrawPowerUps(PowerUp* powerUpList);
-void CleanupPowerUps(PowerUp** powerUpList);
-void ApplyPowerUpEffect(PowerUpType type, Paddle paddles[PADDLE_ROWS][PADDLE_COLS], 
-                       Bola bola[BOLA_ROWS][BOLA_COLS], Nyawa nyawa[NYAWA_BARIS][NYAWA_KOLOM], PowerUp* powerUp);
-void UpdatePowerUpEffects(PowerUp* powerUpList, Paddle paddles[PADDLE_ROWS][PADDLE_COLS], Bola bola[BOLA_ROWS][BOLA_COLS]);
-void RevertPowerUpEffect(PowerUpType type, Paddle paddles[PADDLE_ROWS][PADDLE_COLS], Bola bola[BOLA_ROWS][BOLA_COLS]);
+typedef struct PowerUpList {
+    PowerUpNode *head;
+} PowerUpList;
 
-// Added function to get the pointer to the global powerUpList
-PowerUp** GetPowerUpListPtr(void);
+// Fungsi
+void InitPowerUp(PowerUpList *list);
+void AddPowerUp(PowerUpList *list, PowerUpType type, Vector2 position);
+void UpdatePowerUp(PowerUpList *list, Paddle *paddle, BolaList *bolaList, float deltaTime);
+void DrawPowerUp(PowerUpList *list);
+void FreePowerUp(PowerUpList *list);
+void ActivatePowerUp(PowerUpType type, Paddle *paddle, BolaList *bolaList, float duration);
 
-#endif // POWERUP_H
+#endif
+

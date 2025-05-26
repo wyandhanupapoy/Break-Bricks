@@ -17,6 +17,7 @@ void PlayButtonClick();
 void PlayPaddleHit();
 void PlayBlockHit();
 void PlayLoseLife();
+void PlayPowerUp();
 void PlayGameOver();
 void PlayGameWin();
 void PlayPowerUpSound();

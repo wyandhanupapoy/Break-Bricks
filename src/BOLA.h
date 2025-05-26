@@ -1,5 +1,3 @@
-
-
 #ifndef BOLA_H
 #define BOLA_H
 
@@ -9,24 +7,29 @@
 #include "skor.h"
 #include "stopwatch.h"
 #include "game_state.h"
+#include "powerup.h"
 
-#define BOLA_ROWS 1
-#define BOLA_COLS 3
-
-typedef struct
-{
+typedef struct BolaNode {
     Vector2 position;
     Vector2 speed;
     float radius;
     Color color;
     bool active;
-} Bola;
+    struct BolaNode *next;
+} BolaNode;
 
-void InitBola(Bola bola[BOLA_ROWS][BOLA_COLS]);
-void UpdateBola(Bola bola[BOLA_ROWS][BOLA_COLS], Paddle paddles[PADDLE_ROWS][PADDLE_COLS], LinkedList *blocks, GameState *state, Skor *skor, Stopwatch* next);
-void DrawBola(Bola bola[BOLA_ROWS][BOLA_COLS]);
-void ResetBola(Bola bola[BOLA_ROWS][BOLA_COLS]);
-void AddNewBall(Bola bola[BOLA_ROWS][BOLA_COLS]);
-int CountActiveBalls(Bola bola[BOLA_ROWS][BOLA_COLS]);
+typedef struct BolaList {
+    BolaNode *head;
+} BolaList;
 
-#endif // BOLA_H
+// Fungsi
+void InitBola(BolaList *list);
+void AddBola(BolaList *list, Vector2 position, Vector2 speed);
+void UpdateBola(BolaList *list, Paddle paddles[PADDLE_ROWS][PADDLE_COLS], LinkedList* blockList, 
+               GameState *state, Skor *skor, Stopwatch* stopwatchList, PowerUpList *powerUpList);
+bool SemuaBolaMati(BolaList *list);
+void DrawBola(BolaList *list);
+void ResetBola(BolaList *list);
+void FreeBola(BolaList *list);
+
+#endif

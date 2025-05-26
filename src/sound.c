@@ -11,6 +11,7 @@ static Sound buttonClick;
 static Sound paddleHit;
 static Sound blockHit;
 static Sound loseLife;
+static Sound powerUp;
 static Sound gameOverSound;
 static Sound gameWinSound;
 static Music backgroundMusic;
@@ -29,6 +30,7 @@ void InitSoundEffects()
     paddleHit = LoadSound("assets/sounds/paddle_hit.wav");
     blockHit = LoadSound("assets/sounds/block_hit.wav");
     loseLife = LoadSound("assets/sounds/lose_life.wav");
+    powerUp = LoadSound("assets/sounds/powerup.wav");
     gameOverSound = LoadSound("assets/sounds/game_over.wav");
     gameWinSound = LoadSound("assets/sounds/game_win.wav");
 
@@ -44,6 +46,7 @@ void UnloadSoundEffects()
     UnloadSound(paddleHit);
     UnloadSound(blockHit);
     UnloadSound(loseLife);
+    UnloadSound(powerUp);
     UnloadSound(gameOverSound);
     UnloadSound(gameWinSound);
     UnloadMusicStream(backgroundMusic);
@@ -56,6 +59,7 @@ void PlayButtonClick()  { PlaySound(buttonClick); }
 void PlayPaddleHit()    { PlaySound(paddleHit); }
 void PlayBlockHit()     { PlaySound(blockHit); }
 void PlayLoseLife()     { PlaySound(loseLife); }
+void PlayPowerUp()      { PlaySound(powerUp); }
 void PlayGameOver()     { PlaySound(gameOverSound); }
 void PlayGameWin()      { PlaySound(gameWinSound); }
 void PlayPowerUpSound() { PlaySound(blockHit); }  // Gunakan efek suara block hit untuk power-up
