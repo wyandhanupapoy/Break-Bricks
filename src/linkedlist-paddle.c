@@ -14,6 +14,7 @@ Paddle* CreatePaddle(float x, float y) {
         newPaddle->rect = (Rectangle){x, y, PADDLE_WIDTH, PADDLE_HEIGHT};
         newPaddle->speed = (Vector2){PADDLE_SPEED, PADDLE_SPEED};
         newPaddle->next = NULL;
+        newPaddle->prev = NULL; // Inisialisasi prev ke NULL
     }
     return newPaddle;
 }
@@ -28,6 +29,7 @@ void AddPaddle(Paddle** head, float x, float y) {
             current = current->next;
         }
         current->next = newPaddle;
+        newPaddle->prev = current;   // <<-- hubungkan pointer prev ke node sebelumnya
     }
 }
 
@@ -38,24 +40,17 @@ void InitPaddles(Paddle** head) {
     AddPaddle(head, startX, startY);
 }
 
-void UpdatePaddles(Paddle* head) {
-    Paddle* current = head;
-    while (current != NULL) {
-        if (IsKeyDown(KEY_LEFT) && current->rect.x > 0) {
-            current->rect.x -= current->speed.x;
-        }
-        if (IsKeyDown(KEY_RIGHT) && current->rect.x < SCREEN_WIDTH - PADDLE_WIDTH) {
-            current->rect.x += current->speed.x;
-        }
-        if (IsKeyDown(KEY_UP) && current->rect.y > 0) {
-            current->rect.y -= current->speed.y;
-        }
-        if (IsKeyDown(KEY_DOWN) && current->rect.y < SCREEN_HEIGHT - PADDLE_HEIGHT) {
-            current->rect.y += current->speed.y;
-        }
-        current = current->next;
+void UpdatePaddles(Paddle* activePaddle) {
+    if (activePaddle == NULL) return;
+
+    if (IsKeyDown(KEY_LEFT) && activePaddle->rect.x > 0) {
+        activePaddle->rect.x -= activePaddle->speed.x;
     }
-}
+        if (IsKeyDown(KEY_RIGHT) && activePaddle->rect.x < SCREEN_WIDTH - PADDLE_WIDTH) {
+            activePaddle->rect.x += activePaddle->speed.x;
+        }
+    }
+   
 
 void DrawPaddles(Paddle* head) {
     Paddle* current = head;
