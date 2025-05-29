@@ -89,7 +89,7 @@ void UpdateBola(BolaList* list, Paddle paddles[PADDLE_ROWS][PADDLE_COLS],
                         float paddleCenter = paddles[j][k].rect.x + paddles[j][k].rect.width / 2;
                         float hitPos = (curr->position.x - paddleCenter) / (paddles[j][k].rect.width / 2);
                         curr->speed = (Vector2){hitPos * 7.0f, -fabsf(curr->speed.y)};
-                        PlayPaddleHit();
+                        PlaySfx("paddle_hit");
                         curr->position.y = paddles[j][k].rect.y - curr->radius - 1;
                     }
                 }
@@ -122,7 +122,7 @@ void UpdateBola(BolaList* list, Paddle paddles[PADDLE_ROWS][PADDLE_COLS],
                 closestBlockNode->data.hitPoints--;
                 
                 if (closestBlockNode->data.hitPoints <= 0) {
-                    PlayBlockHit();
+                    PlaySfx("block_hit");
                     closestBlockNode->data.active = false;
                     TambahSkorDenganWaktu(skor, stopwatchList->time);
 

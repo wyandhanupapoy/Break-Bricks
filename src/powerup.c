@@ -100,7 +100,7 @@ void DrawPowerUp(PowerUpList *list) {
 }
 
 void ActivatePowerUp(PowerUpType type, Paddle *paddle, BolaList *bolaList, float duration) {
-    PlayPowerUp();
+    PlaySfx("power_up");
 
     if (type == POWERUP_TRIPLE_BALL) {
         AddBola(bolaList, (Vector2){paddle->rect.x + paddle->rect.width/2, paddle->rect.y - 20}, (Vector2){-4, -6});
