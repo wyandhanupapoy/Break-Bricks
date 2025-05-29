@@ -15,11 +15,16 @@
 #define PADDLE_SPEED 8 // kecepatan paddle 
 #define PADDLE_WIDTH_DEFAULT PADDLE_WIDTH  // Untuk reset efek power-up
 
+typedef struct ActivePowerUp {
+    PowerUpType type;
+    float remainingTime;
+    struct ActivePowerUp *next;
+} ActivePowerUp;
+
 typedef struct Paddle{
     Rectangle rect; // posisi paddle 
     Vector2 speed; 
-    float powerUpTimer;      // Timer durasi efek
-    PowerUpType activePowerUp;  // Jenis power-up aktif
+    ActivePowerUp *activePowerUps;  // Linked list efek aktif
 } Paddle;
 
 void InitPaddles(Paddle paddles[PADDLE_ROWS][PADDLE_COLS]); // inisiasi paddle

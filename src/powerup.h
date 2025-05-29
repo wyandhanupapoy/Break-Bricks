@@ -16,7 +16,6 @@ typedef enum {
 typedef struct PowerUpNode {
     Rectangle rect;
     PowerUpType type;
-    // Texture2D texture;
     bool active;
     float duration;
     struct PowerUpNode *next;
@@ -33,6 +32,7 @@ void UpdatePowerUp(PowerUpList *list, Paddle *paddle, BolaList *bolaList, float 
 void DrawPowerUp(PowerUpList *list);
 void FreePowerUp(PowerUpList *list);
 void ActivatePowerUp(PowerUpType type, Paddle *paddle, BolaList *bolaList, float duration);
+void UpdateActivePowerUps(Paddle *paddle, float deltaTime);
 
 #endif
 

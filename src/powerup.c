@@ -101,21 +101,55 @@ void DrawPowerUp(PowerUpList *list) {
 
 void ActivatePowerUp(PowerUpType type, Paddle *paddle, BolaList *bolaList, float duration) {
     PlayPowerUp();
-    paddle->activePowerUp = type;  // Set jenis power-up aktif
-    paddle->powerUpTimer = duration;  // Gunakan durasi dari power-up
 
-    switch (type) {
-        case POWERUP_TRIPLE_BALL:
-            // Tambah 2 bola baru
-            AddBola(bolaList, (Vector2){paddle->rect.x + paddle->rect.width/2, paddle->rect.y - 20}, (Vector2){-4, -6});
-            AddBola(bolaList, (Vector2){paddle->rect.x + paddle->rect.width/2, paddle->rect.y - 20}, (Vector2){4, -6});
-            break;
+    if (type == POWERUP_TRIPLE_BALL) {
+        AddBola(bolaList, (Vector2){paddle->rect.x + paddle->rect.width/2, paddle->rect.y - 20}, (Vector2){-4, -6});
+        AddBola(bolaList, (Vector2){paddle->rect.x + paddle->rect.width/2, paddle->rect.y - 20}, (Vector2){4, -6});
+    }
 
-        case POWERUP_LONG_PADDLE:
-            float newWidth = paddle->rect.width * 1.5f;
-            float maxWidth = SCREEN_WIDTH - paddle->rect.x;  // Sesuaikan dengan batas layar
-            paddle->rect.width = (newWidth > maxWidth) ? maxWidth : newWidth;
-            break;
+    if (type == POWERUP_LONG_PADDLE) {
+        // Tambah panjang paddle
+        float newWidth = paddle->rect.width * 1.2f; // Tambah 20%
+        float maxWidth = SCREEN_WIDTH - paddle->rect.x;
+        paddle->rect.width = (newWidth > maxWidth) ? maxWidth : newWidth;
+    }
+
+    // Tambah ke daftar power-up aktif
+    ActivePowerUp *newPower = (ActivePowerUp *)malloc(sizeof(ActivePowerUp));
+    newPower->type = type;
+    newPower->remainingTime = duration;
+    newPower->next = paddle->activePowerUps;
+    paddle->activePowerUps = newPower;
+}
+
+void UpdateActivePowerUps(Paddle *paddle, float deltaTime) {
+    ActivePowerUp *curr = paddle->activePowerUps;
+    ActivePowerUp *prev = NULL;
+
+    while (curr != NULL) {
+        curr->remainingTime -= deltaTime;
+
+        if (curr->remainingTime <= 0) {
+            // Efek habis, kurangi efeknya
+            if (curr->type == POWERUP_LONG_PADDLE) {
+                // Kembalikan sebagian panjang paddle (20%)
+                paddle->rect.width *= 1.0f / 1.2f; // Balik dari pertambahan
+            }
+
+            // Hapus dari list
+            if (prev == NULL) {
+                paddle->activePowerUps = curr->next;
+                free(curr);
+                curr = paddle->activePowerUps;
+            } else {
+                prev->next = curr->next;
+                free(curr);
+                curr = prev->next;
+            }
+        } else {
+            prev = curr;
+            curr = curr->next;
+        }
     }
 }
 
