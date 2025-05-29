@@ -1,336 +1,338 @@
 /*
 Nama Pembuat:   Wyandhanu Maulidan Nugraha
-Nama Fitur:     Leeaderboard
-Deskripsi:      Fitur leaderboard untuk menyimpan data pemain dan menampilkannya dalam bentuk tabel
+Nama Fitur:     Leaderboard (Linked List)
+Deskripsi:      Implementasi fitur leaderboard menggunakan linked list.
 */
 #include "leaderboard.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h> // Untuk malloc dan free
 
+// Pointer ke kepala linked list (global statis untuk modul ini)
+static LeaderboardNode* leaderboardHead = NULL;
+
+
+// Variabel untuk tekstur medali (tetap sama)
 static Texture2D goldMedal;
 static Texture2D silverMedal;
 static Texture2D bronzeMedal;
 static bool medalsLoaded = false;
-static float medalScale = 0.3f; // Scale factor to resize medals (adjust as needed)
-static int medalWidth = 24;     // Desired medal width
-static int medalHeight = 24;    // Desired medal height
+static float medalScale = 0.08f; // Disesuaikan agar lebih kecil
+static int medalWidth = 24;    // Default, bisa diubah dengan SetMedalSize
+static int medalHeight = 24;   // Default, bisa diubah dengan SetMedalSize
 
-void LoadMedalTextures()
-{
-    if (!medalsLoaded)
-    {
-        goldMedal = LoadTexture("assets/images/gold_medal.png");
-        silverMedal = LoadTexture("assets/images/silver_medal.png");
-        bronzeMedal = LoadTexture("assets/images/bronze_medal.png");
-        medalsLoaded = true;
+// 🔹 Forward declaration untuk fungsi helper internal
+static void FreeLeaderboardRecursive(LeaderboardNode* node) { // <--- TAMBAHKAN static
+    if (node == NULL) return;
+    FreeLeaderboardRecursive(node->next);
+    free(node);
+}
+
+
+// --- Fungsi Inisialisasi & Pembersihan ---
+
+void InitLeaderboard() {
+    FreeLeaderboard(); // Bersihkan dulu jika ada sisa
+    leaderboardHead = NULL;
+    // Pastikan tekstur medali dimuat jika belum
+    if (!medalsLoaded) {
+        LoadMedalTextures();
     }
 }
 
-void UnloadMedalTextures()
-{
-    if (medalsLoaded)
-    {
-        UnloadTexture(goldMedal);
-        UnloadTexture(silverMedal);
-        UnloadTexture(bronzeMedal);
-        medalsLoaded = false;
+void FreeLeaderboard() {
+    LeaderboardNode* current = leaderboardHead;
+    LeaderboardNode* nextNode;
+    while (current != NULL) {
+        nextNode = current->next;
+        free(current);
+        current = nextNode;
     }
+    leaderboardHead = NULL;
 }
 
-void InitLeaderboard(LeaderboardEntry leaderboard[MAX_LEADERBOARD_ENTRIES])
-{
-    for (int i = 0; i < MAX_LEADERBOARD_ENTRIES; i++)
-    {
-        strcpy(leaderboard[i].name, "");
-        leaderboard[i].score = 0;
-        leaderboard[i].time = 9999.9f;
-        leaderboard[i].level = 0;
-        strcpy(leaderboard[i].status, ""); // Kosongkan status awal
+// --- Fungsi Operasi Leaderboard ---
+
+void AddEntryToLeaderboard(const char *name, int score, float time, int level, const char *status) {
+    LeaderboardNode* newNode = (LeaderboardNode*)malloc(sizeof(LeaderboardNode));
+    if (!newNode) {
+        TraceLog(LOG_WARNING, "Failed to allocate memory for new leaderboard entry.");
+        return;
     }
-}
 
-void AddToLeaderboard(LeaderboardEntry leaderboard[MAX_LEADERBOARD_ENTRIES],
-                      const char *name, int score, float time, int level, const char *status)
-{
-    // Muat leaderboard lama sebelum menambahkan data baru
-    LoadLeaderboard(leaderboard);
+    strncpy(newNode->name, name, MAX_NAME_LENGTH - 1);
+    newNode->name[MAX_NAME_LENGTH - 1] = '\0';
+    newNode->score = score;
+    newNode->time = time;
+    newNode->level = level;
+    strncpy(newNode->status, status, sizeof(newNode->status) - 1);
+    newNode->status[sizeof(newNode->status) - 1] = '\0';
+    newNode->next = NULL;
 
-    int insertPos = MAX_LEADERBOARD_ENTRIES;
-    for (int i = 0; i < MAX_LEADERBOARD_ENTRIES; i++)
-    {
-        if (time < leaderboard[i].time || leaderboard[i].score == 0)
-        {
-            insertPos = i;
-            break;
+    // Kasus 1: List kosong atau newNode lebih baik dari head
+    if (leaderboardHead == NULL ||
+        (newNode->score > leaderboardHead->score) ||
+        (newNode->score == leaderboardHead->score && newNode->time < leaderboardHead->time) ||
+        (newNode->score == leaderboardHead->score && newNode->time == leaderboardHead->time && strcmp(newNode->status, "Win") == 0 && strcmp(leaderboardHead->status, "GAME OVER") == 0)) {
+        newNode->next = leaderboardHead;
+        leaderboardHead = newNode;
+    } else {
+        // Kasus 2: Cari posisi yang tepat untuk disisipkan
+        LeaderboardNode* current = leaderboardHead;
+        while (current->next != NULL &&
+               (newNode->score < current->next->score ||
+                (newNode->score == current->next->score && newNode->time > current->next->time) ||
+                (newNode->score == current->next->score && newNode->time == current->next->time && !(strcmp(newNode->status, "Win") == 0 && strcmp(current->next->status, "GAME OVER") == 0)))) {
+            current = current->next;
         }
+        newNode->next = current->next;
+        current->next = newNode;
     }
 
-    if (insertPos < MAX_LEADERBOARD_ENTRIES)
-    {
-        for (int j = MAX_LEADERBOARD_ENTRIES - 1; j > insertPos; j--)
-        {
-            leaderboard[j] = leaderboard[j - 1];
+    // Membatasi jumlah entri hingga MAX_LEADERBOARD_ENTRIES
+    int count = 0;
+    LeaderboardNode* current = leaderboardHead;
+    LeaderboardNode* prev = NULL;
+    while (current != NULL) {
+        count++;
+        if (count > MAX_LEADERBOARD_ENTRIES) {
+            if (prev) { // Seharusnya selalu ada prev jika count > MAX_LEADERBOARD_ENTRIES
+                prev->next = NULL; // Putuskan sisa list
+                FreeLeaderboardRecursive(current); // Hapus sisa node setelah prev
+            }
+            break; 
         }
-
-        // Potong nama jika lebih dari MAX_NAME_LENGTH - 1
-        strncpy(leaderboard[insertPos].name, name, MAX_NAME_LENGTH - 1);
-        leaderboard[insertPos].name[MAX_NAME_LENGTH - 1] = '\0'; // Pastikan null-terminated
-
-        leaderboard[insertPos].score = score;
-        leaderboard[insertPos].time = time;
-        leaderboard[insertPos].level = level;
-        strncpy(leaderboard[insertPos].status, status, 9);
-        leaderboard[insertPos].status[9] = '\0';
-
-        SortLeaderboard(leaderboard);
-        SaveLeaderboard(leaderboard); // Pastikan leaderboard tersimpan setelah perubahan
+        prev = current;
+        current = current->next;
     }
 }
 
-void SortLeaderboard(LeaderboardEntry leaderboard[MAX_LEADERBOARD_ENTRIES])
-{
-    for (int i = 0; i < MAX_LEADERBOARD_ENTRIES - 1; i++)
-    {
-        for (int j = 0; j < MAX_LEADERBOARD_ENTRIES - i - 1; j++)
-        {
-            int shouldSwap = 0;
 
-            // Urutkan berdasarkan skor (descending)
-            if (leaderboard[j].score < leaderboard[j + 1].score)
-            {
-                shouldSwap = 1;
-            }
-            // Jika skor sama, urutkan berdasarkan waktu (ascending)
-            else if (leaderboard[j].score == leaderboard[j + 1].score &&
-                     leaderboard[j].time > leaderboard[j + 1].time)
-            {
-                shouldSwap = 1;
-            }
-            // Jika skor dan waktu sama, urutkan berdasarkan status ("Win" di atas "Lose")
-            else if (leaderboard[j].score == leaderboard[j + 1].score &&
-                     leaderboard[j].time == leaderboard[j + 1].time)
-            {
-                if (strcmp(leaderboard[j].status, "Win") < 0 && strcmp(leaderboard[j + 1].status, "Lose") == 0)
-                {
-                    shouldSwap = 1;
-                }
-            }
-
-            if (shouldSwap)
-            {
-                LeaderboardEntry temp = leaderboard[j];
-                leaderboard[j] = leaderboard[j + 1];
-                leaderboard[j + 1] = temp;
-            }
-        }
+void SaveLeaderboard(const char *filename) {
+    FILE *file = fopen(filename, "wb");
+    if (!file) {
+        TraceLog(LOG_WARNING, "Failed to open leaderboard file for writing: %s", filename);
+        return;
     }
+
+    LeaderboardNode* current = leaderboardHead;
+    int entriesWritten = 0;
+    while (current != NULL && entriesWritten < MAX_LEADERBOARD_ENTRIES) {
+        // Hanya tulis data relevan, bukan pointer 'next'
+        fwrite(current->name, sizeof(char), MAX_NAME_LENGTH, file);
+        fwrite(&current->score, sizeof(int), 1, file);
+        fwrite(&current->time, sizeof(float), 1, file);
+        fwrite(&current->level, sizeof(int), 1, file);
+        fwrite(current->status, sizeof(char), 10, file); // Asumsi status max 10 char
+        
+        current = current->next;
+        entriesWritten++;
+    }
+    fclose(file);
 }
 
-void DrawLeaderboard(LeaderboardEntry leaderboard[MAX_LEADERBOARD_ENTRIES], int x, int y)
-{
+void LoadLeaderboard(const char *filename) {
+    FreeLeaderboard(); // Bersihkan list yang ada sebelum memuat
+
+    FILE *file = fopen(filename, "rb");
+    if (!file) {
+        TraceLog(LOG_INFO, "Leaderboard file not found or cannot be opened: %s. Initializing empty leaderboard.", filename);
+        // Tidak perlu InitLeaderboard() lagi karena sudah dihandle FreeLeaderboard() dan head jadi NULL
+        return;
+    }
+
+    // Buat buffer sementara untuk data yang dibaca
+    char tempName[MAX_NAME_LENGTH];
+    int tempScore;
+    float tempTime;
+    int tempLevel;
+    char tempStatus[10];
+
+    // Baca entri satu per satu
+    while (fread(tempName, sizeof(char), MAX_NAME_LENGTH, file) == MAX_NAME_LENGTH &&
+           fread(&tempScore, sizeof(int), 1, file) == 1 &&
+           fread(&tempTime, sizeof(float), 1, file) == 1 &&
+           fread(&tempLevel, sizeof(int), 1, file) == 1 &&
+           fread(tempStatus, sizeof(char), 10, file) == 10)
+    {
+        // Daripada memanggil AddEntryToLeaderboard yang kompleks dan mahal untuk setiap load,
+        // kita akan buat node dan tambahkan ke akhir, lalu sort sekali jika perlu.
+        // Atau, karena data di file seharusnya sudah terurut, kita bisa langsung tambahkan ke akhir.
+        // Untuk kesederhanaan, kita panggil AddEntryToLeaderboard agar urutannya terjaga.
+        AddEntryToLeaderboard(tempName, tempScore, tempTime, tempLevel, tempStatus);
+    }
+
+    fclose(file);
+}
+
+
+int GetLeaderboardCount() {
+    int count = 0;
+    LeaderboardNode* current = leaderboardHead;
+    while (current != NULL) {
+        count++;
+        current = current->next;
+    }
+    return count;
+}
+
+
+// --- Fungsi Tampilan ---
+
+void DrawLeaderboardInfo(int x, int y, int maxEntriesToDisplay) {
     DrawText("Leaderboard:", x, y, 20, BLACK);
-    for (int i = 0; i < 5; i++)
-    { // Tampilkan 5 besar
-        char entry[128];
-        // Potong nama jika lebih dari 15 karakter
-        char displayName[MAX_NAME_LENGTH];
-        if (strlen(leaderboard[i].name) > 15)
-        {
-            strncpy(displayName, leaderboard[i].name, 15);
-            displayName[8] = '\0';      // Pastikan null-terminated
-            strcat(displayName, "..."); // Tambahkan elipsis
-        }
-        else
-        {
-            strcpy(displayName, leaderboard[i].name);
+    LeaderboardNode* current = leaderboardHead;
+    int entriesDrawn = 0;
+    int currentY = y + 30;
+
+    while (current != NULL && entriesDrawn < maxEntriesToDisplay) {
+        char entryText[128];
+        char displayName[MAX_NAME_LENGTH + 4]; // +4 untuk "..." dan null terminator
+
+        if (strlen(current->name) > 15) {
+            strncpy(displayName, current->name, 15);
+            displayName[15] = '\0'; // Pastikan null-terminated
+            strcat(displayName, "...");
+        } else {
+            strcpy(displayName, current->name);
         }
 
-        snprintf(entry, sizeof(entry), "%d. %s - Score: %d - Time: %.2f - %s",
-                 i + 1, displayName, leaderboard[i].score, leaderboard[i].time, leaderboard[i].status);
-        DrawText(entry, x, y + 30 + i * 25, 18, DARKGRAY);
+        snprintf(entryText, sizeof(entryText), "%d. %s - %d (%.2fs) %s",
+                 entriesDrawn + 1, displayName, current->score, current->time, current->status);
+        DrawText(entryText, x, currentY, 18, DARKGRAY);
+
+        currentY += 25;
+        current = current->next;
+        entriesDrawn++;
     }
 }
 
-// Add this at the top with other global variables in mainmenu.c
-static int leaderboardScrollOffset = 0;
-
-// Implementation of DrawLeaderboardMenu with scrolling and refresh button
-void DrawLeaderboardMenu(LeaderboardEntry *leaderboard, int totalEntries, int scrollOffset)
-{
-    // Make sure medal textures are loaded before drawing
-    if (!medalsLoaded)
-    {
+void DrawLeaderboardMenuScreen(int scrollOffset) {
+    // Pastikan tekstur medali dimuat
+    if (!medalsLoaded) {
         LoadMedalTextures();
     }
 
     DrawRectangle(100, 50, 800, 500, Fade(DARKGRAY, 0.9f));
     DrawText("LEADERBOARD", 400, 70, 30, WHITE);
-    DrawText("Backspace - Back to Menu", 370, 520, 20, LIGHTGRAY);
-    DrawText("Scroll ^", 800, 520, 20, LIGHTGRAY);
+    DrawText("Backspace - Back to Menu | Scroll with Mouse Wheel", 250, 520, 20, LIGHTGRAY);
 
-    // Draw scroll indicators if needed
-    if (scrollOffset > 0)
-    {
-        DrawTriangle(
-            (Vector2){500, 110},
-            (Vector2){515, 95},
-            (Vector2){485, 95},
-            LIGHTGRAY);
+    // Indikator scroll
+    int totalEntries = GetLeaderboardCount();
+    int contentHeight = totalEntries * 30;
+    int visibleAreaHeight = 380; // Tinggi area yang bisa di-scroll (150 sampai 500-30-y_header)
+
+    if (scrollOffset > 0) {
+        DrawTriangle((Vector2){860, 130}, (Vector2){875, 115}, (Vector2){845, 115}, LIGHTGRAY); // Panah atas
     }
-
-    int maxScroll = (MAX_LEADERBOARD_ENTRIES * 30) - 380;
-    if (maxScroll > 0 && scrollOffset < maxScroll)
-    {
-        DrawTriangle(
-            (Vector2){500, 500},
-            (Vector2){515, 485},
-            (Vector2){485, 485},
-            LIGHTGRAY);
+    if (contentHeight > visibleAreaHeight && scrollOffset < (contentHeight - visibleAreaHeight)) {
+        DrawTriangle((Vector2){860, 480}, (Vector2){875, 495}, (Vector2){845, 495}, LIGHTGRAY); // Panah bawah
     }
+    
+    // Tombol Refresh (opsional, bisa di-handle di mainmenu.c jika perlu)
+    // Rectangle refreshButton = {750, 60, 120, 30};
+    // Vector2 mousePos = GetMousePosition();
+    // Color refreshBtnColor = CheckCollisionPointRec(mousePos, refreshButton) ? SKYBLUE : BLUE;
+    // DrawRectangleRec(refreshButton, refreshBtnColor);
+    // DrawText("Refresh", 770, 65, 20, WHITE);
+    // if (CheckCollisionPointRec(mousePos, refreshButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+    //     LoadLeaderboard(LEADERBOARD_FILE); // Reload
+    //     PlayButtonClick(); // Asumsi ada fungsi ini
+    // }
 
-    // Draw refresh button
-    Rectangle refreshButton = {750, 60, 120, 30};
-    Vector2 mousePos = GetMousePosition();
-    Color refreshBtnColor = CheckCollisionPointRec(mousePos, refreshButton) ? SKYBLUE : BLUE;
-
-    DrawRectangleRec(refreshButton, refreshBtnColor);
-    DrawText("Refresh", 770, 65, 20, WHITE);
-
-    // Draw dividing line
-    DrawLine(100, 110, 900, 110, WHITE);
-
-    // Draw header
+    DrawLine(100, 110, 900, 110, WHITE); // Garis pembatas
     DrawText("Rank", 150, 120, 20, GOLD);
     DrawText("Name", 260, 120, 20, GOLD);
-    DrawText("Score", 390, 120, 20, GOLD);
-    DrawText("Time", 470, 120, 20, GOLD);
-    DrawText("Level", 550, 120, 20, GOLD);
-    DrawText("Status", 630, 120, 20, GOLD);
+    DrawText("Score", 420, 120, 20, GOLD); // Disesuaikan x-pos
+    DrawText("Time", 520, 120, 20, GOLD);  // Disesuaikan x-pos
+    DrawText("Level", 620, 120, 20, GOLD); // Disesuaikan x-pos
+    DrawText("Status", 720, 120, 20, GOLD);// Disesuaikan x-pos
 
-    // Draw scrollable content
-    for (int i = 0; i < totalEntries; i++)
-    {
-        // Skip empty entries
-        if (leaderboard[i].score == 0 && leaderboard[i].time == 9999.9f)
-            continue;
-
+    LeaderboardNode* current = leaderboardHead;
+    int i = 0;
+    while (current != NULL) {
         int yPos = 150 + (i * 30) - scrollOffset;
 
-        // Only draw visible entries
-        if (yPos >= 150 && yPos <= 490)
-        {
-            // Draw rank with different colors for top 3
-            char rankText[5];
+        // Hanya gambar entri yang terlihat
+        if (yPos >= 120 && yPos <= 470) { // Area tampil dari bawah header sampai sebelum footer
+            char rankText[10];
             sprintf(rankText, "#%d", i + 1);
             Color rankColor = WHITE;
+            Texture2D medalToDraw = {0}; // Default no medal
 
-            // Draw medals for top 3 ranks with size control
-            if (i == 0)
-            {
-                rankColor = GOLD;
-                // Option 1: Using DrawTextureEx with scale
-                DrawTextureEx(goldMedal,
-                              (Vector2){120, yPos - 3}, // Position (adjust as needed)
-                              0.0f,                     // Rotation (0 = no rotation)
-                              medalScale,               // Scale factor
-                              WHITE);                   // Tint
+            if (i == 0) { rankColor = GOLD; medalToDraw = goldMedal; }
+            else if (i == 1) { rankColor = SILVER; medalToDraw = silverMedal; }
+            else if (i == 2) { rankColor = BRONZE; medalToDraw = bronzeMedal; }
 
-                // Option 2: Using source/dest rectangles for precise control
-                // Rectangle source = {0, 0, goldMedal.width, goldMedal.height};
-                // Rectangle dest = {120, yPos - 3, medalWidth, medalHeight};
-                // DrawTexturePro(goldMedal, source, dest, (Vector2){0, 0}, 0.0f, WHITE);
+            if (medalToDraw.id != 0 && medalsLoaded) { // Cek jika medali valid dan sudah dimuat
+                 DrawTextureEx(medalToDraw, (Vector2){120, yPos -5}, 0.0f, medalScale, WHITE);
             }
-            else if (i == 1)
-            {
-                rankColor = (Color){192, 192, 192, 255}; // Silver
-                DrawTextureEx(silverMedal,
-                              (Vector2){120, yPos - 3},
-                              0.0f,
-                              medalScale,
-                              WHITE);
-            }
-            else if (i == 2)
-            {
-                rankColor = (Color){205, 127, 50, 255}; // Bronze
-                DrawTextureEx(bronzeMedal,
-                              (Vector2){120, yPos - 3},
-                              0.0f,
-                              medalScale,
-                              WHITE);
-            }
+            DrawText(rankText, 155, yPos, 20, rankColor);
 
-            DrawText(rankText, 150, yPos, 20, rankColor);
-
-            // Potong nama jika lebih dari 15 karakter
-            char displayName[MAX_NAME_LENGTH];
-            if (strlen(leaderboard[i].name) > 15)
-            {
-                strncpy(displayName, leaderboard[i].name, 15);
-                displayName[8] = '\0';      // Pastikan null-terminated
-                strcat(displayName, "..."); // Tambahkan elipsis
-            }
-            else
-            {
-                strcpy(displayName, leaderboard[i].name);
+            char displayName[MAX_NAME_LENGTH + 4];
+            if (strlen(current->name) > 15) { // Disesuaikan untuk lebar kolom nama
+                strncpy(displayName, current->name, 15);
+                displayName[15] = '\0';
+                strcat(displayName, "...");
+            } else {
+                strcpy(displayName, current->name);
             }
             DrawText(displayName, 260, yPos, 20, WHITE);
 
-            char scoreText[20];
-            sprintf(scoreText, "%d", leaderboard[i].score);
-            DrawText(scoreText, 390, yPos, 20, WHITE);
+            char scoreText[20]; sprintf(scoreText, "%d", current->score);
+            DrawText(scoreText, 420, yPos, 20, WHITE);
 
-            char timeText[20];
-            sprintf(timeText, "%.2fs", leaderboard[i].time);
-            DrawText(timeText, 470, yPos, 20, WHITE);
+            char timeText[20]; sprintf(timeText, "%.2fs", current->time);
+            DrawText(timeText, 520, yPos, 20, WHITE);
 
-            char levelText[10];
-            sprintf(levelText, "%d", leaderboard[i].level);
-            DrawText(levelText, 550, yPos, 20, WHITE);
-
-            // Draw status with color
+            char levelText[10]; sprintf(levelText, "%d", current->level);
+            DrawText(levelText, 620, yPos, 20, WHITE);
+            
             Color statusColor = WHITE;
-            if (strcmp(leaderboard[i].status, "Win") == 0)
-                statusColor = GREEN;
-            else if (strcmp(leaderboard[i].status, "Lose") == 0)
-                statusColor = RED;
-            DrawText(leaderboard[i].status, 630, yPos, 20, statusColor);
+            if (strcmp(current->status, "Win") == 0) statusColor = GREEN;
+            else if (strcmp(current->status, "GAME OVER") == 0) statusColor = RED; // Cocokkan string dari main.c
+            DrawText(current->status, 720, yPos, 20, statusColor);
+        }
+        i++;
+        current = current->next;
+         if (i >= MAX_LEADERBOARD_ENTRIES) break; // Hanya tampilkan MAX_LEADERBOARD_ENTRIES
+    }
+}
+
+
+// --- Fungsi Tekstur Medali (Implementasi sebagian besar sama) ---
+
+void LoadMedalTextures() {
+    if (!medalsLoaded) {
+        // Pastikan path relatif terhadap direktori kerja saat eksekusi
+        goldMedal = LoadTexture("assets/images/gold_medal.png");
+        silverMedal = LoadTexture("assets/images/silver_medal.png");
+        bronzeMedal = LoadTexture("assets/images/bronze_medal.png");
+
+        if (goldMedal.id == 0 || silverMedal.id == 0 || bronzeMedal.id == 0) {
+            TraceLog(LOG_WARNING, "Failed to load one or more medal textures. Check paths.");
+        } else {
+            medalsLoaded = true;
+            TraceLog(LOG_INFO, "Medal textures loaded successfully.");
         }
     }
 }
 
-// Function to set medal scale
-void SetMedalScale(float scale)
-{
+void UnloadMedalTextures() {
+    if (medalsLoaded) {
+        UnloadTexture(goldMedal);
+        UnloadTexture(silverMedal);
+        UnloadTexture(bronzeMedal);
+        medalsLoaded = false;
+        TraceLog(LOG_INFO, "Medal textures unloaded.");
+    }
+}
+
+void SetMedalScale(float scale) {
     medalScale = scale;
 }
 
-// Function to set medal dimensions
-void SetMedalSize(int width, int height)
-{
+void SetMedalSize(int width, int height) {
     medalWidth = width;
     medalHeight = height;
-}
-
-void SaveLeaderboard(LeaderboardEntry leaderboard[MAX_LEADERBOARD_ENTRIES])
-{
-    FILE *file = fopen(LEADERBOARD_FILE, "wb");
-    if (file != NULL)
-    {
-        fwrite(leaderboard, sizeof(LeaderboardEntry), MAX_LEADERBOARD_ENTRIES, file);
-        fclose(file);
-    }
-}
-
-void LoadLeaderboard(LeaderboardEntry leaderboard[MAX_LEADERBOARD_ENTRIES])
-{
-    FILE *file = fopen(LEADERBOARD_FILE, "rb");
-    if (file != NULL)
-    {
-        fread(leaderboard, sizeof(LeaderboardEntry), MAX_LEADERBOARD_ENTRIES, file);
-        fclose(file);
-    }
-    else
-    {
-        InitLeaderboard(leaderboard);
-    }
 }

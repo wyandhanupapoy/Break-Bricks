@@ -34,7 +34,6 @@
 // Timer untuk auto return ke menu
 float gameEndTimer = 0.0f;
 const float returnDelay = 3.0f; // 3 detik kembali ke menu
-LeaderboardEntry leaderboard[MAX_LEADERBOARD_ENTRIES];
 PowerUpList powerUpList;
 LinkedList blockList;
 
@@ -131,11 +130,13 @@ int main()
     LoadNyawaTexture();
     InitBackground();
     InitSoundEffects();
+    InitLeaderboard();
+    
     InitPowerUp(&powerUpList);
     PlayBackgroundMusic();
 
     // 🔹 Load leaderboard dari file
-    LoadLeaderboard(leaderboard);
+    LoadLeaderboard(LEADERBOARD_FILE);
 
     // Game State & Control
     GameState gameState = GAME_MENU;
@@ -196,7 +197,7 @@ int main()
             FreePowerUp(&powerUpList);  // Hapus semua power-up aktif
             InitPowerUp(&powerUpList);  // Inisialisasi ulang
 
-            LoadLeaderboard(leaderboard); // ⬅️ **Memuat ulang leaderboard setiap masuk ke menu utama!**
+            LoadLeaderboard(LEADERBOARD_FILE); // ⬅️ **Memuat ulang leaderboard setiap masuk ke menu utama!**
 
             UpdateMainMenu();
 
@@ -288,16 +289,15 @@ int main()
 
                 if (!leaderboardUpdated)
                 {
-                    AddToLeaderboard(leaderboard, GetPlayerName(), skor[0].score, stopwatchList->time, currentLevel, "GAME OVER");
-                    SaveLeaderboard(leaderboard);
-                    LoadLeaderboard(leaderboard); // ⬅️ **Langsung reload leaderboard**
+                    AddEntryToLeaderboard(GetPlayerName(), skor[0].score, stopwatchList->time, currentLevel, "GAME OVER");
+                    SaveLeaderboard(LEADERBOARD_FILE);
                     leaderboardUpdated = true;
                 }
 
                 DrawGameOverScreen();
 
                 // ⬅️ **Tambahkan ini agar leaderboard langsung terlihat**
-                DrawLeaderboard(leaderboard, 50, 400);
+                DrawLeaderboardInfo(50, 400, 5);
 
                 if (gameEndTimer >= returnDelay || IsKeyPressed(KEY_R))
                 {
@@ -316,16 +316,15 @@ int main()
 
                 if (!leaderboardUpdated)
                 {
-                    AddToLeaderboard(leaderboard, GetPlayerName(), skor[0].score, stopwatchList->time, currentLevel, "WIN");
-                    SaveLeaderboard(leaderboard);
-                    LoadLeaderboard(leaderboard); // ⬅️ **Langsung reload leaderboard**
+                    AddEntryToLeaderboard(GetPlayerName(), skor[0].score, stopwatchList->time, currentLevel, "WIN");
+                    SaveLeaderboard(LEADERBOARD_FILE);
                     leaderboardUpdated = true;
                 }
 
                 DrawWinScreen();
 
                 // ⬅️ **Tambahkan ini agar leaderboard langsung terlihat**
-                DrawLeaderboard(leaderboard, 50, 400);
+                DrawLeaderboardInfo(50, 400, 5);
 
                 if (gameEndTimer >= returnDelay || IsKeyPressed(KEY_R))
                 {
@@ -366,7 +365,7 @@ int main()
         if (gameState == GAME_OVER || gameState == GAME_WIN)
         {
             DrawRectangle(250, 100, 400, 250, WHITE); // Background kotak leaderboard
-            DrawLeaderboard(leaderboard, 270, 120);
+            DrawLeaderboardInfo(50, 400, 5);
         }
 
         // === GAME STATE UI ===
@@ -377,12 +376,12 @@ int main()
         else if (gameState == GAME_OVER)
         {
             DrawGameOverScreen();
-            DrawLeaderboard(leaderboard, 50, 400);
+            DrawLeaderboardInfo(50, 400, 5);
         }
         else if (gameState == GAME_WIN)
         {
             DrawWinScreen();
-            DrawLeaderboard(leaderboard, 50, 400);
+            DrawLeaderboardInfo(50, 400, 5);
         }
         else if (isPaused)
         {
@@ -399,10 +398,11 @@ int main()
         }
     }
 
-    SaveLeaderboard(leaderboard);
+    SaveLeaderboard(LEADERBOARD_FILE);
+    FreeLeaderboard();
     UnloadNyawaTexture();
     UnloadSoundEffects();
-    FreePowerUp(&powerUpList); for (int i = 0; i < 3; i++) 
+    FreePowerUp(&powerUpList);
     UnloadMedalTextures();
     UnloadImage(icon);
     CloseWindow();

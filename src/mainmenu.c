@@ -439,35 +439,29 @@ void DrawMainMenu()
     }
     else if (currentMenu == MENU_LEADERBOARD)
     {
-        static LeaderboardEntry leaderboard[MAX_PLAYERS];
-        static bool leaderboardLoaded = false;
-
-        if (!leaderboardLoaded)
-        {
-            LoadLeaderboard(leaderboard);
-            leaderboardLoaded = true;
-        }
 
         // Handle scrolling with mouse wheel
         leaderboardScrollOffset -= (GetMouseWheelMove() * SCROLL_SPEED);
 
-        // Limit scrolling
-        int maxScroll = (MAX_LEADERBOARD_ENTRIES * 30) - 380; // Calculate based on entries and visible area
-        if (leaderboardScrollOffset < 0)
-            leaderboardScrollOffset = 0;
-        if (maxScroll > 0 && leaderboardScrollOffset > maxScroll)
-            leaderboardScrollOffset = maxScroll;
-
-        // Check for refresh button click
-        Vector2 mousePos = GetMousePosition();
-        Rectangle refreshButton = {750, 60, 120, 30};
-        if (CheckCollisionPointRec(mousePos, refreshButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-        {
-            LoadLeaderboard(leaderboard); // Reload leaderboard data
-            PlayButtonClick();            // Add sound feedback
+        // Batasi scrolling
+        int totalBoardEntries = GetLeaderboardCount(); // Gunakan fungsi baru
+        int maxScroll = 0;
+        if (totalBoardEntries > 0)
+        {                                               // hindari pembagian dengan nol atau nilai negatif jika entri sedikit
+            int contentHeight = totalBoardEntries * 30; // 30 adalah tinggi per entri
+            int visibleAreaHeight = 350;                // Perkiraan tinggi area scrollable
+            if (contentHeight > visibleAreaHeight)
+            {
+                maxScroll = contentHeight - visibleAreaHeight;
+            }
         }
 
-        DrawLeaderboardMenu(leaderboard, MAX_LEADERBOARD_ENTRIES, leaderboardScrollOffset);
+        if (leaderboardScrollOffset < 0)
+            leaderboardScrollOffset = 0;
+        if (leaderboardScrollOffset > maxScroll)
+            leaderboardScrollOffset = maxScroll;
+
+        DrawLeaderboardMenuScreen(leaderboardScrollOffset);
     }
 }
 
