@@ -20,7 +20,7 @@ void AddPowerUp(PowerUpList *list, PowerUpType type, Vector2 position) {
     newNode->type = type;
     // newNode->texture = texture;
     newNode->active = true;
-    newNode->duration = 10.0f; // Durasi 10 detik
+    newNode->duration = 5.0f; // Durasi 10 detik
     newNode->next = list->head;
     list->head = newNode;
 }
