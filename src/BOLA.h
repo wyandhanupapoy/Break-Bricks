@@ -2,12 +2,16 @@
 #define BOLA_H
 
 #include <raylib.h>
-#include "paddle.h"
+// #include "paddle.h" // No, forward declare PaddleList
 #include "LinkedList-Block.h"
 #include "skor.h"
 #include "stopwatch.h"
 #include "game_state.h"
-#include "powerup.h"
+// #include "powerup.h" // No, forward declare PowerUpList
+
+// Forward declarations
+struct PaddleList; // Defined in paddle.h
+struct PowerUpList; // Defined in powerup.h
 
 typedef struct BolaNode {
     Vector2 position;
@@ -25,11 +29,12 @@ typedef struct BolaList {
 // Fungsi
 void InitBola(BolaList *list);
 void AddBola(BolaList *list, Vector2 position, Vector2 speed);
-void UpdateBola(BolaList *list, Paddle paddles[PADDLE_ROWS][PADDLE_COLS], LinkedList* blockList, 
-               GameState *state, Skor *skor, Stopwatch* stopwatchList, PowerUpList *powerUpList);
+// UpdateBola now takes PaddleList
+void UpdateBola(BolaList *list, struct PaddleList *paddleList, LinkedList* blockList,
+                GameState *state, Skor *skor, Stopwatch* stopwatchList, struct PowerUpList *powerUpList);
 bool SemuaBolaMati(BolaList *list);
 void DrawBola(BolaList *list);
 void ResetBola(BolaList *list);
 void FreeBola(BolaList *list);
 
-#endif
+#endif //BOLA_H

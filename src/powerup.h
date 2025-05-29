@@ -1,12 +1,15 @@
 #ifndef POWERUP_H
 #define POWERUP_H
 
-#include <raylib.h>  // Untuk Rectangle, Texture2D, dll
+#include <raylib.h>
 
 // Forward declarations
-typedef struct Paddle Paddle;
-typedef struct BolaList BolaList;
-typedef struct PowerUpList PowerUpList;
+// Ensure these match the actual struct names if they are typedef'd elsewhere
+// For PaddleNode and PaddleList, the structs are defined in paddle.h
+// For BolaList, it's defined in BOLA.h
+struct PaddleNode;
+struct PaddleList;
+struct BolaList;
 
 typedef enum {
     POWERUP_TRIPLE_BALL,
@@ -17,22 +20,28 @@ typedef struct PowerUpNode {
     Rectangle rect;
     PowerUpType type;
     bool active;
-    float duration;
+    float duration; // Duration the power-up effect lasts when collected
     struct PowerUpNode *next;
 } PowerUpNode;
 
 typedef struct PowerUpList {
-    PowerUpNode *head;
+    PowerUpNode *head; // List of falling power-up items
 } PowerUpList;
 
-// Fungsi
+// Functions
 void InitPowerUp(PowerUpList *list);
 void AddPowerUp(PowerUpList *list, PowerUpType type, Vector2 position);
-void UpdatePowerUp(PowerUpList *list, Paddle *paddle, BolaList *bolaList, float deltaTime);
+
+// UpdatePowerUp now takes PaddleList to check collision with any active paddle
+void UpdatePowerUp(PowerUpList *fallingPowerUpList, struct PaddleList *paddleList, struct BolaList *bolaList, float deltaTime);
+
 void DrawPowerUp(PowerUpList *list);
-void FreePowerUp(PowerUpList *list);
-void ActivatePowerUp(PowerUpType type, Paddle *paddle, BolaList *bolaList, float duration);
-void UpdateActivePowerUps(Paddle *paddle, float deltaTime);
+void FreePowerUp(PowerUpList *list); // Frees the list of falling power-ups
 
-#endif
+// ActivatePowerUp applies an effect to a specific paddle
+void ActivatePowerUp(PowerUpType type, struct PaddleNode *paddle_node, struct BolaList *bolaList, float duration);
 
+// UpdateActivePowerUps updates effects already active on a specific paddle
+void UpdateActivePowerUps(struct PaddleNode *paddle_node, float deltaTime);
+
+#endif // POWERUP_H

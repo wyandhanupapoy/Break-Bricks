@@ -1,34 +1,46 @@
 // Nama : Muhammad Raihan Abubakar
-// Nama fitur : paddle 
+// Nama fitur : paddle
 // Deskripsi : paddle berfungsi untuk memantulkan dan mengarahkan bola agar bisa menghancurkan block
+// MODIFIED: Changed to a dynamic linked list of paddles.
 
 #ifndef PADDLE_H
 #define PADDLE_H
 
 #include <raylib.h>
-#include "powerup.h"
+#include "powerup.h" // For PowerUpType
 
-#define PADDLE_ROWS 1 
-#define PADDLE_COLS 1 // jumlah baris dan kolom paddle 
-#define PADDLE_WIDTH 100 // lebar paddle
-#define PADDLE_HEIGHT 20 // tinggi paddle 
-#define PADDLE_SPEED 8 // kecepatan paddle 
-#define PADDLE_WIDTH_DEFAULT PADDLE_WIDTH  // Untuk reset efek power-up
+// Default properties for a new paddle
+#define PADDLE_WIDTH 100       // Default initial width of the paddle
+#define PADDLE_HEIGHT 20       // Height of the paddle
+#define PADDLE_SPEED 8         // Movement speed of the paddle
+#define PADDLE_WIDTH_DEFAULT PADDLE_WIDTH // Default width for resetting power-ups
 
+// Structure for active power-up effects on a paddle
 typedef struct ActivePowerUp {
     PowerUpType type;
     float remainingTime;
     struct ActivePowerUp *next;
 } ActivePowerUp;
 
-typedef struct Paddle{
-    Rectangle rect; // posisi paddle 
-    Vector2 speed; 
-    ActivePowerUp *activePowerUps;  // Linked list efek aktif
-} Paddle;
+// Node for an individual paddle in the linked list
+typedef struct PaddleNode {
+    Rectangle rect;             // Position and dimensions of the paddle
+    Vector2 speed;              // Movement speed of the paddle
+    ActivePowerUp *activePowerUps; // Linked list of active power-up effects on this paddle
+    Color color;                // Base color of the paddle
+    struct PaddleNode *next;    // Pointer to the next paddle in the list
+} PaddleNode;
 
-void InitPaddles(Paddle paddles[PADDLE_ROWS][PADDLE_COLS]); // inisiasi paddle
-void UpdatePaddles(Paddle paddles[PADDLE_ROWS][PADDLE_COLS], float deltaTime); // memperbarui posisi paddle berdasarkan input keyboard
-void DrawPaddles(Paddle paddles[PADDLE_ROWS][PADDLE_COLS]); // menggambar paddle di layar
+// Linked list structure to manage all paddles
+typedef struct PaddleList {
+    PaddleNode *head;           // Pointer to the first paddle in the list
+} PaddleList;
+
+// Functions for paddle management
+void InitPaddles(PaddleList *list);                                    // Initializes the paddle list (e.g., adds one default paddle)
+void AddPaddle(PaddleList *list, Vector2 position, float width, Color color); // Adds a new paddle to the list
+void UpdatePaddles(PaddleList *list, float deltaTime);                 // Updates all paddles in the list
+void DrawPaddles(PaddleList *list);                                    // Draws all paddles in the list
+void FreePaddles(PaddleList *list);                                    // Frees all memory allocated for paddles
 
 #endif // PADDLE_H
