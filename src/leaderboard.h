@@ -12,7 +12,7 @@ Deskripsi:      Fitur leaderboard untuk menyimpan data pemain dan menampilkannya
 
 #define MAX_NAME_LENGTH 20
 #define MAX_LEADERBOARD_ENTRIES 10 // Batas maksimal entri yang disimpan dan ditampilkan (bisa disesuaikan)
-#define LEADERBOARD_FILE "src/leaderboard.dat"
+#define LEADERBOARD_FILE "assets/data_leaderboard/leaderboard.dat"
 #define SCROLL_SPEED 20 // Kecepatan scroll di menu leaderboard
 
 // Warna kustom
