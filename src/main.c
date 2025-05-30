@@ -232,9 +232,9 @@ int main()
 
         if (IsKeyPressed(KEY_M))
             ToggleMusic();
-        if (IsKeyPressed(KEY_W))
+        if (IsKeyPressed(KEY_V))
             IncreaseVolume();
-        if (IsKeyPressed(KEY_S))
+        if (IsKeyPressed(KEY_C))
             DecreaseVolume();
 
         if (gameState == GAME_MENU)
