@@ -229,12 +229,14 @@ static void UpdateNameInputScreenCustom(Vector2 mousePos) {
         }
 
         if (IsKeyPressed(KEY_BACKSPACE)) {
+            SetMouseCursor(MOUSE_CURSOR_DEFAULT);
             if (letterCount > 0) {
                 letterCount--;
                 playerName[letterCount] = '\0';
             }
         }
         if (IsKeyPressed(KEY_ENTER)) {
+            SetMouseCursor(MOUSE_CURSOR_DEFAULT);
             Action_ConfirmNameAndStart();
         }
     } else {
@@ -434,7 +436,7 @@ void DrawDynamicMainMenu(void) {
     } else if (strlen(currentActiveScreen->title) > 0) {
         int titleFontSize = 45;
         int titleY = 150;
-        if(currentActiveScreen->type == MENU_TYPE_LEADERBOARD) titleY = 70;
+        if(currentActiveScreen->type == MENU_TYPE_LEADERBOARD) titleY = 40;
         else if (currentActiveScreen->type == MENU_TYPE_INFO) titleY = 100;
 
         DrawRainbowText(currentActiveScreen->title, SCREEN_WIDTH / 2, titleY, titleFontSize);

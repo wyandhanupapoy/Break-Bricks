@@ -47,6 +47,6 @@ void DrawWinScreen()
 // Fungsi untuk menampilkan informasi kontrol permainan di bagian bawah layar
 void DrawControlInfo()
 {
-    DrawRectangle(0, 620, 835, 30, LIGHTGRAY); 
+    DrawRectangle(0, 620, 830, 30, LIGHTGRAY); 
     DrawText("<- -> Move   |   P - Pause   |   F - Fullscreen   |   Esc - Exit   |   M - Mute", 15, 625, 20, BLACK);
 }

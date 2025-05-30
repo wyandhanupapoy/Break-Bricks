@@ -16,7 +16,7 @@
 // Konstanta ini mendefinisikan batas-batas dan nama file yang digunakan oleh leaderboard.
 
 #define MAX_NAME_LENGTH 20       // Panjang maksimum nama pemain yang bisa disimpan.
-#define MAX_LEADERBOARD_ENTRIES 10 // Jumlah entri maksimum yang akan disimpan dan ditampilkan di leaderboard.
+#define MAX_LEADERBOARD_ENTRIES 100 // Jumlah entri maksimum yang akan disimpan dan ditampilkan di leaderboard.
                                  // Jika ada lebih dari 10 entri, hanya 10 teratas yang disimpan.
 #define LEADERBOARD_FILE "assets/data_leaderboard/leaderboard.dat" // Path dan nama file tempat data leaderboard disimpan secara permanen.
                                                                    // Ekstensi .dat menandakan file data biner.

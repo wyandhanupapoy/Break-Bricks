@@ -24,7 +24,7 @@ static Texture2D bronzeMedal;
 static bool medalsLoaded = false; // Status apakah tekstur medali sudah dimuat ke memori.
 
 // Pengaturan default untuk tampilan medali.
-static float medalScale = 0.08f; // Skala ukuran medali (0.08 = 8% dari ukuran asli).
+static float medalScale = 0.3f; // Skala ukuran medali (0.08 = 8% dari ukuran asli).
 static int medalWidth = 24;      // Lebar default medali (dalam piksel).
 static int medalHeight = 24;     // Tinggi default medali (dalam piksel).
 
@@ -299,9 +299,7 @@ void DrawLeaderboardMenuScreen(int scrollOffset) {
     }
 
     // Latar belakang menu leaderboard.
-    DrawRectangle(100, 50, 800, 500, Fade(DARKGRAY, 0.9f)); // Kotak semi-transparan.
-    DrawText("LEADERBOARD", 400, 70, 30, WHITE); // Judul besar.
-    DrawText("Backspace - Back to Menu | Scroll with Mouse Wheel", 250, 520, 20, LIGHTGRAY); // Info kontrol.
+    DrawText("Backspace - Back to Menu", 370, 540, 20, LIGHTGRAY); // Info kontrol.
 
     // Indikator scroll (panah atas/bawah) jika konten bisa di-scroll.
     int totalEntries = GetLeaderboardCount();
@@ -317,13 +315,22 @@ void DrawLeaderboardMenuScreen(int scrollOffset) {
     }
 
     // Garis pemisah dan header tabel.
-    DrawLine(100, 110, 900, 110, WHITE);
-    DrawText("Rank", 150, 120, 20, GOLD);
-    DrawText("Name", 260, 120, 20, GOLD);
-    DrawText("Score", 420, 120, 20, GOLD);
-    DrawText("Time", 520, 120, 20, GOLD);
-    DrawText("Level", 620, 120, 20, GOLD);
-    DrawText("Status", 720, 120, 20, GOLD);
+    DrawLine(100, 100, 900, 100, WHITE);
+    DrawRectangle(100, 105, 800, 30, BLACK); // Header background.
+    DrawText("Rank", 150, 110, 20, GOLD);
+    DrawText("Name", 295, 110, 20, GOLD);
+    DrawText("Score", 425, 110, 20, GOLD);
+    DrawText("Time", 540, 110, 20, GOLD);
+    DrawText("Level", 630, 110, 20, GOLD);
+    DrawText("Status", 765, 110, 20, GOLD);
+    DrawLine(100, 530, 900, 530, WHITE);
+    DrawLine(900, 100, 900, 530, WHITE);
+    DrawLine(100, 100, 100, 530, WHITE);
+    DrawLine(240, 100, 240, 530, WHITE);
+    DrawLine(400, 100, 400, 530, WHITE);
+    DrawLine(510, 100, 510, 530, WHITE);
+    DrawLine(610, 100, 610, 530, WHITE);
+    DrawLine(710, 100, 710, 530, WHITE);
 
     LeaderboardNode* current = leaderboardHead;
     int i = 0; // Indeks peringkat (mulai dari 0).
@@ -332,7 +339,7 @@ void DrawLeaderboardMenuScreen(int scrollOffset) {
         int yPos = 150 + (i * 30) - scrollOffset;
 
         // Hanya gambar entri yang terlihat dalam area yang ditentukan.
-        if (yPos >= 120 && yPos <= 470) {
+        if (yPos >= 140 && yPos <= 500) {
             char rankText[10];
             sprintf(rankText, "#%d", i + 1); // Teks peringkat (misalnya, "#1").
             Color rankColor = WHITE;
@@ -345,7 +352,7 @@ void DrawLeaderboardMenuScreen(int scrollOffset) {
 
             // Gambar medali jika ada dan sudah dimuat.
             if (medalToDraw.id != 0 && medalsLoaded) {
-                DrawTextureEx(medalToDraw, (Vector2){120.0f, (float)yPos - 5.0f}, 0.0f, medalScale, WHITE);
+                DrawTextureEx(medalToDraw, (Vector2){120.0f, (float)yPos - 1.5f}, 0.0f, medalScale, WHITE);
             }
 
             DrawText(rankText, 155, yPos, 20, rankColor); // Gambar teks peringkat.
