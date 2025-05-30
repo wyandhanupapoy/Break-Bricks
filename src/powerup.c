@@ -1,14 +1,16 @@
 #include "powerup.h"
-#include "paddle.h"  // For PaddleNode definition, ActivePowerUp, PADDLE_WIDTH_DEFAULT etc.
-#include "BOLA.h"    // For BolaList definition and AddBola function
-#include "sound.h"   // For PlaySfx
-#include <stdlib.h>  // For malloc, free
+#include "paddle.h"  // Untuk PaddleNode, ActivePowerUp, PADDLE_WIDTH_DEFAULT, dll.
+#include "BOLA.h"    // Untuk BolaList dan AddBola
+#include "sound.h"   // Untuk PlaySfx
+#include <stdlib.h>  // Untuk malloc, free
+#include <raymath.h> // Untuk fminf, fmaxf
 
-#define POWERUP_SPEED 3.0f
-#define POWERUP_WIDTH 30
-#define POWERUP_HEIGHT 30
-// #define SCREEN_WIDTH needs to be contextually correct, e.g. from game_state.h or passed if needed for spawn/despawn logic
-// Using GetScreenHeight() from raylib for despawn.
+#define POWERUP_FALL_SPEED 2.0f // Kecepatan jatuh power-up (unit per detik jika dikali deltaTime)
+#define POWERUP_ITEM_WIDTH 30
+#define POWERUP_ITEM_HEIGHT 30
+
+#define LONG_PADDLE_INCREMENT_VALUE 40.0f
+
 
 void InitPowerUp(PowerUpList *list) {
     if (!list) return;
@@ -18,94 +20,189 @@ void InitPowerUp(PowerUpList *list) {
 void AddPowerUp(PowerUpList *list, PowerUpType type, Vector2 position) {
     if (!list) return;
     PowerUpNode *newNode = (PowerUpNode*)malloc(sizeof(PowerUpNode));
-    if (!newNode) return;
+    if (!newNode) {
+        TraceLog(LOG_WARNING, "POWERUP: Failed to allocate memory for new falling item.");
+        return;
+    }
 
-    newNode->rect = (Rectangle){position.x - POWERUP_WIDTH/2, position.y, POWERUP_WIDTH, POWERUP_HEIGHT}; // Center spawn
+    newNode->rect = (Rectangle){position.x - POWERUP_ITEM_WIDTH/2, position.y, POWERUP_ITEM_WIDTH, POWERUP_ITEM_HEIGHT};
     newNode->type = type;
     newNode->active = true;
-    newNode->duration = 10.0f; // Default duration for power-up effect (e.g., 10 seconds)
+    // newNode->duration tidak ada lagi di PowerUpNode, durasi dikelola oleh ActivePowerUp
     newNode->next = list->head;
     list->head = newNode;
+    TraceLog(LOG_INFO, "POWERUP: Added new falling item type %d", type);
 }
 
-void UpdatePowerUp(PowerUpList *fallingPowerUpList, PaddleList *paddleList, BolaList *bolaList, float deltaTime) {
+// Fungsi untuk mengaktifkan efek power-up pada paddle
+void ActivatePowerUp(PowerUpType type, struct PaddleNode *paddle_node, struct BolaList *bolaList) {
+    if (!paddle_node) return;
+
+    PlaySfx("power_up"); // Mainkan suara sekali saat power-up diambil
+
+    // Cek apakah efek dengan tipe ini sudah ada di paddle
+    ActivePowerUp* existingEffect = paddle_node->activePowerUps;
+    bool foundInList = false;
+    while(existingEffect != NULL) {
+        if (existingEffect->type == type) {
+            existingEffect->remainingTime = POWERUP_DEFAULT_DURATION; // Perbarui/reset durasi jika sudah ada
+            foundInList = true;
+            // Untuk Long Paddle, kita tetap ingin efek penambahan panjangnya terjadi
+            // jadi jangan langsung return di sini jika hanya me-refresh timer.
+            break; 
+        }
+        existingEffect = existingEffect->next;
+    }
+
+    // Terapkan efek langsung dari power-up
+    if (type == POWERUP_TRIPLE_BALL && bolaList) {
+        Vector2 spawnPos = {paddle_node->rect.x + paddle_node->rect.width / 2, paddle_node->rect.y - 15};
+        // Sekarang MIN_BALL_SPEED seharusnya terdefinisi
+        AddBola(bolaList, spawnPos, (Vector2){GetRandomValue(-5, -3), -MIN_BALL_SPEED});
+        AddBola(bolaList, spawnPos, (Vector2){GetRandomValue(3, 5), -MIN_BALL_SPEED});
+    }
+    if (type == POWERUP_LONG_PADDLE) {
+        paddle_node->rect.width += LONG_PADDLE_INCREMENT_VALUE; // Tambah panjang paddle
+
+        // Batasi lebar maksimum paddle
+        if (paddle_node->rect.width > MAX_PADDLE_WIDTH) {
+            paddle_node->rect.width = MAX_PADDLE_WIDTH;
+        }
+
+        // Setelah lebar diubah, pastikan paddle tidak keluar batas kiri atau kanan
+        // dan tetap berada dalam area permainan paddle
+        if (paddle_node->rect.x < 0) {
+            paddle_node->rect.x = 0;
+        }
+        // Jika paddle keluar ke kanan setelah memanjang dari sisi kiri
+        if (paddle_node->rect.x + paddle_node->rect.width > PADDLE_GAME_AREA_WIDTH) {
+            paddle_node->rect.x = PADDLE_GAME_AREA_WIDTH - paddle_node->rect.width;
+        }
+    }
+
+    // Jika belum ada dalam daftar efek aktif, tambahkan sebagai node baru
+    if (!foundInList) {
+        ActivePowerUp *newEffect = (ActivePowerUp*)malloc(sizeof(ActivePowerUp));
+        if (!newEffect) {
+            TraceLog(LOG_WARNING, "POWERUP: Failed to allocate memory for new active effect.");
+            return;
+        }
+        newEffect->type = type;
+        newEffect->remainingTime = POWERUP_DEFAULT_DURATION;
+        newEffect->next = paddle_node->activePowerUps; // Tambahkan ke depan list
+        paddle_node->activePowerUps = newEffect;
+        TraceLog(LOG_INFO, "POWERUP: Activated new effect type %d on paddle.", type);
+    } else {
+        // Jika sudah ada di list (foundInList == true), timer-nya sudah di-refresh di loop atas.
+        TraceLog(LOG_INFO, "POWERUP: Refreshed duration for active effect type %d on paddle.", type);
+    }
+}
+
+
+void UpdateActivePowerUps(struct PaddleNode *paddle_node, float deltaTime) {
+    if (!paddle_node) return;
+
+    ActivePowerUp *curr = paddle_node->activePowerUps;
+    ActivePowerUp *prev = NULL;
+
+    while (curr != NULL) {
+        ActivePowerUp *nextEffect = curr->next; 
+        curr->remainingTime -= deltaTime;
+
+        if (curr->remainingTime <= 0) {
+            TraceLog(LOG_INFO, "POWERUP: Effect type %d expired.", curr->type);
+            if (curr->type == POWERUP_LONG_PADDLE) {
+                // Saat Long Paddle berakhir, reset ke lebar default.
+                // Jika ada beberapa "stack" Long Paddle, ini akan langsung reset.
+                // Jika ingin pengurangan bertahap, logikanya akan lebih kompleks.
+                // Untuk sekarang, kita reset ke default saat timer habis.
+                paddle_node->rect.width = PADDLE_WIDTH_DEFAULT;
+
+                // Pastikan paddle tetap dalam batas setelah reset lebar
+                if (paddle_node->rect.x + paddle_node->rect.width > PADDLE_GAME_AREA_WIDTH) {
+                    paddle_node->rect.x = PADDLE_GAME_AREA_WIDTH - paddle_node->rect.width;
+                }
+                if (paddle_node->rect.x < 0) { // Seharusnya tidak terjadi jika width default > 0
+                    paddle_node->rect.x = 0;
+                }
+            }
+            // Untuk POWERUP_TRIPLE_BALL, efeknya instan, tidak ada yang perlu dikembalikan saat timer habis.
+            // Timer hanya menandakan "efek ini pernah aktif".
+
+            // Hapus efek dari daftar
+            if (prev == NULL) {
+                paddle_node->activePowerUps = nextEffect;
+            } else {
+                prev->next = nextEffect;
+            }
+            free(curr);
+            curr = nextEffect; 
+        } else {
+            prev = curr;
+            curr = nextEffect;
+        }
+    }
+}
+
+
+void UpdatePowerUp(PowerUpList *fallingPowerUpList, struct PaddleList *paddleList, struct BolaList *bolaList, float deltaTime) {
     if (!fallingPowerUpList) return;
 
     PowerUpNode *prev = NULL;
     PowerUpNode *curr = fallingPowerUpList->head;
 
     while (curr != NULL) {
-        if (!curr->active) { // If collected or despawned
-            PowerUpNode *toDelete = curr;
+        PowerUpNode *nextNode = curr->next; 
+
+        if (!curr->active) { 
             if (prev == NULL) {
-                fallingPowerUpList->head = curr->next;
-                curr = fallingPowerUpList->head;
+                fallingPowerUpList->head = nextNode;
             } else {
-                prev->next = curr->next;
-                curr = curr->next;
+                prev->next = nextNode;
             }
-            free(toDelete);
+            free(curr);
+            curr = nextNode; 
             continue;
         }
 
-        // Move power-up downwards
-        curr->rect.y += POWERUP_SPEED;
+        curr->rect.y += POWERUP_FALL_SPEED * deltaTime * 60.0f; // Kecepatan konsisten (asumsi 60FPS basis jika speed kecil)
+                                                              // Atau jika POWERUP_FALL_SPEED per detik: curr->rect.y += POWERUP_FALL_SPEED * deltaTime;
 
-        // Check collision with any active paddle
-        if (paddleList) {
-            PaddleNode *p_node = paddleList->head;
-            while (p_node != NULL) {
-                if (CheckCollisionRecs(curr->rect, p_node->rect)) {
-                    ActivatePowerUp(curr->type, p_node, bolaList, curr->duration);
-                    curr->active = false; // Mark falling power-up as collected
-                    // No need to break from inner loop if multiple paddles can collect (though unlikely for same item)
-                    // but break outer loop's current iteration by going to 'continue' after freeing.
-                    break; 
-                }
-                p_node = p_node->next;
+        bool collected = false;
+        if (paddleList && paddleList->head) { // Cek paddleList->head untuk validitas
+            // Untuk game single player, kita hanya cek paddle pertama
+            PaddleNode *playerPaddle = paddleList->head;
+            if (CheckCollisionRecs(curr->rect, playerPaddle->rect)) {
+                ActivatePowerUp(curr->type, playerPaddle, bolaList); // Durasi diambil dari konstanta
+                curr->active = false; // Tandai untuk dihapus dari list item jatuh
+                collected = true;
+                // Tidak perlu break karena hanya ada satu paddle yang dicek
             }
         }
-        
-        // If collected, the active flag will be false, and it will be removed at the start of the next iteration for 'curr'
-        if (!curr->active) {
-             // This path is taken if collected in the loop above.
-             // The node will be removed in the next main loop iteration by the first 'if (!curr->active)' block.
-             // To remove immediately:
-            PowerUpNode *toDelete = curr;
-            if (prev == NULL) {
-                fallingPowerUpList->head = curr->next;
-                curr = fallingPowerUpList->head;
-            } else {
-                prev->next = curr->next;
-                curr = curr->next;
-            }
-            free(toDelete);
-            continue; // Restart loop for the new 'curr'
+
+        if (curr->rect.y > GetScreenHeight() + curr->rect.height) { // Tambahkan height agar benar-benar hilang
+            curr->active = false; 
         }
 
-
-        // Despawn if it falls off screen
-        if (curr->rect.y > GetScreenHeight()) {
-            curr->active = false;
-            // Node will be removed in the next iteration by the first 'if' block.
+        if (!collected && curr->active) { 
+            prev = curr;
         }
-
-        prev = curr;
-        curr = curr->next;
+        curr = nextNode;
     }
 }
+
 
 void DrawPowerUp(PowerUpList *list) {
     if (!list) return;
     PowerUpNode *curr = list->head;
     while (curr != NULL) {
-        if (curr->active) {
+        if (curr->active) { // Hanya gambar item power-up yang masih jatuh
             Color color;
             const char *symbol;
             switch (curr->type) {
                 case POWERUP_TRIPLE_BALL:
                     color = RED;
-                    symbol = "3B"; 
+                    symbol = "3X"; 
                     break;
                 case POWERUP_LONG_PADDLE:
                     color = BLUE;
@@ -117,95 +214,15 @@ void DrawPowerUp(PowerUpList *list) {
                     break;
             }
             DrawRectangleRec(curr->rect, color);
-            int fontSize = (POWERUP_HEIGHT < 25) ? 10:20;
+            int fontSize = (POWERUP_ITEM_HEIGHT < 25) ? 10 : 18; // Ukuran font disesuaikan
             int textWidth = MeasureText(symbol, fontSize);
-            int textX = curr->rect.x + (curr->rect.width - textWidth) / 2;
-            int textY = curr->rect.y + (curr->rect.height - fontSize) / 2;
-            DrawText(symbol, textX, textY, fontSize, WHITE);
+            DrawText(symbol, curr->rect.x + (curr->rect.width - textWidth) / 2, curr->rect.y + (curr->rect.height - fontSize) / 2, fontSize, WHITE);
         }
         curr = curr->next;
     }
 }
 
-void ActivatePowerUp(PowerUpType type, PaddleNode *paddle_node, BolaList *bolaList, float duration) {
-    if (!paddle_node) return;
-    PlaySfx("power_up"); // Assuming this function exists in sound.c
-
-    bool alreadyActive = false;
-    ActivePowerUp* existingEffect = paddle_node->activePowerUps;
-    while(existingEffect != NULL) {
-        if (existingEffect->type == type) {
-            existingEffect->remainingTime = duration; // Refresh duration
-            alreadyActive = true;
-            break;
-        }
-        existingEffect = existingEffect->next;
-    }
-
-    if (alreadyActive) return; // Don't stack the same type, just refresh
-
-    // Add new power-up effect to the paddle's list of active effects
-    ActivePowerUp *newEffect = (ActivePowerUp*)malloc(sizeof(ActivePowerUp));
-    if (!newEffect) return;
-
-    newEffect->type = type;
-    newEffect->remainingTime = duration;
-    newEffect->next = paddle_node->activePowerUps;
-    paddle_node->activePowerUps = newEffect;
-
-    // Apply immediate effect
-    if (type == POWERUP_TRIPLE_BALL && bolaList) {
-        // Spawn two additional balls near the paddle that collected the power-up
-        Vector2 spawnPos = {paddle_node->rect.x + paddle_node->rect.width / 2, paddle_node->rect.y - 15};
-        AddBola(bolaList, spawnPos, (Vector2){-4, -6}); // Speed left
-        AddBola(bolaList, spawnPos, (Vector2){4, -6});  // Speed right
-        // The original ball continues, this adds two more.
-    }
-    if (type == POWERUP_LONG_PADDLE) {
-        paddle_node->rect.width = PADDLE_WIDTH * 1.5f; // Increase width by 50%
-        // Add clamping if necessary, e.g., not wider than screen
-        // float gameScreenWidth = SCREEN_WI; // from paddle.c
-        // if (paddle_node->rect.x + paddle_node->rect.width > gameScreenWidth) {
-        //     paddle_node->rect.width = gameScreenWidth - paddle_node->rect.x;
-        // }
-    }
-}
-
-void UpdateActivePowerUps(PaddleNode *paddle_node, float deltaTime) {
-    if (!paddle_node) return;
-
-    ActivePowerUp *curr = paddle_node->activePowerUps;
-    ActivePowerUp *prev = NULL;
-
-    while (curr != NULL) {
-        curr->remainingTime -= deltaTime;
-        if (curr->remainingTime <= 0) {
-            // Effect has expired, revert it
-            if (curr->type == POWERUP_LONG_PADDLE) {
-                paddle_node->rect.width = PADDLE_WIDTH_DEFAULT; // Reset to default width
-            }
-            // For POWERUP_TRIPLE_BALL, the effect is instantaneous (spawning balls). No specific reversion needed here.
-
-            // Remove effect from list
-            ActivePowerUp *toDelete = curr;
-            if (prev == NULL) { // Effect was at the head of the list
-                paddle_node->activePowerUps = curr->next;
-                curr = paddle_node->activePowerUps;
-            } else {
-                prev->next = curr->next;
-                curr = prev->next;
-            }
-            free(toDelete);
-            // 'curr' is already updated, 'prev' remains correct if curr was not head.
-            // If curr was head, prev is NULL, and next loop iteration will handle prev correctly.
-        } else {
-            prev = curr;
-            curr = curr->next;
-        }
-    }
-}
-
-void FreePowerUp(PowerUpList *list) { // Frees the list of *falling* power-ups
+void FreePowerUp(PowerUpList *list) {
     if (!list) return;
     PowerUpNode *curr = list->head;
     while (curr != NULL) {

@@ -18,8 +18,8 @@
 void InitBola(BolaList* list) {
     if(!list) return;
     list->head = NULL;
-    // Add initial ball
-    AddBola(list, (Vector2){SCREEN_W / 2.0f, SCREEN_H / 2.0f}, (Vector2){GetRandomValue(-1,1)? MIN_BALL_SPEED : -MIN_BALL_SPEED, -MIN_BALL_SPEED});
+    // Gunakan konstanta dari BOLA.h
+    AddBola(list, (Vector2){GAME_AREA_WIDTH_BOLA / 2.0f, GAME_AREA_HEIGHT_BOLA / 2.0f}, (Vector2){GetRandomValue(-1,1)? MIN_BALL_SPEED : -MIN_BALL_SPEED, -MIN_BALL_SPEED});
 }
 
 void AddBola(BolaList* list, Vector2 position, Vector2 speed) {
@@ -154,11 +154,12 @@ void UpdateBola(BolaList* list, PaddleList* paddleList,
                     closestBlockNode->data.active = false;
                     TambahSkorDenganWaktu(skor, stopwatchList->time);
                     // Spawn power-up (30% chance)
-                    if (GetRandomValue(1, 100) <= 30 && powerUpList) { // Check powerUpList not NULL
-                        PowerUpType type = (PowerUpType)GetRandomValue(0, 1); // POWERUP_TRIPLE_BALL or POWERUP_LONG_PADDLE
+                    // Spawn power-up menggunakan persentase dari powerup.h
+                    if (powerUpList && GetRandomValue(1, 100) <= POWERUP_SPAWN_CHANCE_PERCENT) { 
+                        PowerUpType type = (PowerUpType)GetRandomValue(0, 1); // POWERUP_TRIPLE_BALL atau POWERUP_LONG_PADDLE
                         AddPowerUp(powerUpList, type, (Vector2){
                             closestBlockNode->data.rect.x + closestBlockNode->data.rect.width / 2,
-                            closestBlockNode->data.rect.y + closestBlockNode->data.rect.height / 2 // Spawn from center of block
+                            closestBlockNode->data.rect.y + closestBlockNode->data.rect.height / 2
                         });
                     }
                 } else {
