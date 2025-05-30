@@ -1,5 +1,6 @@
 /*
 Nama Pembuat:   Wyandhanu Maulidan Nugraha
+NIM:abort       241511092
 Nama Fitur:     Background
 Deskripsi:      Fitur background untuk menampilkan efek latar belakang
                 Dimodifikasi menggunakan linked list
