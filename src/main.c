@@ -154,6 +154,8 @@ int main()
     SetWindowIcon(icon);
 
     LoadLifeTexture();
+    SetLifeIconSize(8.0f);                     // Example size
+    SetLivesDisplayPosition(NYAWA_X, NYAWA_Y); // From layout.h
     InitBackground();
     InitSoundSystem();
     InitLeaderboard();
@@ -186,8 +188,6 @@ int main()
     while (!WindowShouldClose())
     {
         UpdateBackground();
-        SetLifeIconSize(8.0f);                     // Example size
-        SetLivesDisplayPosition(NYAWA_X, NYAWA_Y); // From layout.h
         UpdateMusic();
         UpdateMainMenuMini(&gameState); // For in-game mini menu to return to main menu
 
