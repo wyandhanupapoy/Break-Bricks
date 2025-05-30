@@ -125,12 +125,10 @@ void UpdateBola(BolaList* list, PaddleList* paddleList,
             NodeBlock* closestBlockNode = NULL;
             float closestDistance = FLT_MAX;
             NodeBlock* blockNode = blockList->head;
-            Vector2 ballVelNormalized = Vector2Normalize(curr->speed); // For collision point prediction
 
             while (blockNode != NULL) {
                 if (blockNode->data.active) {
                     // Predict next position to check which side is hit for more accurate normal
-                    Vector2 predictedPos = Vector2Add(curr->position, Vector2Scale(ballVelNormalized, curr->radius));
                     
                     if (CheckCollisionCircleRec(curr->position, curr->radius, blockNode->data.rect)) {
                         // Simple distance check for "closest" (can be improved)

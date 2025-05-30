@@ -84,7 +84,6 @@ void UpdateBackground() {
 
     // Gerakan bintang jatuh menggunakan linked list
     StarNode* current = starHead;
-    StarNode* prev = NULL;
     
     while (current != NULL) {
         current->position.y += current->speed;
@@ -96,7 +95,6 @@ void UpdateBackground() {
             current->brightness = GetRandomValue(50, 100) / 100.0f; // Kecerahan acak baru
         }
         
-        prev = current;
         current = current->next;
     }
     

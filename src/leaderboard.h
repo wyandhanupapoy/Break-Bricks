@@ -49,6 +49,4 @@ void UnloadMedalTextures(void);
 void SetMedalScale(float scale); // Opsional, jika ingin mengatur skala dari luar
 void SetMedalSize(int width, int height); // Opsional, jika ingin mengatur ukuran dari luar
 
-static void FreeLeaderboardRecursive(LeaderboardNode* node);
-
 #endif // LEADERBOARD_H

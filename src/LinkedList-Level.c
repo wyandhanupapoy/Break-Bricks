@@ -31,6 +31,10 @@ void InitLevelBlocks(LinkedList *blockList, int level) {
             newBlock.rect.height = BLOCK_HEIGHT;
             newBlock.active = true;
 
+            // Nilai default untuk hitPoints dan color:
+            newBlock.hitPoints = 1;
+            newBlock.color = (Color){200, 200, 200, 255}; // Contoh: Abu-abu sebagai default
+
             if (level == 1) {
                 newBlock.hitPoints = 1;
                 newBlock.color = (Color){255, 204, 77, 255}; // Kuning Retro
@@ -58,6 +62,10 @@ void InitLevelBlocks(LinkedList *blockList, int level) {
                     newBlock.color = (Color){140, 90, 200, 255}; // Ungu Retro
                 }
             }
+            else {
+                TraceLog(LOG_WARNING, "Level tidak dikenal: %d, menggunakan default block.", level);
+                // Default sudah diatur di atas
+             }
 
             InsertLast(blockList, newBlock);
         }
