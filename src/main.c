@@ -15,14 +15,9 @@
 #include <time.h>   // Untuk time() pada srand
 
 // Game Modules
-<<<<<<< HEAD
 #include "game_state.h"
 #include "paddle.h"
 #include "LinkedList-Block.h"
-=======
-#include "linkedlistpaddle.h"
-#include "block.h"
->>>>>>> origin/LinkedList-Paddle
 #include "BOLA.h"
 #include "nyawa.h"
 #include "skor.h"
@@ -205,21 +200,11 @@ int main()
     const float lifeLostDisplayDuration = 1.5f;
     int currentLevel = 0;
 
-<<<<<<< HEAD
     for (int i = 0; i < 3; i++)
     {
         levelBgStates[i].gradientOffset = 0.0f;
         levelBgStates[i].effectOffset1 = 0.0f;
     }
-=======
-    // Game Data
-    Paddle* paddleList = NULL; // Pointer ke linked list paddle
-    Block blocks[BLOCK_ROWS][BLOCK_COLS];
-    Bola bola[BOLA_ROWS][BOLA_COLS];
-    Nyawa nyawa[NYAWA_BARIS][NYAWA_KOLOM];
-    Stopwatch stopwatch[STOPWATCH_ROWS][STOPWATCH_COLS];
-    Skor skor[MAX_PLAYERS];
->>>>>>> origin/LinkedList-Paddle
 
     InitPowerUp(&powerUpList);
     InitList(&blockList);
@@ -289,22 +274,8 @@ int main()
             if (IsStartGame())
             {
                 int level = GetSelectedLevel();
-<<<<<<< HEAD
                 if (level > 0 && level <= 3)
                 { // Pastikan level valid
-=======
-
-                if (level > 0)
-                {
-                    
-                    AddPaddle(&paddleList, 350, 550);
-                    InitBola(bola);
-                    SetNyawaPosition(NYAWA_X, NYAWA_Y);
-                    InitNyawa(nyawa, 3);
-                    InitStopwatch(stopwatch);
-                    InitSkor(skor);
-                    SetLevel(blocks, level);
->>>>>>> origin/LinkedList-Paddle
                     currentLevel = level;
 
                     InitPaddles(&paddleList);
@@ -371,7 +342,6 @@ int main()
             switch (gameState)
             {
             case GAME_START:
-<<<<<<< HEAD
                 UpdatePaddles(&paddleList, deltaTime);
                 // Bola menempel di paddle, update posisi bola berdasarkan paddle
                 if (paddleList.head != NULL && bolaList.head != NULL)
@@ -380,18 +350,6 @@ int main()
                     bolaList.head->position.y = paddleList.head->rect.y - bolaList.head->radius - 1.0f;
                     bolaList.head->speed = (Vector2){0, 0}; // Pastikan bola tidak bergerak sendiri
                 }
-=======
-                ChangeMusic("assets/sounds/gameplay_music.mp3");
-                UpdateMusic();
-                // Bola nempel paddle sebelum diluncurkan
-                if (paddleList != NULL) {
-                    bola[0][0].position.x = paddleList->rect.x + PADDLE_WIDTH / 2;
-                    bola[0][0].position.y = paddleList->rect.y - bola[0][0].radius - 1;
-                }
-                
-
-                UpdatePaddles(paddleList);
->>>>>>> origin/LinkedList-Paddle
 
                 if (IsKeyPressed(KEY_SPACE))
                 {
@@ -409,17 +367,11 @@ int main()
                 }
                 break;
             case GAME_PLAY:
-<<<<<<< HEAD
                 UpdatePaddles(&paddleList, deltaTime);
                 UpdateBola(&bolaList, &paddleList, &blockList, &gameState, &skor[0], stopwatchList, &powerUpList);
                 UpdatePowerUp(&powerUpList, &paddleList, &bolaList, deltaTime); // Update item power-up yang jatuh
                 if (stopwatchList)
                     UpdateStopwatch(stopwatchList);
-=======
-                UpdatePaddles(paddleList);
-                UpdateBola(bola, paddleList, blocks, &gameState, skor, stopwatch);
-                UpdateStopwatch(stopwatch);
->>>>>>> origin/LinkedList-Paddle
 
                 if (SemuaBolaMati(&bolaList))
                 {
@@ -486,25 +438,7 @@ int main()
         BeginDrawing();
         ClearBackground((Color){10, 0, 20, 255}); // Warna latar sedikit diubah
 
-<<<<<<< HEAD
         if (gameState == GAME_MENU)
-=======
-        // Layout garis & panel bawah
-        DrawLine(835, 0, 835, SCREEN_HEIGHT, WHITE);
-        DrawControlInfo();
-
-        // Draw game layout
-        DrawPaddles(paddleList);
-        DrawBlocks(blocks);
-        DrawBola(bola);
-        DrawNyawa(nyawa);
-        DrawSkor(skor, SCORE_X, SCORE_Y);
-        DrawStopwatch(stopwatch);
-        DrawMainMenuMini(gameState);
-
-        // Tampilkan teks "LIFE LOST!" jika nyawa berkurang
-        if (lifeLost)
->>>>>>> origin/LinkedList-Paddle
         {
             DrawDynamicMainMenu();
         }
