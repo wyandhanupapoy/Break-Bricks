@@ -275,7 +275,6 @@ void DrawLeaderboardMenuScreen(int scrollOffset) {
     DrawText("Level", 630, 110, 20, GOLD);
     DrawText("Status", 765, 110, 20, GOLD);
     DrawLine(100, 530, 900, 530, WHITE);
-
     DrawLine(900, 100, 900, 530, WHITE);
     DrawLine(100, 100, 100, 530, WHITE);
     DrawLine(240, 100, 240, 530, WHITE);
