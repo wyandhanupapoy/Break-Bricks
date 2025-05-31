@@ -65,29 +65,6 @@ void DrawBlocks(LinkedList *blockList) {
     }
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-void RemoveBlock(LinkedList *list, NodeBlock *target, NodeBlock *prev) {
-    if (target == NULL) return;
-
-    if (prev == NULL) {
-        list->head = target->next;
-        if (list->tail == target) {
-            list->tail = NULL;
-        }
-    } else {
-        prev->next = target->next;
-        if (list->tail == target) {
-            list->tail = prev;
-        }
-    }
-    free(target);
-}
-
-=======
->>>>>>> origin/LinkedList-Powerup_Bola
-=======
->>>>>>> origin/LinkedList-Level
 // 🔹 Cek tabrakan bola dengan blok
 bool CheckBallBlockCollision(Vector2 ballPosition, float ballRadius, Rectangle blockRect) {
     return CheckCollisionCircleRec(ballPosition, ballRadius, blockRect);
