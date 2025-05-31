@@ -9,7 +9,7 @@
 #include "skor.h"       
 #include "nyawa.h"      
 #include "block.h"      
-#include "BOLA.h"       
+#include "bola.h"       
 #include "stopwatch.h"  
 #include "game_state.h" 
 
@@ -20,6 +20,12 @@
 #define NYAWA_Y 5        
 #define STOPWATCH_X 870  
 #define STOPWATCH_Y 80   
+
+// Posisi untuk timer power-up aktif di panel UI
+#define POWERUP_TIMER_X STOPWATCH_X // Sejajar dengan X stopwatch
+#define POWERUP_TIMER_Y (STOPWATCH_Y + 30) // Mulai di bawah stopwatch
+#define POWERUP_TIMER_SPACING 20     // Jarak vertikal antar baris timer
+#define POWERUP_TIMER_FONT_SIZE 10   // Ukuran font untuk timer
 
 // Fungsi untuk menggambar berbagai tampilan dalam game
 void DrawPauseScreen();     
