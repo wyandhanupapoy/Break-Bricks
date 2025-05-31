@@ -36,7 +36,10 @@ void AddBlock(LinkedList *list, Block block);
 void ClearList(LinkedList *list);
 void UpdateBlockState(NodeBlock *node);
 void DrawBlocks(LinkedList *blockList);
+<<<<<<< HEAD
 void RemoveBlock(LinkedList *list, NodeBlock *target, NodeBlock *prev);
+=======
+>>>>>>> origin/LinkedList-Leaderboard
 bool CheckBallBlockCollision(Vector2 ballPosition, float ballRadius, Rectangle blockRect);
 bool AllBlocksDestroyed(LinkedList *blockList);
 
