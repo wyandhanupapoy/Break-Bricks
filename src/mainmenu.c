@@ -1,4 +1,4 @@
-// Nama Pembuat: Muhammad Brata Hadinata
+// Nama Pembuat: Muhammad Brata Hadinata (241511082)
 // Nama Fitur: mainmenu.c
 // Deskripsi: Kode ini mengatur tampilan dan logika Main Menu dalam game "Break Bricks".
 //            Modifikasi: Menggunakan linked list dinamis untuk menu.
@@ -375,7 +375,6 @@ void InitDynamicMainMenu(void) {
     // 6. Info Screen
     infoScreen = CreateMenuScreen("INFO", MENU_TYPE_INFO, mainMenuScreen, DrawInfoScreenCustom, UpdateInfoScreenCustom);
     AddMenuItemToScreen(infoScreen, CreateMenuItem("Back", (Rectangle){20, 20, 100, 40}, LIGHTGRAY, DARKGRAY, BLACK, Action_GoBack, NULL));
-
 
     currentActiveScreen = mainMenuScreen;
     exitGame = false;
