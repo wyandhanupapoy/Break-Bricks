@@ -89,8 +89,14 @@ gcc -o BreakBricks src/*.c -lraylib
 ```
 
 ## 📷 Cuplikan Layar
-![Gameplay Screenshot](assets/images/screenshot1.png)
-![Gameplay Screenshot](assets/images/screenshot.png)
+![Gameplay Screenshot](assets/images/1.png)
+![Gameplay Screenshot](assets/images/2.png)
+![Gameplay Screenshot](assets/images/3.png)
+![Gameplay Screenshot](assets/images/4.png)
+![Gameplay Screenshot](assets/images/5.png)
+![Gameplay Screenshot](assets/images/6.png)
+![Gameplay Screenshot](assets/images/8.png)
+![Gameplay Screenshot](assets/images/7.png)
 ![Gameplay Screenshot](assets/images/ss_zoom.png)
 
 
