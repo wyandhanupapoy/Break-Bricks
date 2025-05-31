@@ -19,6 +19,7 @@
 🔼 **Beragam Level & Kesulitan**: Pilih dari level Easy, Medium, atau Hard, masing-masing dengan konfigurasi blok dan tantangan yang berbeda (blok multi-hit).
 
 🚀 **Sistem Power-Up Dinamis**: Kumpulkan power-up seperti **Bola Ganda (Triple Ball)** dan **Paddle Panjang** untuk membantumu menghancurkan blok lebih cepat.
+
 🏆 **Leaderboard Interaktif**: Catat skormu! Leaderboard menyimpan nama pemain, skor, waktu bermain, level tercapai, dan status akhir (Menang/Kalah). Peringkat teratas akan mendapatkan medali emas, perak, atau perunggu.
 
 🎨 **Menu Utama yang Kaya Fitur**: Navigasi yang mudah melalui menu utama, pemilihan level, tampilan leaderboard (dengan scroll), pengaturan suara (volume & mute), dan halaman informasi tim pengembang.
