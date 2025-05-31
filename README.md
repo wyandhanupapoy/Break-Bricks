@@ -14,25 +14,46 @@
 ### 📌 Dosen Pembimbing/Manager: **Djoko Cahyo Utomo**
 
 ## 🎮 Fitur Game
-✅ **Gameplay Klasik** - Konsep **Breakout** dengan paddle dan bola untuk menghancurkan blok.
-✅ **Level Beragam** - Berbagai pola blok dengan tingkat kesulitan yang meningkat.
-✅ **Fisik Realistis** - Pantulan bola mengikuti hukum fisika sederhana.
-✅ **Grafik Simpel & Menarik** - Menggunakan **Raylib** untuk tampilan 2D yang ringan.
-✅ **Kontrol Mudah** - Gerakan paddle dengan keyboard untuk pengalaman bermain yang nyaman.
-✅ **Efek Suara** - Menambah keseruan dengan efek suara saat memantulkan bola dan menghancurkan blok.
+✨ **Gameplay Klasik Breakout yang Disempurnakan**: Nikmati esensi game Breakout dengan paddle, bola, dan blok yang harus dihancurkan.
+🔼 **Beragam Level & Kesulitan**: Pilih dari level Easy, Medium, atau Hard, masing-masing dengan konfigurasi blok dan tantangan yang berbeda (blok multi-hit).
+🚀 **Sistem Power-Up Dinamis**: Kumpulkan power-up seperti **Bola Ganda (Triple Ball)** dan **Paddle Panjang** untuk membantumu menghancurkan blok lebih cepat.
+🏆 **Leaderboard Interaktif**: Catat skormu! Leaderboard menyimpan nama pemain, skor, waktu bermain, level tercapai, dan status akhir (Menang/Kalah). Peringkat teratas akan mendapatkan medali emas, perak, atau perunggu.
+🎨 **Menu Utama yang Kaya Fitur**: Navigasi yang mudah melalui menu utama, pemilihan level, tampilan leaderboard (dengan scroll), pengaturan suara (volume & mute), dan halaman informasi tim pengembang.
+👤 **Input Nama Pemain**: Personalisasikan entri leaderboard-mu dengan nama pemain (hingga 8 karakter).
+🔊 **Kontrol Audio Lengkap**: Atur volume musik dan efek suara secara terpisah melalui menu pengaturan atau tombol cepat. Opsi Mute/Unmute tersedia. Musik latar yang berbeda untuk menu dan gameplay.
+🌌 **Latar Belakang Animasi & Efek Visual**: Latar belakang dengan gradasi warna yang berubah secara dinamis dan efek bintang jatuh yang menawan. Terdapat juga animasi latar yang berbeda untuk setiap level.
+📊 **Panel Informasi Terperinci**: Pantau progresmu dengan panel di sisi kanan yang menampilkan Skor, Sisa Nyawa (dengan ikon hati), Waktu Bermain, dan durasi Power-up aktif.
+🧱 **Blok Multi-Hit**: Beberapa blok memerlukan lebih dari satu pukulan untuk hancur, ditandai dengan perubahan warna.
+⚾ **Fisika Bola yang Realistis**: Pantulan bola yang responsif dan dapat diprediksi, dengan kecepatan minimum dan maksimum.
+❤️ **Sistem Nyawa**: Hati-hati jangan sampai bola terakhirmu jatuh! Kehilangan nyawa akan mereset posisi bola dan paddle.
+💡 **Antarmuka Pengguna yang Jelas**: Tampilan yang rapi untuk layar pause, game over, dan kemenangan, serta instruksi kontrol yang selalu terlihat.
 
 ## 🕹️ Cara Bermain
-1. **Jalankan Game**: Buka aplikasi **Break Bricks**.
-2. **Gunakan Keyboard**:
-   - **← (Left Arrow)**: Geser paddle ke kiri.
-   - **→ (Right Arrow)**: Geser paddle ke kanan.
-   - **Spasi**: Mulai permainan.
-3. **Tujuan**: Hancurkan semua blok menggunakan bola tanpa membiarkannya jatuh.
-4. **Game Over**: Jika bola jatuh dari layar, permainan berakhir.
+1.  **Jalankan Game**: Buka aplikasi `breakbricks` setelah kompilasi.
+2.  **Menu Utama**:
+    * Gunakan **Mouse** atau **Tombol Panah Keyboard** dan **Enter** untuk navigasi.
+    * Tekan **Backspace** untuk kembali ke menu sebelumnya.
+    * Pilih **START GAME** untuk memilih level (Easy, Medium, Hard) dan memasukkan nama Anda.
+    * Lihat **LEADERBOARD** untuk skor tertinggi. Gunakan **Mouse Wheel** untuk scroll.
+    * Masuk **SETTINGS** untuk mengatur volume musik/efek suara atau toggle suara.
+    * Cek **INFO** untuk melihat informasi tim pengembang.
+3.  **Kontrol Dalam Game**:
+    * **← (Panah Kiri)**: Geser paddle ke kiri.
+    * **→ (Panah Kanan)**: Geser paddle ke kanan.
+    * **Spasi**: Luncurkan bola dari paddle di awal permainan atau setelah kehilangan nyawa.
+    * **P**: Jeda (Pause) atau melanjutkan permainan.
+    * **M**: Mute/Unmute semua suara.
+    * **V**: Naikkan Volume.
+    * **C**: Turunkan Volume.
+    * **Tombol "Main Menu"** (di kanan bawah layar permainan): Klik untuk kembali ke Menu Utama kapan saja saat bermain.
+4.  **Tujuan**: Hancurkan semua blok di layar menggunakan bola tanpa membiarkannya jatuh melewati paddle. Kumpulkan power-up untuk membantumu.
+5.  **Game Over**: Permainan berakhir jika semua nyawa habis. Skor akan otomatis dicatat jika masuk kriteria leaderboard. Anda akan kembali ke menu utama setelah beberapa detik atau dengan menekan Enter/R.
+6.  **Kemenangan**: Permainan dimenangkan jika semua blok di level berhasil dihancurkan. Skor akan otomatis dicatat. Anda akan kembali ke menu utama setelah beberapa detik atau dengan menekan Enter/R.
 
 ## 🛠️ Teknologi yang Digunakan
 - **Bahasa Pemrograman**: C
 - **Library**: Raylib
+
 
 ## 📥 Instalasi & Cara Menjalankan
 ### 1️⃣ Clone Repository
@@ -50,7 +71,7 @@ brew install raylib              # Untuk macOS (via Homebrew)
 
 ### 3️⃣ Compile & Jalankan
 ```bash
-gcc main.c paddle.c block.c BOLA.c nyawa.c skor.c stopwatch.c leaderboard.c mainmenu.c level.c layout.c background.c sound.c -o my_game -lraylib -lm -lpthread
+gcc -o BreakBricks src/*.c -lraylib
 ./breakbricks
 ```
 
