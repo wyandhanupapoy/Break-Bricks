@@ -1,10 +1,4 @@
-/*
- * Nama Pembuat: Wyandhanu Maulidan Nugraha
- * Nama Fitur:   Leaderboard (Linked List) - Source File
- * Deskripsi:    Implementasi fitur leaderboard menggunakan linked list.
- * Mencakup fungsi untuk menambah, menyimpan, memuat, dan menampilkan data leaderboard.
- */
-
+/* * Nama Pembuat: Wyandhanu Maulidan Nugraha * Nama Fitur:   Leaderboard (Linked List) - Source File * Deskripsi:    Implementasi fitur leaderboard menggunakan linked list. * Mencakup fungsi untuk menambah, menyimpan, memuat, dan menampilkan data leaderboard. */
 #include "leaderboard.h" // Menyertakan deklarasi dari file header leaderboard.h
 #include <stdio.h>      // Diperlukan untuk operasi file (fopen, fwrite, fread, fclose) dan snprintf.
 #include <string.h>     // Diperlukan untuk operasi string (strncpy, strcmp, strlen, strcat).
@@ -12,7 +6,6 @@
 
 // === Variabel Global Statis untuk Modul Ini ===
 // 'static' berarti variabel ini hanya dapat diakses dari dalam file leaderboard.c ini.
-
 // Pointer ke kepala (entri pertama) dari linked list leaderboard.
 // Awalnya NULL, menandakan leaderboard kosong.
 static LeaderboardNode* leaderboardHead = NULL;
@@ -32,20 +25,34 @@ static int medalHeight = 24;     // Tinggi default medali (dalam piksel).
 // Fungsi ini hanya digunakan di dalam file ini untuk membantu fungsi lain.
 static void FreeLeaderboardRecursive(LeaderboardNode* node); // Fungsi rekursif untuk membebaskan memori node.
 
+// Static helper function to determine if entry A should be ranked higher than entry B
+static bool is_better(LeaderboardNode* A, LeaderboardNode* B) {
+    if (A->score > B->score) return true;  // Higher score is better
+    if (A->score < B->score) return false; // Lower score is worse
+
+    // Scores are equal, compare by status
+    bool a_is_win = (strcmp(A->status, "WIN") == 0);
+    bool b_is_win = (strcmp(B->status, "WIN") == 0);
+
+    // If A is "WIN" and B is not "WIN" (implicitly "GAME OVER" if those are the only two main states), A is better.
+    if (a_is_win && !b_is_win) return true;
+    // If A is not "WIN" (implicitly "GAME OVER") and B is "WIN", A is worse.
+    if (!a_is_win && b_is_win) return false;
+
+    // Scores are equal AND statuses are equivalent for sorting purposes
+    // (e.g., both are "WIN", or both are "GAME OVER").
+    // Now, compare by time (lower time is better).
+    return A->time < B->time;
+}
+
+
 // === Implementasi Fungsi ===
 
 // --- Fungsi Inisialisasi & Pembersihan ---
-
-/**
- * @brief Menginisialisasi sistem leaderboard.
- * Membersihkan leaderboard yang ada (jika ada), mengatur head ke NULL,
- * dan memuat tekstur medali jika belum dimuat.
- * Seharusnya juga memanggil LoadLeaderboard() untuk memuat data dari file.
- */
+/** * @brief Menginisialisasi sistem leaderboard. * Membersihkan leaderboard yang ada (jika ada), mengatur head ke NULL, * dan memuat tekstur medali jika belum dimuat. * Seharusnya juga memanggil LoadLeaderboard() untuk memuat data dari file. */
 void InitLeaderboard() {
     FreeLeaderboard();      // Pastikan leaderboard bersih sebelum inisialisasi.
     leaderboardHead = NULL; // Set kepala list ke NULL (kosong).
-
     // Muat tekstur medali jika belum pernah dimuat.
     if (!medalsLoaded) {
         LoadMedalTextures();
@@ -55,14 +62,10 @@ void InitLeaderboard() {
     // Itu juga valid, tergantung preferensi struktur kode.
 }
 
-/**
- * @brief Membebaskan semua memori yang dialokasikan untuk node-node leaderboard.
- * Menggunakan iterasi untuk menghapus setiap node satu per satu.
- */
+/** * @brief Membebaskan semua memori yang dialokasikan untuk node-node leaderboard. * Menggunakan iterasi untuk menghapus setiap node satu per satu. */
 void FreeLeaderboard() {
     LeaderboardNode* current = leaderboardHead; // Mulai dari kepala list.
     LeaderboardNode* nextNode;
-
     while (current != NULL) { // Ulangi selama masih ada node.
         nextNode = current->next; // Simpan pointer ke node berikutnya.
         free(current);            // Bebaskan memori node saat ini.
@@ -71,10 +74,7 @@ void FreeLeaderboard() {
     leaderboardHead = NULL; // Setelah semua node dibebaskan, set head kembali ke NULL.
 }
 
-/**
- * @brief Fungsi helper rekursif untuk membebaskan memori node dari titik tertentu ke akhir list.
- * @param node Node awal dari mana pembebasan memori akan dimulai.
- */
+/** * @brief Fungsi helper rekursif untuk membebaskan memori node dari titik tertentu ke akhir list. * @param node Node awal dari mana pembebasan memori akan dimulai. */
 static void FreeLeaderboardRecursive(LeaderboardNode* node) {
     if (node == NULL) return; // Kondisi berhenti rekursi: jika node saat ini NULL.
     FreeLeaderboardRecursive(node->next); // Panggil rekursif untuk node berikutnya.
@@ -82,18 +82,7 @@ static void FreeLeaderboardRecursive(LeaderboardNode* node) {
 }
 
 // --- Fungsi Operasi Leaderboard ---
-
-/**
- * @brief Menambahkan entri baru ke leaderboard dengan menjaga urutan.
- * Urutan: Skor tertinggi, lalu waktu tercepat, lalu status "Win" diutamakan.
- * Juga memastikan jumlah entri tidak melebihi MAX_LEADERBOARD_ENTRIES.
- *
- * @param name Nama pemain.
- * @param score Skor pemain.
- * @param time Waktu bermain pemain.
- * @param level Level yang dicapai.
- * @param status Status akhir permainan ("WIN" atau "GAME OVER").
- */
+/** * @brief Menambahkan entri baru ke leaderboard dengan menjaga urutan. * Urutan: Skor tertinggi, lalu status "Win" diutamakan, lalu waktu tercepat. * Juga memastikan jumlah entri tidak melebihi MAX_LEADERBOARD_ENTRIES. * * @param name Nama pemain. * @param score Skor pemain. * @param time Waktu bermain pemain. * @param level Level yang dicapai. * @param status Status akhir permainan ("WIN" atau "GAME OVER"). */
 void AddEntryToLeaderboard(const char *name, int score, float time, int level, const char *status) {
     // 1. Alokasikan memori untuk node baru.
     LeaderboardNode* newNode = (LeaderboardNode*)malloc(sizeof(LeaderboardNode));
@@ -113,29 +102,15 @@ void AddEntryToLeaderboard(const char *name, int score, float time, int level, c
     newNode->next = NULL; // Awalnya, node baru belum menunjuk ke mana pun.
 
     // 3. Sisipkan node baru ke dalam linked list dengan urutan yang benar.
-
     // Kasus 1: Leaderboard kosong ATAU node baru lebih baik dari entri pertama (head).
-    // Kriteria "lebih baik":
-    // - Skor lebih tinggi, ATAU
-    // - Skor sama DAN waktu lebih rendah (lebih cepat), ATAU
-    // - Skor sama DAN waktu sama DAN status newNode "Win" sementara head "GAME OVER".
-    if (leaderboardHead == NULL ||
-        (newNode->score > leaderboardHead->score) ||
-        (newNode->score == leaderboardHead->score && newNode->time < leaderboardHead->time) ||
-        (newNode->score == leaderboardHead->score && newNode->time == leaderboardHead->time &&
-         strcmp(newNode->status, "WIN") == 0 && strcmp(leaderboardHead->status, "GAME OVER") == 0)) {
+    if (leaderboardHead == NULL || is_better(newNode, leaderboardHead)) {
         newNode->next = leaderboardHead; // Node baru menunjuk ke head lama.
         leaderboardHead = newNode;       // Node baru menjadi head baru.
     } else {
         // Kasus 2: Cari posisi yang tepat untuk menyisipkan node baru.
         LeaderboardNode* current = leaderboardHead;
-        // Iterasi selama node berikutnya ada DAN kriteria "lebih baik" dari newNode
-        // BELUM terpenuhi dibandingkan current->next.
-        while (current->next != NULL &&
-               (newNode->score < current->next->score ||
-                (newNode->score == current->next->score && newNode->time > current->next->time) ||
-                (newNode->score == current->next->score && newNode->time == current->next->time &&
-                 !(strcmp(newNode->status, "WIN") == 0 && strcmp(current->next->status, "GAME OVER") == 0)))) {
+        // Iterasi selama node berikutnya ada DAN node berikutnya (current->next) lebih baik dari newNode.
+        while (current->next != NULL && is_better(current->next, newNode)) {
             current = current->next; // Pindah ke node berikutnya.
         }
         // Setelah loop, 'current' adalah node SEBELUM posisi penyisipan.
@@ -162,10 +137,7 @@ void AddEntryToLeaderboard(const char *name, int score, float time, int level, c
     }
 }
 
-/**
- * @brief Menyimpan data leaderboard saat ini ke file biner.
- * @param filename Nama file untuk menyimpan data.
- */
+/** * @brief Menyimpan data leaderboard saat ini ke file biner. * @param filename Nama file untuk menyimpan data. */
 void SaveLeaderboard(const char *filename) {
     FILE *file = fopen(filename, "wb"); // Buka file dalam mode "write binary" ("wb").
                                         // "wb" akan membuat file baru atau menimpa yang sudah ada.
@@ -185,23 +157,16 @@ void SaveLeaderboard(const char *filename) {
         fwrite(&current->time, sizeof(float), 1, file);
         fwrite(&current->level, sizeof(int), 1, file);
         fwrite(current->status, sizeof(char), 10, file); // Asumsi status maks 10 char seperti di .h (char status[10])
-
         current = current->next;
         entriesWritten++;
     }
-
     fclose(file); // Tutup file setelah selesai menulis.
     // TraceLog(LOG_INFO, "LEADERBOARD: Data disimpan ke %s", filename);
 }
 
-/**
- * @brief Memuat data leaderboard dari file biner.
- * Membersihkan list yang ada sebelum memuat.
- * @param filename Nama file untuk memuat data.
- */
+/** * @brief Memuat data leaderboard dari file biner. * Membersihkan list yang ada sebelum memuat. * @param filename Nama file untuk memuat data. */
 void LoadLeaderboard(const char *filename) {
     FreeLeaderboard(); // Bersihkan list yang ada di memori sebelum memuat dari file.
-
     FILE *file = fopen(filename, "rb"); // Buka file dalam mode "read binary" ("rb").
     if (!file) { // Jika file tidak ditemukan atau tidak bisa dibuka.
         TraceLog(LOG_INFO, "LEADERBOARD: File leaderboard tidak ditemukan atau gagal dibuka: %s. Leaderboard kosong.", filename);
@@ -229,15 +194,11 @@ void LoadLeaderboard(const char *filename) {
         // AddEntryToLeaderboard akan menangani penyisipan secara terurut.
         AddEntryToLeaderboard(tempName, tempScore, tempTime, tempLevel, tempStatus);
     }
-
     fclose(file); // Tutup file setelah selesai membaca.
     // TraceLog(LOG_INFO, "LEADERBOARD: Data dimuat dari %s", filename);
 }
 
-/**
- * @brief Mendapatkan jumlah entri yang ada di leaderboard saat ini.
- * @return Jumlah entri.
- */
+/** * @brief Mendapatkan jumlah entri yang ada di leaderboard saat ini. * @return Jumlah entri. */
 int GetLeaderboardCount() {
     int count = 0;
     LeaderboardNode* current = leaderboardHead;
@@ -249,16 +210,9 @@ int GetLeaderboardCount() {
 }
 
 // --- Fungsi Tampilan ---
-
-/**
- * @brief Menggambar informasi leaderboard ringkas pada posisi x, y.
- * @param x Posisi X untuk mulai menggambar.
- * @param y Posisi Y untuk mulai menggambar.
- * @param maxEntriesToDisplay Jumlah entri maksimum yang akan ditampilkan.
- */
+/** * @brief Menggambar informasi leaderboard ringkas pada posisi x, y. * @param x Posisi X untuk mulai menggambar. * @param y Posisi Y untuk mulai menggambar. * @param maxEntriesToDisplay Jumlah entri maksimum yang akan ditampilkan. */
 void DrawLeaderboardInfo(int x, int y, int maxEntriesToDisplay) {
     DrawText("Leaderboard:", x, y, 20, BLACK); // Judul kecil.
-
     LeaderboardNode* current = leaderboardHead;
     int entriesDrawn = 0;
     int currentY = y + 30; // Posisi Y untuk entri pertama.
@@ -280,18 +234,15 @@ void DrawLeaderboardInfo(int x, int y, int maxEntriesToDisplay) {
         // Format teks entri: "Peringkat. Nama - Skor (Waktu s) Status"
         snprintf(entryText, sizeof(entryText), "%d. %s - %d (%.2fs) %s",
                  entriesDrawn + 1, displayName, current->score, current->time, current->status);
-
         DrawText(entryText, x, currentY, 18, DARKGRAY); // Gambar teks entri.
+
         currentY += 25; // Naikkan posisi Y untuk entri berikutnya.
         current = current->next;
         entriesDrawn++;
     }
 }
 
-/**
- * @brief Menggambar layar menu leaderboard lengkap dengan scroll dan medali.
- * @param scrollOffset Nilai offset untuk scrolling (menggeser tampilan vertikal).
- */
+/** * @brief Menggambar layar menu leaderboard lengkap dengan scroll dan medali. * @param scrollOffset Nilai offset untuk scrolling (menggeser tampilan vertikal). */
 void DrawLeaderboardMenuScreen(int scrollOffset) {
     // Pastikan tekstur medali sudah dimuat.
     if (!medalsLoaded) {
@@ -324,6 +275,7 @@ void DrawLeaderboardMenuScreen(int scrollOffset) {
     DrawText("Level", 630, 110, 20, GOLD);
     DrawText("Status", 765, 110, 20, GOLD);
     DrawLine(100, 530, 900, 530, WHITE);
+
     DrawLine(900, 100, 900, 530, WHITE);
     DrawLine(100, 100, 100, 530, WHITE);
     DrawLine(240, 100, 240, 530, WHITE);
@@ -339,7 +291,7 @@ void DrawLeaderboardMenuScreen(int scrollOffset) {
         int yPos = 150 + (i * 30) - scrollOffset;
 
         // Hanya gambar entri yang terlihat dalam area yang ditentukan.
-        if (yPos >= 140 && yPos <= 500) {
+        if (yPos >= 140 && yPos <= 500) { // Adjusted for header and potential bottom margin
             char rankText[10];
             sprintf(rankText, "#%d", i + 1); // Teks peringkat (misalnya, "#1").
             Color rankColor = WHITE;
@@ -354,7 +306,6 @@ void DrawLeaderboardMenuScreen(int scrollOffset) {
             if (medalToDraw.id != 0 && medalsLoaded) {
                 DrawTextureEx(medalToDraw, (Vector2){120.0f, (float)yPos - 1.5f}, 0.0f, medalScale, WHITE);
             }
-
             DrawText(rankText, 155, yPos, 20, rankColor); // Gambar teks peringkat.
 
             // Potong nama jika terlalu panjang.
@@ -371,7 +322,7 @@ void DrawLeaderboardMenuScreen(int scrollOffset) {
             // Gambar skor, waktu, dan level.
             char scoreText[20]; sprintf(scoreText, "%d", current->score);
             DrawText(scoreText, 420, yPos, 20, WHITE);
-            char timeText[20]; sprintf(timeText, "%.2fs", current->time);
+            char timeText[20];  sprintf(timeText, "%.2fs", current->time);
             DrawText(timeText, 520, yPos, 20, WHITE);
             char levelText[10]; sprintf(levelText, "%d", current->level);
             DrawText(levelText, 620, yPos, 20, WHITE);
@@ -382,20 +333,14 @@ void DrawLeaderboardMenuScreen(int scrollOffset) {
             else if (strcmp(current->status, "GAME OVER") == 0) statusColor = RED;
             DrawText(current->status, 720, yPos, 20, statusColor);
         }
-
         i++;
         current = current->next;
         if (i >= MAX_LEADERBOARD_ENTRIES) break; // Hanya tampilkan hingga MAX_LEADERBOARD_ENTRIES.
     }
 }
 
-
 // --- Fungsi Tekstur Medali ---
-
-/**
- * @brief Memuat tekstur medali dari file gambar.
- * Hanya dijalankan sekali jika medalsLoaded false.
- */
+/** * @brief Memuat tekstur medali dari file gambar. * Hanya dijalankan sekali jika medalsLoaded false. */
 void LoadMedalTextures() {
     if (!medalsLoaded) {
         // Path harus relatif terhadap direktori kerja saat program dieksekusi.
@@ -414,10 +359,7 @@ void LoadMedalTextures() {
     }
 }
 
-/**
- * @brief Melepaskan (unload) tekstur medali dari memori.
- * Dilakukan saat game ditutup untuk membebaskan sumber daya.
- */
+/** * @brief Melepaskan (unload) tekstur medali dari memori. * Dilakukan saat game ditutup untuk membebaskan sumber daya. */
 void UnloadMedalTextures() {
     if (medalsLoaded) {
         UnloadTexture(goldMedal);
@@ -428,21 +370,12 @@ void UnloadMedalTextures() {
     }
 }
 
-/**
- * @brief Mengatur faktor skala untuk tekstur medali.
- * @param scale Faktor skala (misalnya, 0.1f untuk 10% ukuran asli).
- */
+/** * @brief Mengatur faktor skala untuk tekstur medali. * @param scale Faktor skala (misalnya, 0.1f untuk 10% ukuran asli). */
 void SetMedalScale(float scale) {
     medalScale = scale;
 }
 
-/**
- * @brief Mengatur ukuran (lebar dan tinggi) target untuk medali saat digambar.
- * Catatan: Kode DrawLeaderboardMenuScreen menggunakan medalScale, bukan medalWidth/Height secara langsung
- * untuk menggambar tekstur. Fungsi ini mungkin dimaksudkan untuk penggunaan lain atau penyesuaian internal.
- * @param width Lebar target medali.
- * @param height Tinggi target medali.
- */
+/** * @brief Mengatur ukuran (lebar dan tinggi) target untuk medali saat digambar. * Catatan: Kode DrawLeaderboardMenuScreen menggunakan medalScale, bukan medalWidth/Height secara langsung * untuk menggambar tekstur. Fungsi ini mungkin dimaksudkan untuk penggunaan lain atau penyesuaian internal. * @param width Lebar target medali. * @param height Tinggi target medali. */
 void SetMedalSize(int width, int height) {
     medalWidth = width;
     medalHeight = height;
