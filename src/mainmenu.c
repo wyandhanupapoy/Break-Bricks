@@ -39,7 +39,7 @@ static bool mouseOnText = false;
 static int leaderboardScrollOffset = 0;
 static Rectangle miniMenuBtn = {850, 580, 140, 40}; // Tombol mini menu di game
 
-// 🔹 Warna Pelangi (tetap sama)
+// 🔹 Warna Pelangi (akan tetap sama)
 static Color rainbowColors[] = {RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE};
 static int rainbowSize = sizeof(rainbowColors) / sizeof(rainbowColors[0]);
 
