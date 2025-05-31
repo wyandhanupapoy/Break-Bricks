@@ -1,485 +1,558 @@
 // Nama Pembuat: Muhammad Brata Hadinata
 // Nama Fitur: mainmenu.c
-// Deskripsi: Kode ini mengatur tampilan dan logika Main Menu dalam game "Break Bricks", termasuk menu utama,
-//            pemilihan level, pengaturan, input nama pemain, leaderboard, dan info.
+// Deskripsi: Kode ini mengatur tampilan dan logika Main Menu dalam game "Break Bricks".
+//            Modifikasi: Menggunakan linked list dinamis untuk menu.
+//            Termasuk menu utama, pemilihan level, pengaturan, input nama pemain, leaderboard, dan info.
 //            Kode juga menangani interaksi tombol dengan mouse/keyboard serta efek suara.
 
 #include "mainmenu.h"
 #include "sound.h"
-#include "game_state.h"
+// #include "game_state.h" // Sudah diinclude via mainmenu.h
 #include "background.h"
-#include "layout.h"
+#include "layout.h"     // Untuk DrawInfo()
 #include "raylib.h"
-#include "leaderboard.h"
-#include "game_state.h"
-
+#include "leaderboard.h" // Untuk MAX_NAME_LENGTH, GetLeaderboardCount, DrawLeaderboardMenuScreen, SCROLL_SPEED
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>     // Untuk malloc, free
 
-// 🔹 Variabel Global
-static MenuState currentMenu = MENU_MAIN;
-static bool exitGame = false, startGame = false, soundOn = true;
+// 🔹 Variabel Global untuk Menu Dinamis
+static MenuScreen* mainMenuScreen = NULL;
+static MenuScreen* levelSelectScreen = NULL;
+static MenuScreen* nameInputScreen = NULL;
+static MenuScreen* leaderboardScreen = NULL;
+static MenuScreen* settingsScreen = NULL;
+static MenuScreen* infoScreen = NULL;
+static MenuScreen* currentActiveScreen = NULL;
+
+// 🔹 Variabel State Game Lainnya (yang sebelumnya static global)
+static bool exitGame = false;
+static bool startGame = false;
+static bool soundOn = true; // Status suara, sinkronkan dengan modul sound jika perlu
 static int selectedLevel = 0;
-static char playerName[MAX_NAME_LENGTH] = "";
+static char playerName[MAX_NAME_LENGTH] = ""; // MAX_NAME_LENGTH dari leaderboard.h
 static int letterCount = 0;
-static Rectangle textBox = {350, 300, 300, 50};
+
+// Variabel untuk UI spesifik
+static Rectangle textBox = {SCREEN_WIDTH / 2 - 150, 300, 300, 50}; // Disesuaikan untuk tengah
 static bool mouseOnText = false;
 static int leaderboardScrollOffset = 0;
+static Rectangle miniMenuBtn = {850, 580, 140, 40}; // Tombol mini menu di game
 
-static Rectangle miniMenuBtn = {850, 580, 140, 40};
-
-// 🔹 Tombol utama
-static Rectangle buttons[] = {
-    {350, 250, 320, 50},                   // Start Game
-    {350, 320, 320, 50},                   // Leaderboard
-    {350, 390, 320, 50},                   // Settings
-    {350, 460, 320, 50},                   // Exit Game
-    {SCREEN_WIDTH / 2 - 60, 300, 140, 40}, // Sound Toggle
-    {SCREEN_WIDTH / 2 - 110, 300, 40, 40}, // Sound Volume Down
-    {SCREEN_WIDTH / 2 + 90, 300, 40, 40},  // Sound Volume Up
-    {470, 390, 70, 40},                    // Back to Main Menu
-    {900, 590, 70, 40},                    // Info
-};
-
-// 🔹 Tombol level select
-static Rectangle levelButtons[] = {
-    {350, 250, 300, 50}, // Level Easy
-    {350, 320, 300, 50}, // Level Medium
-    {350, 390, 300, 50}, // Level Hard
-    {20, 20, 100, 40},   // Back Button
-};
-
-static Rectangle inputName[] = {
-    {20, 20, 170, 40}, // Back to Main Menu Button
-};
-
-// 🔹 Warna Pelangi
+// 🔹 Warna Pelangi (tetap sama)
 static Color rainbowColors[] = {RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE};
 static int rainbowSize = sizeof(rainbowColors) / sizeof(rainbowColors[0]);
 
-// 🔹 Gambar Teks Pelangi dengan Spacing yang Lebih Presisi
-void DrawRainbowText(const char *text, int centerX, int posY, int fontSize)
-{
-    int letterCount = 0;
+// Prototipe fungsi helper internal dan aksi
+static void Action_NavigateToLevelSelect(void);
+static void Action_NavigateToLeaderboard(void);
+static void Action_NavigateToSettings(void);
+static void Action_NavigateToInfo(void);
+static void Action_ExitGame(void);
+static void Action_GoBack(void);
+static void Action_SelectLevel1(void);
+static void Action_SelectLevel2(void);
+static void Action_SelectLevel3(void);
+static void Action_ConfirmNameAndStart(void);
+static void Action_MM_ToggleSound(void); // Menggunakan prefix MM_ untuk menghindari konflik jika ada ToggleSound global
+static void Action_MM_IncreaseVolume(void);
+static void Action_MM_DecreaseVolume(void);
+
+// Prototipe fungsi custom draw/update
+static void DrawNameInputScreenCustom(Vector2 mousePos);
+static void UpdateNameInputScreenCustom(Vector2 mousePos);
+static void DrawLeaderboardScreenCustom(Vector2 mousePos);
+static void UpdateLeaderboardScreenCustom(Vector2 mousePos);
+static void DrawSettingsScreenCustom(Vector2 mousePos);
+static void UpdateSettingsScreenCustom(Vector2 mousePos);
+static void DrawInfoScreenCustom(Vector2 mousePos);
+static void UpdateInfoScreenCustom(Vector2 mousePos);
+
+
+// 🔹 Gambar Teks Pelangi dengan Spacing yang Lebih Presisi (tetap sama)
+void DrawRainbowText(const char *text, int centerX, int posY, int fontSize){
+    int currentLetterCount = 0; // Renamed to avoid conflict with global letterCount
     float totalWidth = 0;
-    float letterWidths[256] = {0}; // Simpan ukuran tiap huruf
-
-    // 🔹 Hitung total panjang teks & simpan lebar tiap huruf
-    for (int i = 0; text[i] != '\0'; i++)
-    {
+    float letterWidths[256] = {0};
+    for (int i = 0; text[i] != '\0'; i++) {
         letterWidths[i] = MeasureTextEx(GetFontDefault(), TextFormat("%c", text[i]), fontSize, 2).x;
-        totalWidth += letterWidths[i] + 3;
-        letterCount++;
+        totalWidth += letterWidths[i] + 3; // Include spacing in totalWidth calculation more accurately
+        currentLetterCount++;
     }
-
-    // 🔹 Pastikan teks tetap di tengah
-    float startX = centerX - (totalWidth / 2);
+    float startX = centerX - (totalWidth / 2.0f); // Center align
     float xOffset = 0;
-
-    // 🔹 Gambar huruf satu per satu dengan spacing yang stabil
-    for (int i = 0; i < letterCount; i++)
-    {
-        Color letterColor = rainbowColors[i % rainbowSize]; // Warna bergantian
+    for (int i = 0; i < currentLetterCount; i++) {
+        Color letterColor = rainbowColors[i % rainbowSize];
         DrawTextEx(GetFontDefault(), TextFormat("%c", text[i]),
-                   (Vector2){startX + xOffset, posY}, fontSize, 2, letterColor);
-        xOffset += letterWidths[i] + 5; // Spacing antar huruf
+                   (Vector2){startX + xOffset, (float)posY}, fontSize, 2, letterColor);
+        xOffset += letterWidths[i] + 5; // Consistent spacing after each letter
     }
 }
 
-// 🔹 Update Mini Menu (Hanya saat game berjalan)
-void UpdateMainMenuMini(GameState *state)
-{
-    Vector2 mouse = GetMousePosition();
-
-    if ((*state == GAME_START || *state == GAME_PLAY) && CheckCollisionPointRec(mouse, miniMenuBtn) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-    {
-        PlayButtonClick();
-        *state = GAME_MENU; // Kembali ke Main Menu
-        ChangeMusic("assets/sounds/background_music.mp3");
-        UpdateMusic();
-    }
-}
-
-// 🔹 Gambar Mini Menu (Hanya saat game berjalan)
-void DrawMainMenuMini(GameState state)
-{
-    if (state != GAME_START && state != GAME_PLAY)
-        return; // Tampilkan hanya jika sedang bermain
-
-    Vector2 mouse = GetMousePosition();
-
-    Color miniColor = CheckCollisionPointRec(mouse, miniMenuBtn) ? BLUE : YELLOW;
-    DrawRectangleRec(miniMenuBtn, miniColor);
-
-    // **Pastikan teks berada di tengah tombol**
-    int textWidth = MeasureText("Main Menu", 20);
-    int textX = 870;
-    int textY = 590;
-
-    DrawText("Main Menu", textX, textY, 20, BLACK);
-}
-
-// 🔹 Gambar Title "BREAK BRICKS"
-void DrawTitle()
-{
+// 🔹 Gambar Title "BREAK BRICKS" (tetap sama)
+void DrawTitle(){
     DrawRainbowText("BREAK BRICKS", SCREEN_WIDTH / 2, 150, 75);
 }
 
-// 🔹 Inisialisasi Menu
-void InitMainMenu()
-{
-    currentMenu = MENU_MAIN;
-    exitGame = startGame = false;
-    selectedLevel = 0;
-    soundOn = true;
-    letterCount = 0;
-    strcpy(playerName, "");
+// ----------------------------------------------------------------------------------
+// Menu Item dan Screen Helper Functions
+// ----------------------------------------------------------------------------------
+MenuItem* CreateMenuItem(const char* text, Rectangle rect, Color base, Color hover, Color textColor, MenuItemAction action, MenuScreen* target) {
+    MenuItem* newItem = (MenuItem*)malloc(sizeof(MenuItem));
+    if (!newItem) {
+        TraceLog(LOG_ERROR, "Failed to allocate memory for MenuItem");
+        return NULL;
+    }
+    strncpy(newItem->text, text, sizeof(newItem->text) - 1);
+    newItem->text[sizeof(newItem->text) - 1] = '\0';
+    newItem->rect = rect;
+    newItem->baseColor = base;
+    newItem->hoverColor = hover;
+    newItem->textColor = textColor;
+    newItem->action = action;
+    newItem->targetScreen = target; // Biasanya NULL jika action menangani navigasi
+    newItem->next = NULL;
+    return newItem;
 }
 
-// 🔹 Update Menu
-void UpdateMainMenu()
-{
-    Vector2 mouse = GetMousePosition();
-
-    if (currentMenu == MENU_MAIN)
-    {
-        if (CheckCollisionPointRec(mouse, buttons[0]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-        {
-            PlayButtonClick();
-            currentMenu = MENU_LEVEL_SELECT;
+void AddMenuItemToScreen(MenuScreen* screen, MenuItem* item) {
+    if (!screen || !item) return;
+    if (screen->itemsHead == NULL) {
+        screen->itemsHead = item;
+    } else {
+        MenuItem* temp = screen->itemsHead;
+        while (temp->next != NULL) {
+            temp = temp->next;
         }
-        if (CheckCollisionPointRec(mouse, buttons[1]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-        {
-            PlayButtonClick();
-            currentMenu = MENU_LEADERBOARD;
-        }
-        if (CheckCollisionPointRec(mouse, buttons[2]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-        {
-            PlayButtonClick();
-            currentMenu = MENU_SETTINGS;
-        }
-        if (CheckCollisionPointRec(mouse, buttons[8]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-        {
-            PlayButtonClick();
-            currentMenu = MENU_INFO;
-        }
-        if (CheckCollisionPointRec(mouse, buttons[3]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-        {
-            PlayButtonClick();
-            exitGame = true;
-        }
+        temp->next = item;
     }
-    else if (currentMenu == MENU_LEVEL_SELECT)
-    {
-        for (int i = 0; i < 3; i++)
-        {
-            if (CheckCollisionPointRec(mouse, levelButtons[i]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-            {
-                PlayButtonClick();
-                selectedLevel = i + 1;
-                letterCount = 0;
-                strcpy(playerName, "");
-                currentMenu = MENU_NAME_INPUT;
+}
+
+MenuScreen* CreateMenuScreen(const char* title, MenuScreenType type, MenuScreen* parent,
+                             void (*drawCustom)(Vector2), void (*updateCustom)(Vector2)) {
+    MenuScreen* newScreen = (MenuScreen*)malloc(sizeof(MenuScreen));
+    if (!newScreen) {
+        TraceLog(LOG_ERROR, "Failed to allocate memory for MenuScreen");
+        return NULL;
+    }
+    strncpy(newScreen->title, title, sizeof(newScreen->title) - 1);
+    newScreen->title[sizeof(newScreen->title) - 1] = '\0';
+    newScreen->type = type;
+    newScreen->itemsHead = NULL;
+    newScreen->parentScreen = parent;
+    newScreen->drawScreenCustom = drawCustom;
+    newScreen->updateScreenCustom = updateCustom;
+    return newScreen;
+}
+
+// ----------------------------------------------------------------------------------
+// Actions for MenuItems
+// ----------------------------------------------------------------------------------
+static void Action_NavigateToLevelSelect(void) { currentActiveScreen = levelSelectScreen; PlaySfx("button_click"); }
+static void Action_NavigateToLeaderboard(void) { currentActiveScreen = leaderboardScreen; PlaySfx("button_click"); LoadLeaderboard(LEADERBOARD_FILE); leaderboardScrollOffset = 0;}
+static void Action_NavigateToSettings(void) { currentActiveScreen = settingsScreen; PlaySfx("button_click"); }
+static void Action_NavigateToInfo(void) { currentActiveScreen = infoScreen; PlaySfx("button_click"); }
+static void Action_ExitGame(void) { exitGame = true; PlaySfx("button_click"); }
+
+static void Action_GoBack(void) {
+    if (currentActiveScreen && currentActiveScreen->parentScreen) {
+        currentActiveScreen = currentActiveScreen->parentScreen;
+        PlaySfx("button_click");
+    } else {
+        currentActiveScreen = mainMenuScreen; // Fallback to main menu
+        PlaySfx("button_click");
+    }
+}
+
+static void Action_SelectLevel(int level) {
+    selectedLevel = level;
+    letterCount = 0; // Reset player name input
+    memset(playerName, 0, sizeof(playerName)); // Clear player name string
+    currentActiveScreen = nameInputScreen;
+    PlaySfx("button_click");
+}
+static void Action_SelectLevel1(void) { Action_SelectLevel(1); }
+static void Action_SelectLevel2(void) { Action_SelectLevel(2); }
+static void Action_SelectLevel3(void) { Action_SelectLevel(3); }
+
+static void Action_ConfirmNameAndStart(void) {
+    if (letterCount > 0) {
+        startGame = true; // main.c will detect this and change game state
+        // currentActiveScreen = mainMenuScreen; // Game will transition out of menu state
+        PlaySfx("button_click");
+    }
+}
+
+static void Action_MM_ToggleSound(void) {
+    ToggleSound(); // This function should be from sound.h/sound.c or defined here
+    PlaySfx("button_click");
+}
+static void Action_MM_IncreaseVolume(void) { IncreaseVolume(); PlaySfx("button_click"); } // from sound.h/sound.c
+static void Action_MM_DecreaseVolume(void) { DecreaseVolume(); PlaySfx("button_click"); } // from sound.h/sound.c
+
+// ----------------------------------------------------------------------------------
+// Custom Screen Draw and Update Functions
+// ----------------------------------------------------------------------------------
+
+// --- Name Input Screen ---
+static void DrawNameInputScreenCustom(Vector2 mousePos) {
+    DrawRectangleRec(textBox, LIGHTGRAY);
+    DrawRectangleLinesEx(textBox, 2, mouseOnText ? RED : DARKGRAY);
+    DrawText(playerName, textBox.x + 10, textBox.y + (textBox.height - 30)/2, 30, BLACK);
+
+    if (mouseOnText) {
+        if (letterCount < MAX_NAME_LENGTH_INPUT) { // MAX_NAME_LENGTH_INPUT is 8
+            if (((int)(GetTime() * 2.0f) % 2) == 0) {
+                DrawText("_", textBox.x + 10 + MeasureText(playerName, 30), textBox.y + (textBox.height - 30)/2, 30, BLACK);
             }
         }
-
-        // Penanganan tombol BACKSPACE
-        if (IsKeyPressed(KEY_BACKSPACE))
-        {
-            currentMenu = MENU_MAIN;
-        }
     }
-    else if (currentMenu == MENU_SETTINGS)
-    {
-        if (CheckCollisionPointRec(mouse, buttons[4]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-        {
-            PlayButtonClick();
-            ToggleSound();
-        }
-        if (CheckCollisionPointRec(mouse, buttons[5]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-        {
-            PlayButtonClick();
-            DecreaseVolume();
-        }
-        if (CheckCollisionPointRec(mouse, buttons[6]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-        {
-            PlayButtonClick();
-            IncreaseVolume();
-        }
-        if (CheckCollisionPointRec(mouse, buttons[7]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-        {
-            PlayButtonClick();
-            currentMenu = MENU_MAIN;
-        }
+    DrawText("Press ENTER to confirm", textBox.x, textBox.y + textBox.height + 10, 20, WHITE);
+    DrawText("Press BACKSPACE to erase", textBox.x, textBox.y + textBox.height + 35, 20, WHITE);
+    DrawText(TextFormat("Max %d characters", MAX_NAME_LENGTH_INPUT), textBox.x, textBox.y + textBox.height + 60, 20, WHITE);
+}
 
-        // Penanganan tombol BACKSPACE
-        if (IsKeyPressed(KEY_BACKSPACE))
-        {
-            currentMenu = MENU_MAIN;
-        }
-    }
-    else if (currentMenu == MENU_INFO)
-    {
-        if (CheckCollisionPointRec(mouse, levelButtons[3]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-        {
-            PlayButtonClick();
-            currentMenu == MENU_MAIN;
-        }
-
-        // Penanganan tombol BACKSPACE
-        if (IsKeyPressed(KEY_BACKSPACE))
-        {
-            currentMenu = MENU_MAIN;
-        }
-    }
-    else if (currentMenu == MENU_NAME_INPUT)
-    {
-        mouseOnText = CheckCollisionPointRec(mouse, textBox);
-
-        if (mouseOnText)
-        {
-            SetMouseCursor(MOUSE_CURSOR_IBEAM);
-
-            // Get char pressed (unicode character) on the queue
-            int key = GetCharPressed();
-
-            // Check if more characters can be added (maximum 8 characters)
-            if (letterCount < 8)
-            {
-                // Add characters (Only allow alphabetical and numbers)
-                if (((key >= 32) && (key <= 125)) && (key != '\\') && (key != '/') && (key != ':') && (key != '*') && (key != '?') && (key != '\"') && (key != '<') && (key != '>') && (key != '|'))
-                {
+static void UpdateNameInputScreenCustom(Vector2 mousePos) {
+    mouseOnText = CheckCollisionPointRec(mousePos, textBox);
+    if (mouseOnText) {
+        SetMouseCursor(MOUSE_CURSOR_IBEAM);
+        int key = GetCharPressed();
+        while (key > 0) { // Process all characters in the queue
+            if ((key >= 32) && (key <= 125)) { // Printable characters
+                if (letterCount < MAX_NAME_LENGTH_INPUT) {
                     playerName[letterCount] = (char)key;
-                    playerName[letterCount + 1] = '\0'; // Add null terminator
+                    playerName[letterCount + 1] = '\0';
                     letterCount++;
                 }
             }
-
-            // Delete button (backspace)
-            if (IsKeyPressed(KEY_BACKSPACE))
-            {
-                if (letterCount > 0)
-                {
-                    letterCount--;
-                    playerName[letterCount] = '\0';
-                }
-            }
-
-            // Submit button (enter)
-            if (IsKeyPressed(KEY_ENTER) && letterCount > 0)
-            {
-                PlayButtonClick();
-                startGame = true;
-                currentMenu = MENU_MAIN;
-            }
+            key = GetCharPressed(); // Get next char
         }
-        else
-        {
+
+        if (IsKeyPressed(KEY_BACKSPACE)) {
             SetMouseCursor(MOUSE_CURSOR_DEFAULT);
+            if (letterCount > 0) {
+                letterCount--;
+                playerName[letterCount] = '\0';
+            }
         }
+        if (IsKeyPressed(KEY_ENTER)) {
+            SetMouseCursor(MOUSE_CURSOR_DEFAULT);
+            Action_ConfirmNameAndStart();
+        }
+    } else {
+        SetMouseCursor(MOUSE_CURSOR_DEFAULT);
+    }
+    // "BACK" button is a standard MenuItem, handled by generic update
+}
 
-        if (mouseOnText && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-        {
-            PlayButtonClick();
+// --- Leaderboard Screen ---
+static void DrawLeaderboardScreenCustom(Vector2 mousePos) {
+    DrawLeaderboardMenuScreen(leaderboardScrollOffset); // From leaderboard.c
+}
+
+static void UpdateLeaderboardScreenCustom(Vector2 mousePos) {
+    leaderboardScrollOffset -= (GetMouseWheelMove() * SCROLL_SPEED); // SCROLL_SPEED from leaderboard.h
+
+    int totalBoardEntries = GetLeaderboardCount(); // From leaderboard.c
+    int maxScroll = 0;
+    if (totalBoardEntries > 5) { // Assuming roughly 5 entries visible without scroll. Adjust as needed.
+        int contentHeight = totalBoardEntries * 30; // Approx height per entry
+        int visibleAreaHeight = 380; // Approx visible area in DrawLeaderboardMenuScreen
+        if (contentHeight > visibleAreaHeight) {
+            maxScroll = contentHeight - visibleAreaHeight;
         }
     }
 
-    if (CheckCollisionPointRec(mouse, inputName[0]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-    {
-        printf("Tombol BACK TO MENU diklik!\n"); // Debugging
-        PlayButtonClick();
-        currentMenu = MENU_LEVEL_SELECT; // Kembali ke menu level
-    }
-    if (CheckCollisionPointRec(mouse, levelButtons[3]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-    {
-        printf("Tombol BACK TO MENU diklik!\n"); // Debugging
-        PlayButtonClick();
-        currentMenu = MENU_MAIN; // Kembali ke menu level
-    }
+    if (leaderboardScrollOffset < 0) leaderboardScrollOffset = 0;
+    if (leaderboardScrollOffset > maxScroll) leaderboardScrollOffset = maxScroll;
 
-    else if (currentMenu == MENU_LEADERBOARD)
-    {
-        if (IsKeyPressed(KEY_BACKSPACE))
-        {
-            currentMenu = MENU_MAIN;
-        }
+    if (IsKeyPressed(KEY_BACKSPACE)) { // Specific back handling
+        Action_GoBack();
     }
 }
 
-// 🔹 Gambar Menu
-void DrawMainMenu()
-{
-    ClearBackground((Color){30, 0, 60, 255});
-    DrawBackground();
+// --- Settings Screen ---
+// Using rects from original static buttons for specific layout
+static Rectangle settings_SoundToggleBtnRect = {SCREEN_WIDTH / 2 - 70, 280, 140, 40};
+static Rectangle settings_VolDownBtnRect = {SCREEN_WIDTH / 2 - 120, 280, 40, 40};
+static Rectangle settings_VolUpBtnRect = {SCREEN_WIDTH / 2 + 80, 280, 40, 40};
+
+static void DrawSettingsScreenCustom(Vector2 mousePos) {
+    // Sound Toggle Button
+    Color soundColor = CheckCollisionPointRec(mousePos, settings_SoundToggleBtnRect) ? SKYBLUE : YELLOW;
+    DrawRectangleRec(settings_SoundToggleBtnRect, soundColor);
+    const char* soundText = IsSoundOn() ? "SOUND ON" : "SOUND OFF";
+    DrawText(soundText, settings_SoundToggleBtnRect.x + (settings_SoundToggleBtnRect.width - MeasureText(soundText, 20))/2, settings_SoundToggleBtnRect.y + 10, 20, BLACK);
+
+    // Volume Down Button
+    Color decreaseColor = CheckCollisionPointRec(mousePos, settings_VolDownBtnRect) ? SKYBLUE : YELLOW;
+    DrawRectangleRec(settings_VolDownBtnRect, decreaseColor);
+    DrawText("-", settings_VolDownBtnRect.x + (settings_VolDownBtnRect.width - MeasureText("-", 20))/2, settings_VolDownBtnRect.y + 10, 20, BLACK);
+
+    // Volume Up Button
+    Color increaseColor = CheckCollisionPointRec(mousePos, settings_VolUpBtnRect) ? SKYBLUE : YELLOW;
+    DrawRectangleRec(settings_VolUpBtnRect, increaseColor);
+    DrawText("+", settings_VolUpBtnRect.x + (settings_VolUpBtnRect.width - MeasureText("+", 20))/2, settings_VolUpBtnRect.y + 10, 20, BLACK);
+}
+
+static void UpdateSettingsScreenCustom(Vector2 mousePos) {
+    if (CheckCollisionPointRec(mousePos, settings_SoundToggleBtnRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        Action_MM_ToggleSound();
+    }
+    if (CheckCollisionPointRec(mousePos, settings_VolDownBtnRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        Action_MM_DecreaseVolume();
+    }
+    if (CheckCollisionPointRec(mousePos, settings_VolUpBtnRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        Action_MM_IncreaseVolume();
+    }
+    if (IsKeyPressed(KEY_BACKSPACE)) { // Back handled by MenuItem or this
+         Action_GoBack();
+    }
+    // "BACK" MenuItem is handled by generic update
+}
+
+// --- Info Screen ---
+static void DrawInfoScreenCustom(Vector2 mousePos) {
+    // Titles drawn by DrawDynamicMainMenu title handler
+    DrawInfo(); // From layout.c, draws the list of names
+}
+
+static void UpdateInfoScreenCustom(Vector2 mousePos) {
+    if (IsKeyPressed(KEY_BACKSPACE)) { // Back handled by MenuItem or this
+         Action_GoBack();
+    }
+    // "BACK" MenuItem is handled by generic update
+}
+
+
+// ----------------------------------------------------------------------------------
+// Main Menu Functions (Dynamic Version)
+// ----------------------------------------------------------------------------------
+void InitDynamicMainMenu(void) {
+    FreeDynamicMainMenu(); // Clear any existing menu
+
+    float btnWidth = 320, btnHeight = 50, btnSpacing = 15; // Consistent spacing
+    float centerX = SCREEN_WIDTH / 2 - btnWidth / 2;
+    float currentY;
+
+    // 1. Main Menu Screen
+    mainMenuScreen = CreateMenuScreen("", MENU_TYPE_MAIN, NULL, NULL, NULL); // Title drawn by DrawTitle()
+    currentY = 240;
+    AddMenuItemToScreen(mainMenuScreen, CreateMenuItem("START GAME", (Rectangle){centerX, currentY, btnWidth, btnHeight}, LIGHTGRAY, GREEN, BLACK, Action_NavigateToLevelSelect, NULL));
+    currentY += btnHeight + btnSpacing;
+    AddMenuItemToScreen(mainMenuScreen, CreateMenuItem("LEADERBOARD", (Rectangle){centerX, currentY, btnWidth, btnHeight}, LIGHTGRAY, BLUE, BLACK, Action_NavigateToLeaderboard, NULL));
+    currentY += btnHeight + btnSpacing;
+    AddMenuItemToScreen(mainMenuScreen, CreateMenuItem("SETTINGS", (Rectangle){centerX, currentY, btnWidth, btnHeight}, LIGHTGRAY, YELLOW, BLACK, Action_NavigateToSettings, NULL));
+    currentY += btnHeight + btnSpacing;
+    AddMenuItemToScreen(mainMenuScreen, CreateMenuItem("INFO", (Rectangle){centerX, currentY, btnWidth, btnHeight}, LIGHTGRAY, SKYBLUE, BLACK, Action_NavigateToInfo, NULL));
+    currentY += btnHeight + btnSpacing;
+    AddMenuItemToScreen(mainMenuScreen, CreateMenuItem("EXIT GAME", (Rectangle){centerX, currentY, btnWidth, btnHeight}, LIGHTGRAY, RED, BLACK, Action_ExitGame, NULL));
+
+    // 2. Level Select Screen
+    levelSelectScreen = CreateMenuScreen("SELECT LEVEL", MENU_TYPE_LEVEL_SELECT, mainMenuScreen, NULL, NULL);
+    currentY = 240;
+    AddMenuItemToScreen(levelSelectScreen, CreateMenuItem("EASY", (Rectangle){centerX, currentY, btnWidth, btnHeight}, LIGHTGRAY, GREEN, BLACK, Action_SelectLevel1, NULL));
+    currentY += btnHeight + btnSpacing;
+    AddMenuItemToScreen(levelSelectScreen, CreateMenuItem("MEDIUM", (Rectangle){centerX, currentY, btnWidth, btnHeight}, LIGHTGRAY, ORANGE, BLACK, Action_SelectLevel2, NULL));
+    currentY += btnHeight + btnSpacing;
+    AddMenuItemToScreen(levelSelectScreen, CreateMenuItem("HARD", (Rectangle){centerX, currentY, btnWidth, btnHeight}, LIGHTGRAY, RED, BLACK, Action_SelectLevel3, NULL));
+    AddMenuItemToScreen(levelSelectScreen, CreateMenuItem("BACK", (Rectangle){20, 20, 100, 40}, LIGHTGRAY, DARKGRAY, BLACK, Action_GoBack, NULL)); // Top-left back
+
+    // 3. Name Input Screen
+    // textBox is defined globally for this screen.
+    nameInputScreen = CreateMenuScreen("ENTER YOUR NAME", MENU_TYPE_NAME_INPUT, levelSelectScreen, DrawNameInputScreenCustom, UpdateNameInputScreenCustom);
+    AddMenuItemToScreen(nameInputScreen, CreateMenuItem("BACK", (Rectangle){20, 20, 100, 40}, LIGHTGRAY, DARKGRAY, BLACK, Action_GoBack, NULL)); // Top-left back
+
+    // 4. Leaderboard Screen
+    leaderboardScreen = CreateMenuScreen("LEADERBOARD", MENU_TYPE_LEADERBOARD, mainMenuScreen, DrawLeaderboardScreenCustom, UpdateLeaderboardScreenCustom);
+    // Back is handled by KEY_BACKSPACE in UpdateLeaderboardScreenCustom
+
+    // 5. Settings Screen
+    settingsScreen = CreateMenuScreen("SETTINGS", MENU_TYPE_SETTINGS, mainMenuScreen, DrawSettingsScreenCustom, UpdateSettingsScreenCustom);
+    // Specific buttons drawn by DrawSettingsScreenCustom, Back button as MenuItem:
+    AddMenuItemToScreen(settingsScreen, CreateMenuItem("Back", (Rectangle){SCREEN_WIDTH/2 - 35, 380, 70, 40}, LIGHTGRAY, DARKGRAY, BLACK, Action_GoBack, NULL));
+
+    // 6. Info Screen
+    infoScreen = CreateMenuScreen("INFO", MENU_TYPE_INFO, mainMenuScreen, DrawInfoScreenCustom, UpdateInfoScreenCustom);
+    AddMenuItemToScreen(infoScreen, CreateMenuItem("Back", (Rectangle){20, 20, 100, 40}, LIGHTGRAY, DARKGRAY, BLACK, Action_GoBack, NULL));
+
+
+    currentActiveScreen = mainMenuScreen;
+    exitGame = false;
+    startGame = false;
+    selectedLevel = 0;
+    soundOn = IsSoundOn(); // Initialize local soundOn with actual sound status
+    letterCount = 0;
+    strcpy(playerName, "");
+    leaderboardScrollOffset = 0;
+}
+
+void UpdateDynamicMainMenu(void) {
+    if (!currentActiveScreen) return;
     Vector2 mouse = GetMousePosition();
 
-    if (currentMenu == MENU_MAIN)
-    {
-        DrawTitle();
-
-        const char *buttonTexts[] = {"START GAME", "LEADERBOARD", "SETTINGS", "EXIT GAME"};
-
-        for (int i = 0; i < 4; i++)
-        {
-            Color buttonColor;
-            if (i == 0)
-                buttonColor = CheckCollisionPointRec(mouse, buttons[i]) ? GREEN : LIGHTGRAY;
-            else if (i == 1)
-                buttonColor = CheckCollisionPointRec(mouse, buttons[i]) ? BLUE : LIGHTGRAY;
-            else if (i == 2)
-                buttonColor = CheckCollisionPointRec(mouse, buttons[i]) ? YELLOW : LIGHTGRAY;
-            else
-                buttonColor = CheckCollisionPointRec(mouse, buttons[i]) ? (Color){198, 60, 60, 255} : LIGHTGRAY;
-
-            DrawRectangleRec(buttons[i], buttonColor);
-
-            // Center text in button
-            int textWidth = MeasureText(buttonTexts[i], 30);
-            int textX = buttons[i].x + (buttons[i].width - textWidth) / 2;
-            int textY = buttons[i].y + (buttons[i].height - 30) / 2;
-
-            DrawText(buttonTexts[i], textX, textY, 30, BLACK);
-        }
-        Color infoColor = CheckCollisionPointRec(mouse, buttons[8]) ? (Color){100, 220, 255, 255} : YELLOW;
-        DrawRectangleRec(buttons[8], infoColor);
-        DrawText("Info", buttons[8].x + 10, buttons[8].y + 10, 20, BLACK);
+    // Handle custom update logic first
+    if (currentActiveScreen->updateScreenCustom) {
+        currentActiveScreen->updateScreenCustom(mouse);
     }
-    else if (currentMenu == MENU_SETTINGS)
-    {
-        DrawRainbowText("SETTINGS", SCREEN_WIDTH / 2, 150, 45);
-        Color soundColor = CheckCollisionPointRec(mouse, buttons[4]) ? (Color){100, 220, 255, 255} : YELLOW;
-        DrawRectangleRec(buttons[4], soundColor);
-        DrawText(soundOn ? "SOUND ON" : "SOUND OFF", buttons[4].x + 10, buttons[4].y + 10, 20, BLACK);
 
-        Color decreaseColor = CheckCollisionPointRec(mouse, buttons[5]) ? (Color){100, 220, 255, 255} : YELLOW;
-        DrawRectangleRec(buttons[5], decreaseColor);
-        DrawText("-", buttons[5].x + 10, buttons[5].y + 10, 20, BLACK);
-
-        Color increaseColor = CheckCollisionPointRec(mouse, buttons[6]) ? (Color){100, 220, 255, 255} : YELLOW;
-        DrawRectangleRec(buttons[6], increaseColor);
-        DrawText("+", buttons[6].x + 10, buttons[6].y + 10, 20, BLACK);
-
-        Color backColor = CheckCollisionPointRec(mouse, buttons[7]) ? RED : LIGHTGRAY;
-        DrawRectangleRec(buttons[7], backColor);
-        DrawText("Back", buttons[7].x + 10, buttons[7].y + 10, 20, BLACK);
-    }
-    else if (currentMenu == MENU_INFO)
-    {
-        DrawRainbowText("INFO", SCREEN_WIDTH / 2, 100, 45);
-        DrawRainbowText("Dibuat Oleh", SCREEN_WIDTH / 2, 180, 20);
-        DrawRainbowText("Kelompok C6 Proyek 2 POLBAN:", SCREEN_WIDTH / 2, 200, 20);
-        DrawText("Ahmad Habib Mutaqqin (241511065)", SCREEN_WIDTH / 2 - 160, 250, 20, WHITE);
-        DrawText("Muhammad Brata Hadinata (241511082)", SCREEN_WIDTH / 2 - 160, 300, 20, WHITE);
-        DrawText("Muhammad Raihan Abubakar (241511084)", SCREEN_WIDTH / 2 - 160, 350, 20, WHITE);
-        DrawText("Nezya Zulfa Fauziah (241511085)", SCREEN_WIDTH / 2 - 160, 400, 20, WHITE);
-        DrawText("Siti Soviyyah (241511090)", SCREEN_WIDTH / 2 - 160, 450, 20, WHITE);
-        DrawText("Wyandhanu Maulidan Nugraha** (241511092)", SCREEN_WIDTH / 2 - 160, 500, 20, WHITE);
-
-        Color backInfoColor = CheckCollisionPointRec(mouse, levelButtons[3]) ? RED : LIGHTGRAY;
-        DrawRectangleRec(levelButtons[3], backInfoColor);
-        DrawText("Back", levelButtons[3].x + 10, levelButtons[3].y + 10, 20, BLACK);
-    }
-    else if (currentMenu == MENU_LEVEL_SELECT)
-    {
-        DrawRainbowText("SELECT LEVEL", SCREEN_WIDTH / 2, 150, 45);
-
-        // 🔹 Pemilihan Level: EASY, MEDIUM, HARD
-        const char *levelText[] = {"EASY", "MEDIUM", "HARD"};
-        Color levelColors[] = {GREEN, ORANGE, RED};
-
-        for (int i = 0; i < 3; i++)
-        {
-            Color color = CheckCollisionPointRec(mouse, levelButtons[i]) ? levelColors[i] : LIGHTGRAY;
-            DrawRectangleRec(levelButtons[i], color);
-
-            // **Menghitung posisi teks agar tepat di tengah tombol**
-            int textWidth = MeasureText(levelText[i], 30);
-            int textX = levelButtons[i].x + (levelButtons[i].width / 2) - (textWidth / 2);
-            int textY = levelButtons[i].y + (levelButtons[i].height / 2) - 15; // 15 untuk menyesuaikan posisi vertikal
-
-            DrawText(levelText[i], textX, textY, 30, BLACK);
-        }
-
-        // Gambar tombol "BACK"
-        Color backColor = CheckCollisionPointRec(mouse, levelButtons[3]) ? RED : LIGHTGRAY;
-        DrawRectangleRec(levelButtons[3], backColor);
-        DrawText("BACK", levelButtons[3].x + 20, levelButtons[3].y + 10, 20, BLACK);
-    }
-    else if (currentMenu == MENU_NAME_INPUT)
-    {
-        DrawRainbowText("ENTER YOUR NAME", SCREEN_WIDTH / 2, 150, 45);
-
-        // Draw text box
-        DrawRectangleRec(textBox, LIGHTGRAY);
-        DrawRectangleLines(textBox.x, textBox.y, textBox.width, textBox.height,
-                           mouseOnText ? RED : DARKGRAY);
-
-        DrawText(playerName, textBox.x + 10, textBox.y + 15, 30, BLACK);
-
-        // Draw blinking cursor
-        if (mouseOnText)
-        {
-            if (letterCount < MAX_NAME_LENGTH)
-            {
-                // Draw cursor at the end of the text
-                if (((int)(GetTime() * 2) % 2) == 0)
-                {
-                    DrawText("_", textBox.x + 10 + MeasureText(playerName, 30), textBox.y + 15, 30, BLACK);
+    // Handle generic menu item interactions
+    MenuItem* currentItem = currentActiveScreen->itemsHead;
+    while (currentItem != NULL) {
+        if (CheckCollisionPointRec(mouse, currentItem->rect)) {
+            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                if (currentItem->action) {
+                    currentItem->action();
+                    // currentActiveScreen might have changed, so break or be careful if continuing loop
+                    return; // Action might change screen, so re-evaluate from top next frame
                 }
             }
         }
-
-        DrawText("Press ENTER to confirm", textBox.x + 5, textBox.y + 60, 20, WHITE);
-        DrawText("Press BACKSPACE to ERASE", textBox.x + 5, textBox.y + 90, 20, WHITE);
-
-        // Draw back to main menu button
-        Color backToMainColor = CheckCollisionPointRec(mouse, inputName[0]) ? RED : LIGHTGRAY;
-        DrawRectangleRec(inputName[0], backToMainColor);
-        DrawText("BACK TO MENU", inputName[0].x + 5, inputName[0].y + 10, 20, BLACK);
+        currentItem = currentItem->next;
     }
-    else if (currentMenu == MENU_LEADERBOARD)
-    {
-        static LeaderboardEntry leaderboard[MAX_PLAYERS];
-        static bool leaderboardLoaded = false;
 
-        if (!leaderboardLoaded)
-        {
-            LoadLeaderboard(leaderboard);
-            leaderboardLoaded = true;
+    // Generic KEY_BACKSPACE for screens without custom backspace handling in their update
+    // (NameInput, Leaderboard, Settings have custom handling or specific back items)
+    if (currentActiveScreen->type != MENU_TYPE_NAME_INPUT &&
+        currentActiveScreen->type != MENU_TYPE_LEADERBOARD &&
+        currentActiveScreen->type != MENU_TYPE_SETTINGS) { // Assuming BACKSPACE is not used otherwise
+        if (IsKeyPressed(KEY_BACKSPACE)) {
+            Action_GoBack();
         }
-
-        // Handle scrolling with mouse wheel
-        leaderboardScrollOffset -= (GetMouseWheelMove() * SCROLL_SPEED);
-
-        // Limit scrolling
-        int maxScroll = (MAX_LEADERBOARD_ENTRIES * 30) - 380; // Calculate based on entries and visible area
-        if (leaderboardScrollOffset < 0)
-            leaderboardScrollOffset = 0;
-        if (maxScroll > 0 && leaderboardScrollOffset > maxScroll)
-            leaderboardScrollOffset = maxScroll;
-
-        // Check for refresh button click
-        Vector2 mousePos = GetMousePosition();
-        Rectangle refreshButton = {750, 60, 120, 30};
-        if (CheckCollisionPointRec(mousePos, refreshButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-        {
-            LoadLeaderboard(leaderboard); // Reload leaderboard data
-            PlayButtonClick();            // Add sound feedback
-        }
-
-        DrawLeaderboardMenu(leaderboard, MAX_LEADERBOARD_ENTRIES, leaderboardScrollOffset);
     }
 }
 
-// 🔹 Getter dan Setter
+void DrawDynamicMainMenu(void) {
+    if (!currentActiveScreen) return;
+
+    ClearBackground((Color){30, 0, 60, 255});
+    DrawBackground(); // From background.c
+
+    Vector2 mouse = GetMousePosition();
+
+    // Draw screen title
+    if (currentActiveScreen->type == MENU_TYPE_MAIN) {
+        DrawTitle(); // Special title for main menu
+    } else if (strlen(currentActiveScreen->title) > 0) {
+        int titleFontSize = 45;
+        int titleY = 150;
+        if(currentActiveScreen->type == MENU_TYPE_LEADERBOARD) titleY = 40;
+        else if (currentActiveScreen->type == MENU_TYPE_INFO) titleY = 100;
+
+        DrawRainbowText(currentActiveScreen->title, SCREEN_WIDTH / 2, titleY, titleFontSize);
+
+        if (currentActiveScreen->type == MENU_TYPE_INFO) { // Subtitles for INFO screen
+            DrawRainbowText("Dibuat Oleh", SCREEN_WIDTH / 2, titleY + 60, 20);
+            DrawRainbowText("Kelompok C6 Proyek 2 POLBAN:", SCREEN_WIDTH / 2, titleY + 85, 20);
+        }
+    }
+
+    // Draw generic menu items
+    MenuItem* currentItem = currentActiveScreen->itemsHead;
+    while (currentItem != NULL) {
+        Color itemColor = currentItem->baseColor;
+        if (CheckCollisionPointRec(mouse, currentItem->rect)) {
+            itemColor = currentItem->hoverColor;
+        }
+        DrawRectangleRec(currentItem->rect, itemColor);
+
+        int fontSize = (currentItem->rect.height > 45) ? 30 : 20; // Adjust font based on button height
+        int textWidth = MeasureText(currentItem->text, fontSize);
+        DrawText(currentItem->text,
+                 currentItem->rect.x + (currentItem->rect.width - textWidth) / 2,
+                 currentItem->rect.y + (currentItem->rect.height - fontSize) / 2,
+                 fontSize, currentItem->textColor);
+        currentItem = currentItem->next;
+    }
+
+    // Handle custom drawing for the screen
+    if (currentActiveScreen->drawScreenCustom) {
+        currentActiveScreen->drawScreenCustom(mouse);
+    }
+}
+
+void FreeMenuItems(MenuItem* head) {
+    MenuItem* current = head;
+    MenuItem* next;
+    while (current != NULL) {
+        next = current->next;
+        free(current);
+        current = next;
+    }
+}
+
+void FreeMenuScreen(MenuScreen** screen_ptr) {
+    if (screen_ptr && *screen_ptr) {
+        FreeMenuItems((*screen_ptr)->itemsHead);
+        free(*screen_ptr);
+        *screen_ptr = NULL;
+    }
+}
+
+void FreeDynamicMainMenu(void) {
+    FreeMenuScreen(&mainMenuScreen);
+    FreeMenuScreen(&levelSelectScreen);
+    FreeMenuScreen(&nameInputScreen);
+    FreeMenuScreen(&leaderboardScreen);
+    FreeMenuScreen(&settingsScreen);
+    FreeMenuScreen(&infoScreen);
+    currentActiveScreen = NULL; // Ensure it's reset
+}
+
+// ----------------------------------------------------------------------------------
+// Mini Menu (In-Game) - Stays mostly the same
+// ----------------------------------------------------------------------------------
+void UpdateMainMenuMini(GameState *state){
+    Vector2 mouse = GetMousePosition();
+    if ((*state == GAME_START || *state == GAME_PLAY) && CheckCollisionPointRec(mouse, miniMenuBtn) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        PlaySfx("button_click");
+        *state = GAME_MENU; // Signal to main.c to go to menu
+        ChangeMusic("assets/sounds/background_music.mp3"); // Assuming ChangeMusic is globally available
+        // UpdateMusic(); // main.c's loop calls UpdateMusic
+        InitDynamicMainMenu(); // Re-initialize main menu state when returning
+    }
+}
+
+void DrawMainMenuMini(GameState state){
+    if (state != GAME_START && state != GAME_PLAY) return;
+
+    Vector2 mouse = GetMousePosition();
+    Color miniColor = CheckCollisionPointRec(mouse, miniMenuBtn) ? SKYBLUE : YELLOW;
+    DrawRectangleRec(miniMenuBtn, miniColor);
+    const char* text = "Main Menu";
+    int textWidth = MeasureText(text, 20);
+    DrawText(text, miniMenuBtn.x + (miniMenuBtn.width - textWidth)/2, miniMenuBtn.y + (miniMenuBtn.height - 20)/2, 20, BLACK);
+}
+
+
+// ----------------------------------------------------------------------------------
+// Getters and Setters (for main.c and other modules)
+// ----------------------------------------------------------------------------------
 bool IsExitGame() { return exitGame; }
 bool IsStartGame() { return startGame; }
 int GetSelectedLevel() { return selectedLevel; }
 const char *GetPlayerName() { return playerName; }
 void SetStartGame(bool value) { startGame = value; }
-void ToggleSound()
-{
-    soundOn = !soundOn;
-    ToggleMusic();
+
+MenuScreenType GetCurrentMenuScreenType(void) {
+    if (currentActiveScreen) {
+        return currentActiveScreen->type;
+    }
+    return MENU_TYPE_NONE;
 }
-bool IsSoundOn() { return soundOn; }
+
+// Sound control - these call functions from sound.c or are wrappers
+// Ensure sound.c provides IsSoundOn(), ToggleMusic(), IncreaseVolume(), DecreaseVolume()
+// For this example, ToggleSound is the action, IsSoundOn is the getter.
+void ToggleSound() { // This is the one called by Action_MM_ToggleSound
+    // Assuming ToggleMusic in sound.c handles the logic of toggling on/off
+    // and updates its internal state reflected by IsSoundOn()
+    ToggleMusic(); // From sound.h
+    soundOn = !soundOn; // Update local reflection if needed, but better to rely on sound module's state
+}
+
+bool IsSoundOn() {
+    // This should ideally query the sound module's state
+    // For now, it uses the local 'soundOn' which is toggled by Action_MM_ToggleSound
+    return soundOn;
+}

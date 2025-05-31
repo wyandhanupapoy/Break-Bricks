@@ -1,89 +1,83 @@
-/*  Nama Pembuat: Muhammad Brata Hadinata
+/* Nama Pembuat: Muhammad Brata Hadinata
     Nama Fitur: nyawa.c
-    Deskripsi: Kode ini berfungsi untuk mengelola sistem nyawa dalam game.
-               Nyawa ditampilkan sebagai ikon hati di layar, yang menunjukkan berapa sisa nyawa pemain.
-               Saat pemain kalah, nyawa berkurang satu. Jika semua nyawa habis, game akan tahu bahwa pemain kalah atau game over.
-               Kode ini juga memuat, menggambar, dan menghapus gambar nyawa dari memori. */
+    Deskripsi: Mengelola sistem nyawa dalam game secara dinamis menggunakan hitungan integer.
+               Menampilkan ikon nyawa di layar, menangani pengurangan nyawa,
+               dan memuat/menghapus tekstur ikon nyawa. */
 
-#include "nyawa.h"
-#include "layout.h"
-#include "raylib.h"
-
-static float nyawaPosX = 0;                                   // Posisi default X
-static float nyawaPosY = 0;                                   // Posisi default Y
-static float nyawaScale = (float)DEFAULT_NYAWA_SIZE / 100.0f; // Skala nyawa
-static Texture2D nyawaTexture;
-
-// 🔹 Memuat gambar nyawa
-void LoadNyawaTexture()
-{
-    nyawaTexture = LoadTexture("assets/images/heart.png");
-}
-
-// 🔹 Membersihkan gambar nyawa dari memori
-void UnloadNyawaTexture()
-{
-    UnloadTexture(nyawaTexture);
-}
-
-// 🔹 Mengatur posisi nyawa
-void SetNyawaPosition(float x, float y)
-{
-    nyawaPosX = x;
-    nyawaPosY = y;
-}
-
-// 🔹 Mengatur ukuran nyawa
-void SetNyawaSize(float size)
-{
-    nyawaScale = size / 100.0f;
-}
-
-// 🔹 Inisialisasi jumlah nyawa
-void InitNyawa(Nyawa nyawa[NYAWA_BARIS][NYAWA_KOLOM], int totalNyawa)
-{
-    for (int i = 0; i < NYAWA_KOLOM; i++)
-    {
-        nyawa[0][i].aktif = (i < totalNyawa);
-    }
-}
-
-// 🔹 Kurangi nyawa jika kehilangan bola
-void KurangiNyawa(Nyawa nyawa[NYAWA_BARIS][NYAWA_KOLOM])
-{
-    for (int i = NYAWA_KOLOM - 1; i >= 0; i--)
-    {
-        if (nyawa[0][i].aktif)
-        {
-            nyawa[0][i].aktif = false;
-            break;
-        }
-    }
-}
-
-// 🔹 Cek apakah masih ada nyawa tersisa
-bool AnyLivesLeft(Nyawa nyawa[NYAWA_BARIS][NYAWA_KOLOM])
-{
-    for (int i = 0; i < NYAWA_KOLOM; i++)
-    {
-        if (nyawa[0][i].aktif)
-        {
-            return true;
-        }
-    }
-    return false;
-}
-
-// 🔹 Gambar nyawa dengan ukuran dinamis & berjejer dari kanan ke kiri
-void DrawNyawa(Nyawa nyawa[NYAWA_BARIS][NYAWA_KOLOM])
-{
-    for (int i = 0; i < NYAWA_KOLOM; i++)
-    {
-        if (nyawa[0][i].aktif)
-        {
-            float posX = nyawaPosX - (i * ((nyawaTexture.width * nyawaScale) + NYAWA_SPACING));
-            float posY = nyawaPosY;
-            DrawTextureEx(nyawaTexture, (Vector2){posX, posY}, 0.0f, nyawaScale, WHITE);
-        }
-    }
-}
+               #include "nyawa.h"
+               // #include "layout.h" // Tidak lagi secara langsung dibutuhkan di sini jika posisi dari main.c
+               
+               static int currentLives = 0; // Jumlah nyawa saat ini
+               static Texture2D lifeTexture; // Tekstur untuk ikon nyawa
+               static float lifeIconPosX = 0;
+               static float lifeIconPosY = 0;
+               static float lifeIconScale = (float)DEFAULT_LIFE_ICON_SIZE / 100.0f;
+               
+               // 🔹 Memuat gambar ikon nyawa
+               void LoadLifeTexture() // Nama baru: LoadLifeTexture
+               {
+                   lifeTexture = LoadTexture("assets/images/heart.png"); // Path tekstur tetap sama
+               }
+               
+               // 🔹 Membersihkan gambar ikon nyawa dari memori
+               void UnloadLifeTexture() // Nama baru: UnloadLifeTexture
+               {
+                   UnloadTexture(lifeTexture);
+               }
+               
+               // 🔹 Mengatur posisi awal untuk tampilan ikon nyawa (pojok kanan atas ikon pertama)
+               void SetLivesDisplayPosition(float x, float y) // Nama baru: SetLivesDisplayPosition
+               {
+                   lifeIconPosX = x;
+                   lifeIconPosY = y;
+               }
+               
+               // 🔹 Mengatur ukuran ikon nyawa
+               void SetLifeIconSize(float size) // Nama baru: SetLifeIconSize
+               {
+                   lifeIconScale = size / 100.0f;
+               }
+               
+               // 🔹 Inisialisasi jumlah nyawa
+               void InitLivesSystem(int initialLives) // Nama baru: InitLivesSystem
+               {
+                   currentLives = initialLives;
+                   if (currentLives < 0) {
+                       currentLives = 0;
+                   }
+               }
+               
+               // 🔹 Kurangi satu nyawa
+               void DecreaseLife(void) // Nama baru: DecreaseLife
+               {
+                   if (currentLives > 0)
+                   {
+                       currentLives--;
+                   }
+               }
+               
+               // 🔹 Cek apakah pemain masih memiliki nyawa
+               bool HasLivesLeft(void) // Nama baru: HasLivesLeft
+               {
+                   return currentLives > 0;
+               }
+               
+               // 🔹 Gambar ikon nyawa berdasarkan jumlah nyawa saat ini
+               // Ikon digambar berjejer dari kanan ke kiri
+               void DrawLives(void) // Nama baru: DrawLives
+               {
+                   int livesToDraw = currentLives;
+                   if (livesToDraw > MAX_DISPLAY_LIVES) { // Batasi jumlah ikon yang digambar jika nyawa > MAX_DISPLAY_LIVES
+                       livesToDraw = MAX_DISPLAY_LIVES;
+                   }
+               
+                   for (int i = 0; i < livesToDraw; i++)
+                   {
+                       // Logika menggambar dari kanan ke kiri
+                       // Ikon ke-0 (paling kanan) ada di lifeIconPosX
+                       // Ikon ke-1 ada di sebelah kirinya, dst.
+                       float posX = lifeIconPosX - (i * ((lifeTexture.width * lifeIconScale) + LIFE_ICON_SPACING));
+                       float posY = lifeIconPosY;
+                       DrawTextureEx(lifeTexture, (Vector2){posX, posY}, 0.0f, lifeIconScale, WHITE);
+                   }
+               }

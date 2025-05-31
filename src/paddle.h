@@ -1,25 +1,44 @@
-// Nama : Muhammad Raihan Abubakar
-// Nama fitur : paddle 
-// Deskripsi : paddle berfungsi untuk memantulkan dan mengarahkan bola agar bisa menghancurkan block
-
+// src/paddle.h
 #ifndef PADDLE_H
 #define PADDLE_H
 
 #include <raylib.h>
+#include "powerup.h" // <-- TAMBAHKAN INI untuk definisi PowerUpType
 
-#define PADDLE_ROWS 1 
-#define PADDLE_COLS 1 // jumlah baris dan kolom paddle 
-#define PADDLE_WIDTH 100 // lebar paddle
-#define PADDLE_HEIGHT 20 // tinggi paddle 
-#define PADDLE_SPEED 8 // kecepatan paddle 
+// typedef enum PowerUpType PowerUpType; // <-- HAPUS BARIS INI
 
-typedef struct {
-    Rectangle rect; // posisi paddle 
-    Vector2 speed; 
-} Paddle;
+// Default properties for a new paddle
+#define PADDLE_WIDTH 100.0f
+#define PADDLE_HEIGHT 20.0f
+#define PADDLE_SPEED 8.0f
+#define PADDLE_WIDTH_DEFAULT PADDLE_WIDTH
 
-void InitPaddles(Paddle paddles[PADDLE_ROWS][PADDLE_COLS]); // inisiasi paddle
-void UpdatePaddles(Paddle paddles[PADDLE_ROWS][PADDLE_COLS]); // memperbarui posisi paddle berdasarkan input keyboard
-void DrawPaddles(Paddle paddles[PADDLE_ROWS][PADDLE_COLS]); // menggambar paddle di layar
+#define PADDLE_GAME_AREA_WIDTH 830.0f
+#define MAX_PADDLE_WIDTH (PADDLE_GAME_AREA_WIDTH * 0.9f)
+
+typedef struct ActivePowerUp {
+    PowerUpType type; // Sekarang PowerUpType seharusnya sudah terdefinisi
+    float remainingTime;
+    struct ActivePowerUp *next;
+} ActivePowerUp;
+
+// ... (sisa kode paddle.h tetap sama) ...
+typedef struct PaddleNode {
+    Rectangle rect;
+    Vector2 speed;
+    ActivePowerUp *activePowerUps;
+    Color color;
+    struct PaddleNode *next;
+} PaddleNode;
+
+typedef struct PaddleList {
+    PaddleNode *head;
+} PaddleList;
+
+void InitPaddles(PaddleList *list);
+void AddPaddle(PaddleList *list, Vector2 position, float width, Color color);
+void UpdatePaddles(PaddleList *list, float deltaTime);
+void DrawPaddles(PaddleList *list);
+void FreePaddles(PaddleList *list);
 
 #endif // PADDLE_H
