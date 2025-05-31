@@ -1,4 +1,4 @@
-// Nama Pembuat: Muhammad Brata Hadinata
+// Nama Pembuat: Muhammad Brata Hadinata (241511082)
 // Nama Fitur: mainmenu.c
 // Deskripsi: Kode ini mengatur tampilan dan logika Main Menu dalam game "Break Bricks".
 //            Modifikasi: Menggunakan linked list dinamis untuk menu.
@@ -9,21 +9,21 @@
 #include "sound.h"
 // #include "game_state.h" // Sudah diinclude via mainmenu.h
 #include "background.h"
-#include "layout.h"     // Untuk DrawInfo()
+#include "layout.h" // Untuk DrawInfo()
 #include "raylib.h"
 #include "leaderboard.h" // Untuk MAX_NAME_LENGTH, GetLeaderboardCount, DrawLeaderboardMenuScreen, SCROLL_SPEED
 #include <string.h>
 #include <stdio.h>
-#include <stdlib.h>     // Untuk malloc, free
+#include <stdlib.h> // Untuk malloc, free
 
 // 🔹 Variabel Global untuk Menu Dinamis
-static MenuScreen* mainMenuScreen = NULL;
-static MenuScreen* levelSelectScreen = NULL;
-static MenuScreen* nameInputScreen = NULL;
-static MenuScreen* leaderboardScreen = NULL;
-static MenuScreen* settingsScreen = NULL;
-static MenuScreen* infoScreen = NULL;
-static MenuScreen* currentActiveScreen = NULL;
+static MenuScreen *mainMenuScreen = NULL;
+static MenuScreen *levelSelectScreen = NULL;
+static MenuScreen *nameInputScreen = NULL;
+static MenuScreen *leaderboardScreen = NULL;
+static MenuScreen *settingsScreen = NULL;
+static MenuScreen *infoScreen = NULL;
+static MenuScreen *currentActiveScreen = NULL;
 
 // 🔹 Variabel State Game Lainnya (yang sebelumnya static global)
 static bool exitGame = false;
@@ -68,20 +68,22 @@ static void UpdateSettingsScreenCustom(Vector2 mousePos);
 static void DrawInfoScreenCustom(Vector2 mousePos);
 static void UpdateInfoScreenCustom(Vector2 mousePos);
 
-
 // 🔹 Gambar Teks Pelangi dengan Spacing yang Lebih Presisi (tetap sama)
-void DrawRainbowText(const char *text, int centerX, int posY, int fontSize){
+void DrawRainbowText(const char *text, int centerX, int posY, int fontSize)
+{
     int currentLetterCount = 0; // Renamed to avoid conflict with global letterCount
     float totalWidth = 0;
     float letterWidths[256] = {0};
-    for (int i = 0; text[i] != '\0'; i++) {
+    for (int i = 0; text[i] != '\0'; i++)
+    {
         letterWidths[i] = MeasureTextEx(GetFontDefault(), TextFormat("%c", text[i]), fontSize, 2).x;
         totalWidth += letterWidths[i] + 3; // Include spacing in totalWidth calculation more accurately
         currentLetterCount++;
     }
     float startX = centerX - (totalWidth / 2.0f); // Center align
     float xOffset = 0;
-    for (int i = 0; i < currentLetterCount; i++) {
+    for (int i = 0; i < currentLetterCount; i++)
+    {
         Color letterColor = rainbowColors[i % rainbowSize];
         DrawTextEx(GetFontDefault(), TextFormat("%c", text[i]),
                    (Vector2){startX + xOffset, (float)posY}, fontSize, 2, letterColor);
@@ -90,16 +92,19 @@ void DrawRainbowText(const char *text, int centerX, int posY, int fontSize){
 }
 
 // 🔹 Gambar Title "BREAK BRICKS" (tetap sama)
-void DrawTitle(){
+void DrawTitle()
+{
     DrawRainbowText("BREAK BRICKS", SCREEN_WIDTH / 2, 150, 75);
 }
 
 // ----------------------------------------------------------------------------------
 // Menu Item dan Screen Helper Functions
 // ----------------------------------------------------------------------------------
-MenuItem* CreateMenuItem(const char* text, Rectangle rect, Color base, Color hover, Color textColor, MenuItemAction action, MenuScreen* target) {
-    MenuItem* newItem = (MenuItem*)malloc(sizeof(MenuItem));
-    if (!newItem) {
+MenuItem *CreateMenuItem(const char *text, Rectangle rect, Color base, Color hover, Color textColor, MenuItemAction action, MenuScreen *target)
+{
+    MenuItem *newItem = (MenuItem *)malloc(sizeof(MenuItem));
+    if (!newItem)
+    {
         TraceLog(LOG_ERROR, "Failed to allocate memory for MenuItem");
         return NULL;
     }
@@ -115,23 +120,31 @@ MenuItem* CreateMenuItem(const char* text, Rectangle rect, Color base, Color hov
     return newItem;
 }
 
-void AddMenuItemToScreen(MenuScreen* screen, MenuItem* item) {
-    if (!screen || !item) return;
-    if (screen->itemsHead == NULL) {
+void AddMenuItemToScreen(MenuScreen *screen, MenuItem *item)
+{
+    if (!screen || !item)
+        return;
+    if (screen->itemsHead == NULL)
+    {
         screen->itemsHead = item;
-    } else {
-        MenuItem* temp = screen->itemsHead;
-        while (temp->next != NULL) {
+    }
+    else
+    {
+        MenuItem *temp = screen->itemsHead;
+        while (temp->next != NULL)
+        {
             temp = temp->next;
         }
         temp->next = item;
     }
 }
 
-MenuScreen* CreateMenuScreen(const char* title, MenuScreenType type, MenuScreen* parent,
-                             void (*drawCustom)(Vector2), void (*updateCustom)(Vector2)) {
-    MenuScreen* newScreen = (MenuScreen*)malloc(sizeof(MenuScreen));
-    if (!newScreen) {
+MenuScreen *CreateMenuScreen(const char *title, MenuScreenType type, MenuScreen *parent,
+                             void (*drawCustom)(Vector2), void (*updateCustom)(Vector2))
+{
+    MenuScreen *newScreen = (MenuScreen *)malloc(sizeof(MenuScreen));
+    if (!newScreen)
+    {
         TraceLog(LOG_ERROR, "Failed to allocate memory for MenuScreen");
         return NULL;
     }
@@ -148,25 +161,52 @@ MenuScreen* CreateMenuScreen(const char* title, MenuScreenType type, MenuScreen*
 // ----------------------------------------------------------------------------------
 // Actions for MenuItems
 // ----------------------------------------------------------------------------------
-static void Action_NavigateToLevelSelect(void) { currentActiveScreen = levelSelectScreen; PlaySfx("button_click"); }
-static void Action_NavigateToLeaderboard(void) { currentActiveScreen = leaderboardScreen; PlaySfx("button_click"); LoadLeaderboard(LEADERBOARD_FILE); leaderboardScrollOffset = 0;}
-static void Action_NavigateToSettings(void) { currentActiveScreen = settingsScreen; PlaySfx("button_click"); }
-static void Action_NavigateToInfo(void) { currentActiveScreen = infoScreen; PlaySfx("button_click"); }
-static void Action_ExitGame(void) { exitGame = true; PlaySfx("button_click"); }
+static void Action_NavigateToLevelSelect(void)
+{
+    currentActiveScreen = levelSelectScreen;
+    PlaySfx("button_click");
+}
+static void Action_NavigateToLeaderboard(void)
+{
+    currentActiveScreen = leaderboardScreen;
+    PlaySfx("button_click");
+    LoadLeaderboard(LEADERBOARD_FILE);
+    leaderboardScrollOffset = 0;
+}
+static void Action_NavigateToSettings(void)
+{
+    currentActiveScreen = settingsScreen;
+    PlaySfx("button_click");
+}
+static void Action_NavigateToInfo(void)
+{
+    currentActiveScreen = infoScreen;
+    PlaySfx("button_click");
+}
+static void Action_ExitGame(void)
+{
+    exitGame = true;
+    PlaySfx("button_click");
+}
 
-static void Action_GoBack(void) {
-    if (currentActiveScreen && currentActiveScreen->parentScreen) {
+static void Action_GoBack(void)
+{
+    if (currentActiveScreen && currentActiveScreen->parentScreen)
+    {
         currentActiveScreen = currentActiveScreen->parentScreen;
         PlaySfx("button_click");
-    } else {
+    }
+    else
+    {
         currentActiveScreen = mainMenuScreen; // Fallback to main menu
         PlaySfx("button_click");
     }
 }
 
-static void Action_SelectLevel(int level) {
+static void Action_SelectLevel(int level)
+{
     selectedLevel = level;
-    letterCount = 0; // Reset player name input
+    letterCount = 0;                           // Reset player name input
     memset(playerName, 0, sizeof(playerName)); // Clear player name string
     currentActiveScreen = nameInputScreen;
     PlaySfx("button_click");
@@ -175,35 +215,50 @@ static void Action_SelectLevel1(void) { Action_SelectLevel(1); }
 static void Action_SelectLevel2(void) { Action_SelectLevel(2); }
 static void Action_SelectLevel3(void) { Action_SelectLevel(3); }
 
-static void Action_ConfirmNameAndStart(void) {
-    if (letterCount > 0) {
+static void Action_ConfirmNameAndStart(void)
+{
+    if (letterCount > 0)
+    {
         startGame = true; // main.c will detect this and change game state
         // currentActiveScreen = mainMenuScreen; // Game will transition out of menu state
         PlaySfx("button_click");
     }
 }
 
-static void Action_MM_ToggleSound(void) {
+static void Action_MM_ToggleSound(void)
+{
     ToggleSound(); // This function should be from sound.h/sound.c or defined here
     PlaySfx("button_click");
 }
-static void Action_MM_IncreaseVolume(void) { IncreaseVolume(); PlaySfx("button_click"); } // from sound.h/sound.c
-static void Action_MM_DecreaseVolume(void) { DecreaseVolume(); PlaySfx("button_click"); } // from sound.h/sound.c
+static void Action_MM_IncreaseVolume(void)
+{
+    IncreaseVolume();
+    PlaySfx("button_click");
+} // from sound.h/sound.c
+static void Action_MM_DecreaseVolume(void)
+{
+    DecreaseVolume();
+    PlaySfx("button_click");
+} // from sound.h/sound.c
 
 // ----------------------------------------------------------------------------------
 // Custom Screen Draw and Update Functions
 // ----------------------------------------------------------------------------------
 
 // --- Name Input Screen ---
-static void DrawNameInputScreenCustom(Vector2 mousePos) {
+static void DrawNameInputScreenCustom(Vector2 mousePos)
+{
     DrawRectangleRec(textBox, LIGHTGRAY);
     DrawRectangleLinesEx(textBox, 2, mouseOnText ? RED : DARKGRAY);
-    DrawText(playerName, textBox.x + 10, textBox.y + (textBox.height - 30)/2, 30, BLACK);
+    DrawText(playerName, textBox.x + 10, textBox.y + (textBox.height - 30) / 2, 30, BLACK);
 
-    if (mouseOnText) {
-        if (letterCount < MAX_NAME_LENGTH_INPUT) { // MAX_NAME_LENGTH_INPUT is 8
-            if (((int)(GetTime() * 2.0f) % 2) == 0) {
-                DrawText("_", textBox.x + 10 + MeasureText(playerName, 30), textBox.y + (textBox.height - 30)/2, 30, BLACK);
+    if (mouseOnText)
+    {
+        if (letterCount < MAX_NAME_LENGTH_INPUT)
+        { // MAX_NAME_LENGTH_INPUT is 8
+            if (((int)(GetTime() * 2.0f) % 2) == 0)
+            {
+                DrawText("_", textBox.x + 10 + MeasureText(playerName, 30), textBox.y + (textBox.height - 30) / 2, 30, BLACK);
             }
         }
     }
@@ -212,14 +267,19 @@ static void DrawNameInputScreenCustom(Vector2 mousePos) {
     DrawText(TextFormat("Max %d characters", MAX_NAME_LENGTH_INPUT), textBox.x, textBox.y + textBox.height + 60, 20, WHITE);
 }
 
-static void UpdateNameInputScreenCustom(Vector2 mousePos) {
+static void UpdateNameInputScreenCustom(Vector2 mousePos)
+{
     mouseOnText = CheckCollisionPointRec(mousePos, textBox);
-    if (mouseOnText) {
+    if (mouseOnText)
+    {
         SetMouseCursor(MOUSE_CURSOR_IBEAM);
         int key = GetCharPressed();
-        while (key > 0) { // Process all characters in the queue
-            if ((key >= 32) && (key <= 125)) { // Printable characters
-                if (letterCount < MAX_NAME_LENGTH_INPUT) {
+        while (key > 0)
+        { // Process all characters in the queue
+            if ((key >= 32) && (key <= 125))
+            { // Printable characters
+                if (letterCount < MAX_NAME_LENGTH_INPUT)
+                {
                     playerName[letterCount] = (char)key;
                     playerName[letterCount + 1] = '\0';
                     letterCount++;
@@ -228,45 +288,57 @@ static void UpdateNameInputScreenCustom(Vector2 mousePos) {
             key = GetCharPressed(); // Get next char
         }
 
-        if (IsKeyPressed(KEY_BACKSPACE)) {
+        if (IsKeyPressed(KEY_BACKSPACE))
+        {
             SetMouseCursor(MOUSE_CURSOR_DEFAULT);
-            if (letterCount > 0) {
+            if (letterCount > 0)
+            {
                 letterCount--;
                 playerName[letterCount] = '\0';
             }
         }
-        if (IsKeyPressed(KEY_ENTER)) {
+        if (IsKeyPressed(KEY_ENTER))
+        {
             SetMouseCursor(MOUSE_CURSOR_DEFAULT);
             Action_ConfirmNameAndStart();
         }
-    } else {
+    }
+    else
+    {
         SetMouseCursor(MOUSE_CURSOR_DEFAULT);
     }
     // "BACK" button is a standard MenuItem, handled by generic update
 }
 
 // --- Leaderboard Screen ---
-static void DrawLeaderboardScreenCustom(Vector2 mousePos) {
+static void DrawLeaderboardScreenCustom(Vector2 mousePos)
+{
     DrawLeaderboardMenuScreen(leaderboardScrollOffset); // From leaderboard.c
 }
 
-static void UpdateLeaderboardScreenCustom(Vector2 mousePos) {
+static void UpdateLeaderboardScreenCustom(Vector2 mousePos)
+{
     leaderboardScrollOffset -= (GetMouseWheelMove() * SCROLL_SPEED); // SCROLL_SPEED from leaderboard.h
 
     int totalBoardEntries = GetLeaderboardCount(); // From leaderboard.c
     int maxScroll = 0;
-    if (totalBoardEntries > 5) { // Assuming roughly 5 entries visible without scroll. Adjust as needed.
+    if (totalBoardEntries > 5)
+    {                                               // Assuming roughly 5 entries visible without scroll. Adjust as needed.
         int contentHeight = totalBoardEntries * 30; // Approx height per entry
-        int visibleAreaHeight = 380; // Approx visible area in DrawLeaderboardMenuScreen
-        if (contentHeight > visibleAreaHeight) {
+        int visibleAreaHeight = 380;                // Approx visible area in DrawLeaderboardMenuScreen
+        if (contentHeight > visibleAreaHeight)
+        {
             maxScroll = contentHeight - visibleAreaHeight;
         }
     }
 
-    if (leaderboardScrollOffset < 0) leaderboardScrollOffset = 0;
-    if (leaderboardScrollOffset > maxScroll) leaderboardScrollOffset = maxScroll;
+    if (leaderboardScrollOffset < 0)
+        leaderboardScrollOffset = 0;
+    if (leaderboardScrollOffset > maxScroll)
+        leaderboardScrollOffset = maxScroll;
 
-    if (IsKeyPressed(KEY_BACKSPACE)) { // Specific back handling
+    if (IsKeyPressed(KEY_BACKSPACE))
+    { // Specific back handling
         Action_GoBack();
     }
 }
@@ -277,58 +349,67 @@ static Rectangle settings_SoundToggleBtnRect = {SCREEN_WIDTH / 2 - 70, 280, 140,
 static Rectangle settings_VolDownBtnRect = {SCREEN_WIDTH / 2 - 120, 280, 40, 40};
 static Rectangle settings_VolUpBtnRect = {SCREEN_WIDTH / 2 + 80, 280, 40, 40};
 
-static void DrawSettingsScreenCustom(Vector2 mousePos) {
+static void DrawSettingsScreenCustom(Vector2 mousePos)
+{
     // Sound Toggle Button
     Color soundColor = CheckCollisionPointRec(mousePos, settings_SoundToggleBtnRect) ? SKYBLUE : YELLOW;
     DrawRectangleRec(settings_SoundToggleBtnRect, soundColor);
-    const char* soundText = IsSoundOn() ? "SOUND ON" : "SOUND OFF";
-    DrawText(soundText, settings_SoundToggleBtnRect.x + (settings_SoundToggleBtnRect.width - MeasureText(soundText, 20))/2, settings_SoundToggleBtnRect.y + 10, 20, BLACK);
+    const char *soundText = IsSoundOn() ? "SOUND ON" : "SOUND OFF";
+    DrawText(soundText, settings_SoundToggleBtnRect.x + (settings_SoundToggleBtnRect.width - MeasureText(soundText, 20)) / 2, settings_SoundToggleBtnRect.y + 10, 20, BLACK);
 
     // Volume Down Button
     Color decreaseColor = CheckCollisionPointRec(mousePos, settings_VolDownBtnRect) ? SKYBLUE : YELLOW;
     DrawRectangleRec(settings_VolDownBtnRect, decreaseColor);
-    DrawText("-", settings_VolDownBtnRect.x + (settings_VolDownBtnRect.width - MeasureText("-", 20))/2, settings_VolDownBtnRect.y + 10, 20, BLACK);
+    DrawText("-", settings_VolDownBtnRect.x + (settings_VolDownBtnRect.width - MeasureText("-", 20)) / 2, settings_VolDownBtnRect.y + 10, 20, BLACK);
 
     // Volume Up Button
     Color increaseColor = CheckCollisionPointRec(mousePos, settings_VolUpBtnRect) ? SKYBLUE : YELLOW;
     DrawRectangleRec(settings_VolUpBtnRect, increaseColor);
-    DrawText("+", settings_VolUpBtnRect.x + (settings_VolUpBtnRect.width - MeasureText("+", 20))/2, settings_VolUpBtnRect.y + 10, 20, BLACK);
+    DrawText("+", settings_VolUpBtnRect.x + (settings_VolUpBtnRect.width - MeasureText("+", 20)) / 2, settings_VolUpBtnRect.y + 10, 20, BLACK);
 }
 
-static void UpdateSettingsScreenCustom(Vector2 mousePos) {
-    if (CheckCollisionPointRec(mousePos, settings_SoundToggleBtnRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+static void UpdateSettingsScreenCustom(Vector2 mousePos)
+{
+    if (CheckCollisionPointRec(mousePos, settings_SoundToggleBtnRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+    {
         Action_MM_ToggleSound();
     }
-    if (CheckCollisionPointRec(mousePos, settings_VolDownBtnRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+    if (CheckCollisionPointRec(mousePos, settings_VolDownBtnRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+    {
         Action_MM_DecreaseVolume();
     }
-    if (CheckCollisionPointRec(mousePos, settings_VolUpBtnRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+    if (CheckCollisionPointRec(mousePos, settings_VolUpBtnRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+    {
         Action_MM_IncreaseVolume();
     }
-    if (IsKeyPressed(KEY_BACKSPACE)) { // Back handled by MenuItem or this
-         Action_GoBack();
+    if (IsKeyPressed(KEY_BACKSPACE))
+    { // Back handled by MenuItem or this
+        Action_GoBack();
     }
     // "BACK" MenuItem is handled by generic update
 }
 
 // --- Info Screen ---
-static void DrawInfoScreenCustom(Vector2 mousePos) {
+static void DrawInfoScreenCustom(Vector2 mousePos)
+{
     // Titles drawn by DrawDynamicMainMenu title handler
     DrawInfo(); // From layout.c, draws the list of names
 }
 
-static void UpdateInfoScreenCustom(Vector2 mousePos) {
-    if (IsKeyPressed(KEY_BACKSPACE)) { // Back handled by MenuItem or this
-         Action_GoBack();
+static void UpdateInfoScreenCustom(Vector2 mousePos)
+{
+    if (IsKeyPressed(KEY_BACKSPACE))
+    { // Back handled by MenuItem or this
+        Action_GoBack();
     }
     // "BACK" MenuItem is handled by generic update
 }
 
-
 // ----------------------------------------------------------------------------------
 // Main Menu Functions (Dynamic Version)
 // ----------------------------------------------------------------------------------
-void InitDynamicMainMenu(void) {
+void InitDynamicMainMenu(void)
+{
     FreeDynamicMainMenu(); // Clear any existing menu
 
     float btnWidth = 320, btnHeight = 50, btnSpacing = 15; // Consistent spacing
@@ -370,12 +451,11 @@ void InitDynamicMainMenu(void) {
     // 5. Settings Screen
     settingsScreen = CreateMenuScreen("SETTINGS", MENU_TYPE_SETTINGS, mainMenuScreen, DrawSettingsScreenCustom, UpdateSettingsScreenCustom);
     // Specific buttons drawn by DrawSettingsScreenCustom, Back button as MenuItem:
-    AddMenuItemToScreen(settingsScreen, CreateMenuItem("Back", (Rectangle){SCREEN_WIDTH/2 - 35, 380, 70, 40}, LIGHTGRAY, DARKGRAY, BLACK, Action_GoBack, NULL));
+    AddMenuItemToScreen(settingsScreen, CreateMenuItem("Back", (Rectangle){SCREEN_WIDTH / 2 - 35, 380, 70, 40}, LIGHTGRAY, DARKGRAY, BLACK, Action_GoBack, NULL));
 
     // 6. Info Screen
     infoScreen = CreateMenuScreen("INFO", MENU_TYPE_INFO, mainMenuScreen, DrawInfoScreenCustom, UpdateInfoScreenCustom);
     AddMenuItemToScreen(infoScreen, CreateMenuItem("Back", (Rectangle){20, 20, 100, 40}, LIGHTGRAY, DARKGRAY, BLACK, Action_GoBack, NULL));
-
 
     currentActiveScreen = mainMenuScreen;
     exitGame = false;
@@ -387,21 +467,28 @@ void InitDynamicMainMenu(void) {
     leaderboardScrollOffset = 0;
 }
 
-void UpdateDynamicMainMenu(void) {
-    if (!currentActiveScreen) return;
+void UpdateDynamicMainMenu(void)
+{
+    if (!currentActiveScreen)
+        return;
     Vector2 mouse = GetMousePosition();
 
     // Handle custom update logic first
-    if (currentActiveScreen->updateScreenCustom) {
+    if (currentActiveScreen->updateScreenCustom)
+    {
         currentActiveScreen->updateScreenCustom(mouse);
     }
 
     // Handle generic menu item interactions
-    MenuItem* currentItem = currentActiveScreen->itemsHead;
-    while (currentItem != NULL) {
-        if (CheckCollisionPointRec(mouse, currentItem->rect)) {
-            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                if (currentItem->action) {
+    MenuItem *currentItem = currentActiveScreen->itemsHead;
+    while (currentItem != NULL)
+    {
+        if (CheckCollisionPointRec(mouse, currentItem->rect))
+        {
+            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+            {
+                if (currentItem->action)
+                {
                     currentItem->action();
                     // currentActiveScreen might have changed, so break or be careful if continuing loop
                     return; // Action might change screen, so re-evaluate from top next frame
@@ -415,15 +502,19 @@ void UpdateDynamicMainMenu(void) {
     // (NameInput, Leaderboard, Settings have custom handling or specific back items)
     if (currentActiveScreen->type != MENU_TYPE_NAME_INPUT &&
         currentActiveScreen->type != MENU_TYPE_LEADERBOARD &&
-        currentActiveScreen->type != MENU_TYPE_SETTINGS) { // Assuming BACKSPACE is not used otherwise
-        if (IsKeyPressed(KEY_BACKSPACE)) {
+        currentActiveScreen->type != MENU_TYPE_SETTINGS)
+    { // Assuming BACKSPACE is not used otherwise
+        if (IsKeyPressed(KEY_BACKSPACE))
+        {
             Action_GoBack();
         }
     }
 }
 
-void DrawDynamicMainMenu(void) {
-    if (!currentActiveScreen) return;
+void DrawDynamicMainMenu(void)
+{
+    if (!currentActiveScreen)
+        return;
 
     ClearBackground((Color){30, 0, 60, 255});
     DrawBackground(); // From background.c
@@ -431,27 +522,35 @@ void DrawDynamicMainMenu(void) {
     Vector2 mouse = GetMousePosition();
 
     // Draw screen title
-    if (currentActiveScreen->type == MENU_TYPE_MAIN) {
+    if (currentActiveScreen->type == MENU_TYPE_MAIN)
+    {
         DrawTitle(); // Special title for main menu
-    } else if (strlen(currentActiveScreen->title) > 0) {
+    }
+    else if (strlen(currentActiveScreen->title) > 0)
+    {
         int titleFontSize = 45;
         int titleY = 150;
-        if(currentActiveScreen->type == MENU_TYPE_LEADERBOARD) titleY = 40;
-        else if (currentActiveScreen->type == MENU_TYPE_INFO) titleY = 100;
+        if (currentActiveScreen->type == MENU_TYPE_LEADERBOARD)
+            titleY = 40;
+        else if (currentActiveScreen->type == MENU_TYPE_INFO)
+            titleY = 100;
 
         DrawRainbowText(currentActiveScreen->title, SCREEN_WIDTH / 2, titleY, titleFontSize);
 
-        if (currentActiveScreen->type == MENU_TYPE_INFO) { // Subtitles for INFO screen
+        if (currentActiveScreen->type == MENU_TYPE_INFO)
+        { // Subtitles for INFO screen
             DrawRainbowText("Dibuat Oleh", SCREEN_WIDTH / 2, titleY + 60, 20);
             DrawRainbowText("Kelompok C6 Proyek 2 POLBAN:", SCREEN_WIDTH / 2, titleY + 85, 20);
         }
     }
 
     // Draw generic menu items
-    MenuItem* currentItem = currentActiveScreen->itemsHead;
-    while (currentItem != NULL) {
+    MenuItem *currentItem = currentActiveScreen->itemsHead;
+    while (currentItem != NULL)
+    {
         Color itemColor = currentItem->baseColor;
-        if (CheckCollisionPointRec(mouse, currentItem->rect)) {
+        if (CheckCollisionPointRec(mouse, currentItem->rect))
+        {
             itemColor = currentItem->hoverColor;
         }
         DrawRectangleRec(currentItem->rect, itemColor);
@@ -466,30 +565,36 @@ void DrawDynamicMainMenu(void) {
     }
 
     // Handle custom drawing for the screen
-    if (currentActiveScreen->drawScreenCustom) {
+    if (currentActiveScreen->drawScreenCustom)
+    {
         currentActiveScreen->drawScreenCustom(mouse);
     }
 }
 
-void FreeMenuItems(MenuItem* head) {
-    MenuItem* current = head;
-    MenuItem* next;
-    while (current != NULL) {
+void FreeMenuItems(MenuItem *head)
+{
+    MenuItem *current = head;
+    MenuItem *next;
+    while (current != NULL)
+    {
         next = current->next;
         free(current);
         current = next;
     }
 }
 
-void FreeMenuScreen(MenuScreen** screen_ptr) {
-    if (screen_ptr && *screen_ptr) {
+void FreeMenuScreen(MenuScreen **screen_ptr)
+{
+    if (screen_ptr && *screen_ptr)
+    {
         FreeMenuItems((*screen_ptr)->itemsHead);
         free(*screen_ptr);
         *screen_ptr = NULL;
     }
 }
 
-void FreeDynamicMainMenu(void) {
+void FreeDynamicMainMenu(void)
+{
     FreeMenuScreen(&mainMenuScreen);
     FreeMenuScreen(&levelSelectScreen);
     FreeMenuScreen(&nameInputScreen);
@@ -502,28 +607,31 @@ void FreeDynamicMainMenu(void) {
 // ----------------------------------------------------------------------------------
 // Mini Menu (In-Game) - Stays mostly the same
 // ----------------------------------------------------------------------------------
-void UpdateMainMenuMini(GameState *state){
+void UpdateMainMenuMini(GameState *state)
+{
     Vector2 mouse = GetMousePosition();
-    if ((*state == GAME_START || *state == GAME_PLAY) && CheckCollisionPointRec(mouse, miniMenuBtn) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+    if ((*state == GAME_START || *state == GAME_PLAY) && CheckCollisionPointRec(mouse, miniMenuBtn) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+    {
         PlaySfx("button_click");
-        *state = GAME_MENU; // Signal to main.c to go to menu
+        *state = GAME_MENU;                                // Signal to main.c to go to menu
         ChangeMusic("assets/sounds/background_music.mp3"); // Assuming ChangeMusic is globally available
         // UpdateMusic(); // main.c's loop calls UpdateMusic
         InitDynamicMainMenu(); // Re-initialize main menu state when returning
     }
 }
 
-void DrawMainMenuMini(GameState state){
-    if (state != GAME_START && state != GAME_PLAY) return;
+void DrawMainMenuMini(GameState state)
+{
+    if (state != GAME_START && state != GAME_PLAY)
+        return;
 
     Vector2 mouse = GetMousePosition();
     Color miniColor = CheckCollisionPointRec(mouse, miniMenuBtn) ? SKYBLUE : YELLOW;
     DrawRectangleRec(miniMenuBtn, miniColor);
-    const char* text = "Main Menu";
+    const char *text = "Main Menu";
     int textWidth = MeasureText(text, 20);
-    DrawText(text, miniMenuBtn.x + (miniMenuBtn.width - textWidth)/2, miniMenuBtn.y + (miniMenuBtn.height - 20)/2, 20, BLACK);
+    DrawText(text, miniMenuBtn.x + (miniMenuBtn.width - textWidth) / 2, miniMenuBtn.y + (miniMenuBtn.height - 20) / 2, 20, BLACK);
 }
-
 
 // ----------------------------------------------------------------------------------
 // Getters and Setters (for main.c and other modules)
@@ -534,8 +642,10 @@ int GetSelectedLevel() { return selectedLevel; }
 const char *GetPlayerName() { return playerName; }
 void SetStartGame(bool value) { startGame = value; }
 
-MenuScreenType GetCurrentMenuScreenType(void) {
-    if (currentActiveScreen) {
+MenuScreenType GetCurrentMenuScreenType(void)
+{
+    if (currentActiveScreen)
+    {
         return currentActiveScreen->type;
     }
     return MENU_TYPE_NONE;
@@ -544,14 +654,16 @@ MenuScreenType GetCurrentMenuScreenType(void) {
 // Sound control - these call functions from sound.c or are wrappers
 // Ensure sound.c provides IsSoundOn(), ToggleMusic(), IncreaseVolume(), DecreaseVolume()
 // For this example, ToggleSound is the action, IsSoundOn is the getter.
-void ToggleSound() { // This is the one called by Action_MM_ToggleSound
+void ToggleSound()
+{ // This is the one called by Action_MM_ToggleSound
     // Assuming ToggleMusic in sound.c handles the logic of toggling on/off
     // and updates its internal state reflected by IsSoundOn()
-    ToggleMusic(); // From sound.h
+    ToggleMusic();      // From sound.h
     soundOn = !soundOn; // Update local reflection if needed, but better to rely on sound module's state
 }
 
-bool IsSoundOn() {
+bool IsSoundOn()
+{
     // This should ideally query the sound module's state
     // For now, it uses the local 'soundOn' which is toggled by Action_MM_ToggleSound
     return soundOn;
