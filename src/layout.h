@@ -8,8 +8,8 @@
 #include <raylib.h>     // Library utama untuk grafis dan input
 #include "skor.h"       
 #include "nyawa.h"      
-#include "LinkedList-Block.h"      
-#include "BOLA.h"       
+#include "block.h"      
+#include "bola.h"       
 #include "stopwatch.h"  
 #include "game_state.h" 
 

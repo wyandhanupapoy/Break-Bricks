@@ -1,9 +1,9 @@
 #include <raylib.h>
-#include "BOLA.h"
+#include "bola.h"
 #include "sound.h"   // For PlaySfx
 #include "paddle.h"  // For PaddleNode definition (to access rect)
 #include "powerup.h" // For AddPowerUp and PowerUpType (if needed directly)
-#include "LinkedList-Block.h" // For NodeBlock
+#include "block.h" // For NodeBlock
 #include <stdlib.h>
 #include <float.h>
 #include <raymath.h> // For Vector2Length, Vector2Normalize, Vector2Scale, Vector2Distance

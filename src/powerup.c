@@ -1,6 +1,6 @@
 #include "powerup.h"
 #include "paddle.h"  // For PaddleNode, ActivePowerUp, PADDLE_WIDTH_DEFAULT, MAX_PADDLE_WIDTH, PADDLE_GAME_AREA_WIDTH
-#include "BOLA.h"    // For BolaList, AddBola, MIN_BALL_SPEED (jika digunakan di sini, pastikan BOLA.h menyediakannya)
+#include "bola.h"    // For BolaList, AddBola, MIN_BALL_SPEED (jika digunakan di sini, pastikan BOLA.h menyediakannya)
 #include "sound.h"   // For PlaySfx
 #include <stdlib.h>  // For malloc, free
 #include <raymath.h> // For fminf, fmaxf

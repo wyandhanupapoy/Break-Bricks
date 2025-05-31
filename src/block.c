@@ -1,4 +1,12 @@
-#include "LinkedList-Block.h"
+//Nama Pembuat: Nezya Zulfa Fauziah
+//Nama Fitur: Block
+// Deskripsi: Fitur linked list ini mengelola blok-blok dalam game Break Bricks secara dinamis.
+// Termasuk inisialisasi, penambahan, penghapusan, serta pembaruan kondisi blok saat terkena bola.
+// Blok akan berubah warna sesuai sisa HP dan hilang jika HP habis.
+// Sistem ini juga menangani gambar blok, deteksi tabrakan, dan pengecekan apakah semua blok telah hancur.
+
+
+#include "block.h"
 #include <stdlib.h>
 
 // 🔹 Fungsi untuk menginisialisasi linked list

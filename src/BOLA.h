@@ -3,7 +3,7 @@
 #define BOLA_H
 
 #include <raylib.h>
-#include "LinkedList-Block.h"
+#include "block.h"
 #include "skor.h"
 #include "stopwatch.h"
 #include "game_state.h"

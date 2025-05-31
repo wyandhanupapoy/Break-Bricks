@@ -1,5 +1,12 @@
-#include "LinkedList-Level.h"
-#include "LinkedList-Block.h"
+// Nama Pembuat: Nezya Zulfa Fauziah
+// Nama Fitur: Level
+// Deskripsi: Fitur level ini mengatur jenis dan ketahanan blok dalam game Break Bricks berdasarkan level yang dipilih.
+// Level 1 hanya memiliki blok kuning (HP 1), level 2 menambahkan blok oranye (HP 2), dan level 3 menambahkan blok ungu (HP 3).
+// Blok-blok diatur dalam grid dan dimasukkan secara dinamis ke linked list.
+// Sistem ini memungkinkan variasi tantangan di setiap level dan dapat di-reset saat level berubah.
+
+#include "level.h"
+#include "block.h"
 #include <stdlib.h>
 #include <time.h>
 
