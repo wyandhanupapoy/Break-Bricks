@@ -39,6 +39,7 @@ void DrawBlocks(LinkedList *blockList);
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 void RemoveBlock(LinkedList *list, NodeBlock *target, NodeBlock *prev);
 =======
 >>>>>>> origin/LinkedList-Leaderboard
@@ -46,6 +47,8 @@ void RemoveBlock(LinkedList *list, NodeBlock *target, NodeBlock *prev);
 >>>>>>> origin/LinkedList-Paddle
 =======
 >>>>>>> origin/LinkedList-Powerup_Bola
+=======
+>>>>>>> origin/LinkedList-Level
 bool CheckBallBlockCollision(Vector2 ballPosition, float ballRadius, Rectangle blockRect);
 bool AllBlocksDestroyed(LinkedList *blockList);
 
