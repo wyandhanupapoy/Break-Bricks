@@ -1,20 +1,16 @@
-//Nama Pembuat: Nezya Zulfa Fauziah  
-//Nama Fitur: Level  
-//Deskripsi: Fitur level menentukan tingkat kesulitan permainan dengan membedakan ketahanan blok berdasarkan warna. **Level 1** hanya memiliki blok **kuning** (1 ketahanan). **Level 2** menambahkan blok **oranye** (2 ketahanan), yang berubah menjadi kuning sebelum hancur. **Level 3** menambah blok **ungu** (3 ketahanan), yang berubah menjadi oranye, lalu kuning sebelum hancur. Fitur ini memberikan variasi dan tantangan bagi pemain sesuai level yang dipilih.
+// Nama Pembuat: Nezya Zulfa Fauziah
+// Nama Fitur: Level
+// Deskripsi: Fitur level ini mengatur jenis dan ketahanan blok dalam game Break Bricks berdasarkan level yang dipilih.
+// Level 1 hanya memiliki blok kuning (HP 1), level 2 menambahkan blok oranye (HP 2), dan level 3 menambahkan blok ungu (HP 3).
+// Blok-blok diatur dalam grid dan dimasukkan secara dinamis ke linked list.
+// Sistem ini memungkinkan variasi tantangan di setiap level dan dapat di-reset saat level berubah.
 
-#ifndef LEVEL_H
-#define LEVEL_H
+#ifndef LINKEDLIST_LEVEL_H
+#define LINKEDLIST_LEVEL_H
 
-#include "raylib.h"
 #include "block.h"
 
-// Fungsi untuk inisialisasi blok berdasarkan level
-void InitLevelBlocks(Block blocks[BLOCK_ROWS][BLOCK_COLS], int level);
+void InitLevelBlocks(LinkedList *blockList, int level);
+void SetLevel(LinkedList *blockList, int level);
 
-// Fungsi untuk mengatur level dan memanggil `InitLevelBlocks`
-void SetLevel(Block blocks[BLOCK_ROWS][BLOCK_COLS], int level);
-
-// Fungsi untuk memperbarui status blok (misalnya saat terkena bola)
-void UpdateBlockState(Block *block);
-
-#endif // LEVEL_H
+#endif

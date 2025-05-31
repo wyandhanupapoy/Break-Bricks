@@ -1,58 +1,86 @@
-//Nama Pembuat: Nezya Zulfa Fauziah  
-//Nama Fitur: Level  
-//Deskripsi: Fitur level menentukan tingkat kesulitan permainan dengan membedakan ketahanan blok berdasarkan warna. **Level 1** hanya memiliki blok **kuning** (1 ketahanan). **Level 2** menambahkan blok **oranye** (2 ketahanan), yang berubah menjadi kuning sebelum hancur. **Level 3** menambah blok **ungu** (3 ketahanan), yang berubah menjadi oranye, lalu kuning sebelum hancur. Fitur ini memberikan variasi dan tantangan bagi pemain sesuai level yang dipilih.
+// Nama Pembuat: Nezya Zulfa Fauziah
+// Nama Fitur: Level
+// Deskripsi: Fitur level ini mengatur jenis dan ketahanan blok dalam game Break Bricks berdasarkan level yang dipilih.
+// Level 1 hanya memiliki blok kuning (HP 1), level 2 menambahkan blok oranye (HP 2), dan level 3 menambahkan blok ungu (HP 3).
+// Blok-blok diatur dalam grid dan dimasukkan secara dinamis ke linked list.
+// Sistem ini memungkinkan variasi tantangan di setiap level dan dapat di-reset saat level berubah.
 
 #include "level.h"
 #include "block.h"
-#include <stdlib.h> // Untuk fungsi `rand()`
-#include <time.h>   // Untuk seeding angka acak
+#include <stdlib.h>
+#include <time.h>
 
-//menginisialisasi blok-blok dalam permainan berdasarkan level yang dipilih
-void InitLevelBlocks(Block blocks[BLOCK_ROWS][BLOCK_COLS], int level) {
-    srand(time(NULL)); // Seed untuk angka acak berdasarkan waktu saat ini
+// Fungsi untuk menambah blok di akhir linked list
+void InsertLast(LinkedList *list, Block newBlock) {
+    NodeBlock *newNode = (NodeBlock *)malloc(sizeof(NodeBlock));
+    newNode->data = newBlock;
+    newNode->next = NULL;
+
+    if (list->tail == NULL) {
+        list->head = newNode;
+        list->tail = newNode;
+    } else {
+        list->tail->next = newNode;
+        list->tail = newNode;
+    }
+}
+
+// Fungsi untuk menginisialisasi blok-blok dalam permainan berdasarkan level yang dipilih
+void InitLevelBlocks(LinkedList *blockList, int level) {
+    srand(time(NULL)); // Seed untuk angka acak
 
     for (int i = 0; i < BLOCK_ROWS; i++) {
         for (int j = 0; j < BLOCK_COLS; j++) {
-            // Mengatur posisi dan ukuran setiap blok
-            blocks[i][j].rect.x = j * (BLOCK_WIDTH + BLOCK_SPACING) + 15;
-            blocks[i][j].rect.y = i * (BLOCK_HEIGHT + BLOCK_SPACING) + 70;
-            blocks[i][j].rect.width = BLOCK_WIDTH;
-            blocks[i][j].rect.height = BLOCK_HEIGHT;
-            blocks[i][j].active = true; // Blok aktif secara default
+            Block newBlock;
+            newBlock.rect.x = j * (BLOCK_WIDTH + BLOCK_SPACING) + 15;
+            newBlock.rect.y = i * (BLOCK_HEIGHT + BLOCK_SPACING) + 70;
+            newBlock.rect.width = BLOCK_WIDTH;
+            newBlock.rect.height = BLOCK_HEIGHT;
+            newBlock.active = true;
 
-            // Menentukan warna dan hitPoints blok berdasarkan level permainan
+            // Nilai default untuk hitPoints dan color:
+            newBlock.hitPoints = 1;
+            newBlock.color = (Color){200, 200, 200, 255}; // Contoh: Abu-abu sebagai default
+
             if (level == 1) {
-                blocks[i][j].hitPoints = 1;
-                blocks[i][j].color = (Color){255, 204, 77, 255}; // Kuning Retro
+                newBlock.hitPoints = 1;
+                newBlock.color = (Color){255, 204, 77, 255}; // Kuning Retro
             }
             else if (level == 2) {
-                int randomType = rand() % 2; // Nilai acak 0 atau 1
+                int randomType = rand() % 2;
                 if (randomType == 0) {
-                    blocks[i][j].hitPoints = 1;
-                    blocks[i][j].color = (Color){255, 204, 77, 255}; // Kuning Retro
+                    newBlock.hitPoints = 1;
+                    newBlock.color = (Color){255, 204, 77, 255}; // Kuning Retro
                 } else {
-                    blocks[i][j].hitPoints = 2;
-                    blocks[i][j].color = (Color){255, 140, 26, 255}; // Orange Retro
+                    newBlock.hitPoints = 2;
+                    newBlock.color = (Color){255, 140, 26, 255}; // Orange Retro
                 }
             }
             else if (level == 3) {
-                int randomType = rand() % 3; // Nilai acak 0 - 2 (Kuning, Orange, Ungu)
+                int randomType = rand() % 3;
                 if (randomType == 0) {
-                    blocks[i][j].hitPoints = 1;
-                    blocks[i][j].color = (Color){255, 204, 77, 255}; // Kuning Retro
+                    newBlock.hitPoints = 1;
+                    newBlock.color = (Color){255, 204, 77, 255}; // Kuning Retro
                 } else if (randomType == 1) {
-                    blocks[i][j].hitPoints = 2;
-                    blocks[i][j].color = (Color){255, 140, 26, 255}; // Orange Retro
+                    newBlock.hitPoints = 2;
+                    newBlock.color = (Color){255, 140, 26, 255}; // Orange Retro
                 } else {
-                    blocks[i][j].hitPoints = 3;
-                    blocks[i][j].color = (Color){140, 90, 200, 255}; // Ungu Retro
+                    newBlock.hitPoints = 3;
+                    newBlock.color = (Color){140, 90, 200, 255}; // Ungu Retro
                 }
             }
+            else {
+                TraceLog(LOG_WARNING, "Level tidak dikenal: %d, menggunakan default block.", level);
+                // Default sudah diatur di atas
+             }
+
+            InsertLast(blockList, newBlock);
         }
     }
 }
 
-//Atur Level
-void SetLevel(Block blocks[BLOCK_ROWS][BLOCK_COLS], int level) {
-    InitLevelBlocks(blocks, level); // Memanggil fungsi untuk menginisialisasi blok berdasarkan level
+// Atur level
+void SetLevel(LinkedList *blockList, int level) {
+    ClearList(blockList);           // Hapus semua blok sebelumnya
+    InitLevelBlocks(blockList, level); // Inisialisasi ulang blok sesuai level
 }
