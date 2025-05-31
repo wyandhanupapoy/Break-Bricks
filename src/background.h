@@ -2,6 +2,7 @@
 Nama Pembuat:   Wyandhanu Maulidan Nugraha
 Nama Fitur:     Background
 Deskripsi:      Fitur background untuk menampilkan efek latar belakang
+                Dimodifikasi menggunakan linked list
 */
 
 #ifndef BACKGROUND_H
@@ -9,16 +10,22 @@ Deskripsi:      Fitur background untuk menampilkan efek latar belakang
 
 #include <raylib.h>
 
-#define MAX_STARS 100 // Jumlah bintang untuk efek luar angkasa
-
-typedef struct {
+// Struktur untuk bintang menggunakan linked list
+typedef struct StarNode {
     Vector2 position;
     float speed;
-} Star;
+    float brightness;  // 0.0f - 1.0f untuk kecerahan bintang
+    struct StarNode* next;
+} StarNode;
 
 // Fungsi inisialisasi dan update background
 void InitBackground();
 void UpdateBackground();
 void DrawBackground();
+
+// Fungsi tambahan untuk linked list
+void AddStar();
+void RemoveStar();
+void CleanupBackground();
 
 #endif // BACKGROUND_H
