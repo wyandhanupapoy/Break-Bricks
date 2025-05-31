@@ -10,7 +10,7 @@ struct PaddleList;
 struct BolaList;
 
 #define POWERUP_SPAWN_CHANCE_PERCENT 30
-#define POWERUP_DEFAULT_DURATION 10.0f
+#define POWERUP_DEFAULT_DURATION 5.0f
 #define LONG_PADDLE_INCREMENT_VALUE 40.0f // PADDLE_WIDTH akan datang dari paddle.h
                                                    // atau perlu didefinisikan di sini/game_state.h
 
