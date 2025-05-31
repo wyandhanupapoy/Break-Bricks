@@ -1,4 +1,6 @@
-/* * Nama Pembuat: Wyandhanu Maulidan Nugraha * Nama Fitur:   Leaderboard (Linked List) - Source File * Deskripsi:    Implementasi fitur leaderboard menggunakan linked list. * Mencakup fungsi untuk menambah, menyimpan, memuat, dan menampilkan data leaderboard. */
+/* * Nama Pembuat:  Wyandhanu Maulidan Nugraha 
+    Nama Fitur:     Leaderboard (Linked List) - Source File
+    Deskripsi:      Implementasi fitur leaderboard menggunakan linked list. * Mencakup fungsi untuk menambah, menyimpan, memuat, dan menampilkan data leaderboard. */
 #include "leaderboard.h" // Menyertakan deklarasi dari file header leaderboard.h
 #include <stdio.h>      // Diperlukan untuk operasi file (fopen, fwrite, fread, fclose) dan snprintf.
 #include <string.h>     // Diperlukan untuk operasi string (strncpy, strcmp, strlen, strcat).

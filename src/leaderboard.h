@@ -1,9 +1,9 @@
 /*
- * Nama Pembuat: Wyandhanu Maulidan Nugraha
- * Nama Fitur:   Leaderboard (Linked List) - Header File
- * Deskripsi:    File header untuk fitur leaderboard. Mendefinisikan struktur data
- * dan mendeklarasikan fungsi-fungsi yang terkait dengan pengelolaan
- * dan penampilan leaderboard.
+ * Nama Pembuat:    Wyandhanu Maulidan Nugraha
+ * Nama Fitur:      Leaderboard (Linked List) - Header File
+ * Deskripsi:       File header untuk fitur leaderboard. Mendefinisikan struktur data
+ *                  dan mendeklarasikan fungsi-fungsi yang terkait dengan pengelolaan
+ *                  dan penampilan leaderboard.
  */
 
 #ifndef LEADERBOARD_H // Pengawal Inklusi (Include Guard) - Mencegah duplikasi definisi jika file ini di-include berkali-kali
