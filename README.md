@@ -15,18 +15,30 @@
 
 ## 🎮 Fitur Game
 ✨ **Gameplay Klasik Breakout yang Disempurnakan**: Nikmati esensi game Breakout dengan paddle, bola, dan blok yang harus dihancurkan.
+
 🔼 **Beragam Level & Kesulitan**: Pilih dari level Easy, Medium, atau Hard, masing-masing dengan konfigurasi blok dan tantangan yang berbeda (blok multi-hit).
+
 🚀 **Sistem Power-Up Dinamis**: Kumpulkan power-up seperti **Bola Ganda (Triple Ball)** dan **Paddle Panjang** untuk membantumu menghancurkan blok lebih cepat.
 🏆 **Leaderboard Interaktif**: Catat skormu! Leaderboard menyimpan nama pemain, skor, waktu bermain, level tercapai, dan status akhir (Menang/Kalah). Peringkat teratas akan mendapatkan medali emas, perak, atau perunggu.
+
 🎨 **Menu Utama yang Kaya Fitur**: Navigasi yang mudah melalui menu utama, pemilihan level, tampilan leaderboard (dengan scroll), pengaturan suara (volume & mute), dan halaman informasi tim pengembang.
+
 👤 **Input Nama Pemain**: Personalisasikan entri leaderboard-mu dengan nama pemain (hingga 8 karakter).
+
 🔊 **Kontrol Audio Lengkap**: Atur volume musik dan efek suara secara terpisah melalui menu pengaturan atau tombol cepat. Opsi Mute/Unmute tersedia. Musik latar yang berbeda untuk menu dan gameplay.
+
 🌌 **Latar Belakang Animasi & Efek Visual**: Latar belakang dengan gradasi warna yang berubah secara dinamis dan efek bintang jatuh yang menawan. Terdapat juga animasi latar yang berbeda untuk setiap level.
+
 📊 **Panel Informasi Terperinci**: Pantau progresmu dengan panel di sisi kanan yang menampilkan Skor, Sisa Nyawa (dengan ikon hati), Waktu Bermain, dan durasi Power-up aktif.
+
 🧱 **Blok Multi-Hit**: Beberapa blok memerlukan lebih dari satu pukulan untuk hancur, ditandai dengan perubahan warna.
+
 ⚾ **Fisika Bola yang Realistis**: Pantulan bola yang responsif dan dapat diprediksi, dengan kecepatan minimum dan maksimum.
+
 ❤️ **Sistem Nyawa**: Hati-hati jangan sampai bola terakhirmu jatuh! Kehilangan nyawa akan mereset posisi bola dan paddle.
+
 💡 **Antarmuka Pengguna yang Jelas**: Tampilan yang rapi untuk layar pause, game over, dan kemenangan, serta instruksi kontrol yang selalu terlihat.
+
 
 ## 🕹️ Cara Bermain
 1.  **Jalankan Game**: Buka aplikasi `breakbricks` setelah kompilasi.
